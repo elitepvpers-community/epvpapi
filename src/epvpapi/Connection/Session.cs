@@ -74,10 +74,9 @@ namespace epvpapi.Connection
         }
 
         /// <summary>
-        /// Creates a session and performs POST and GET Requests in order to log-in the session user
+        /// Logs in the session user
         /// </summary>
-        /// <param name="md5Password"> Encrypted password of the used user </param>
-        /// <returns> <c>Session</c> object containing cookies and tokens for further usage </returns>
+        /// <param name="md5Password"> Hashed password (MD5) of the session user </param>
         public void Login(string md5Password)
         {
             Response res = Post("http://www.elitepvpers.com/forum/login.php?do=login",
@@ -99,7 +98,7 @@ namespace epvpapi.Connection
 
 
         /// <summary>
-        /// Log-out the session user and destroys the session
+        /// Logs out the session user and destroys the session
         /// </summary>
         public void Logout()
         {
@@ -108,7 +107,7 @@ namespace epvpapi.Connection
         }
 
         /// <summary>
-        /// Updates session relevant information such as the SecurityToken
+        /// Updates required session information such as the SecurityToken
         /// </summary>
         public void Update()
         {
@@ -119,6 +118,9 @@ namespace epvpapi.Connection
             // User.Update(this);
         }
 
+        /// <summary>
+        /// Small wrapper function for throwing an exception if the session is invalid
+        /// </summary>
         public void ThrowIfInvalid()
         {
             if (!Valid) throw new InvalidSessionException("Session is not valid, Cookies: " + Cookies.Count +

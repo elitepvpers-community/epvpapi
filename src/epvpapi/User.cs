@@ -108,7 +108,7 @@ namespace epvpapi
         }
 
         /// <summary>
-        /// Updates the user by requesting the profile information
+        /// Updates the user by requesting the profile
         /// </summary>
         /// <param name="session"> Session used for sending the request </param>
         public void Update(Session session)
