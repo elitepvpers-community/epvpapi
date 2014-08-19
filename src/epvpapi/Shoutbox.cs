@@ -1,4 +1,5 @@
-﻿using System;
+﻿using epvpapi.Connection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,6 +30,10 @@ namespace epvpapi
             public uint ID { get; set; }
             public string Name { get; set; }
 
+            /// <summary>
+            /// List of the most recent shouts available in the channel, updated on executing the <c>Update</c> function
+            /// </summary>
+            public List<Shout> Shouts { get; set; }
 
             public Channel(uint id, string name)
             {
@@ -37,17 +42,23 @@ namespace epvpapi
             }
 
             /// <summary>
-            /// List of the most recent shouts available in the channel, updated on executing the <c>Update</c> function
-            /// </summary>
-            public static List<Shout> Shouts { get; set; }
-
-            /// <summary>
             /// Sends a message to the channel
             /// </summary>
+            /// <param name="session"> Session used for sending the request </param>
             /// <param name="message"> The message text to send </param>
-            public static void Send(string message)
+            public void Send(Session session, string message)
             {
-                throw new NotImplementedException();
+                session.ThrowIfInvalid();
+
+                Response res = session.Post("http://www.elitepvpers.com/forum/mgc_cb_evo_ajax.php",
+                                            new List<KeyValuePair<string, string>>()
+                                            {
+                                                new KeyValuePair<string, string>("do", "ajax_chat"),
+                                                new KeyValuePair<string, string>("channel_id", ID.ToString()),
+                                                new KeyValuePair<string, string>("chat", message),
+                                                new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
+                                                new KeyValuePair<string, string>("s", String.Empty)
+                                            });
             }
 
             /// <summary>
@@ -94,7 +105,7 @@ namespace epvpapi
             set { _Global = value; }
         }
 
-        private static Channel _EnglishOnly = new Channel(0, "EnglishOnly");
+        private static Channel _EnglishOnly = new Channel(1, "EnglishOnly");
         public static Channel EnglishOnly
         {
             get { return _EnglishOnly; }
