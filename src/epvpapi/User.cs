@@ -107,44 +107,6 @@ namespace epvpapi
             Groups |= Usergroups.None;
         }
 
-
-        /// <summary>
-        /// Creates a session and performs POST and GET Requests in order to log-in the user
-        /// </summary>
-        /// <param name="session"> Session used for sending the request </param>
-        /// <param name="md5Password"> Encrypted password of the used user </param>
-        /// <returns> <c>Session</c> object containing cookies and tokens for further usage </returns>
-        public void Login(Session session, string md5Password)
-        {
-            Response res = session.Post("http://www.elitepvpers.com/forum/login.php?do=login",
-                                        new List<KeyValuePair<string, string>>()
-                                        {
-                                            new KeyValuePair<string, string>("vb_login_username", Name),
-                                            new KeyValuePair<string, string>("cookieuser", "1"),
-                                            new KeyValuePair<string, string>("s", String.Empty),
-                                            new KeyValuePair<string, string>("securitytoken", "guest"),
-                                            new KeyValuePair<string, string>("do", "login"),
-                                            new KeyValuePair<string, string>("vb_login_md5password", md5Password),
-                                            new KeyValuePair<string, string>("vb_login_md5password_utf", md5Password)
-                                        });
-
-            session.Update();
-            if (String.IsNullOrEmpty(session.SecurityToken))
-                throw new InvalidCredentialsException("Credentials entered for user " + Name + " were invalid");
-        }
-
-
-        /// <summary>
-        /// Log-out the user and destroys the session
-        /// </summary>
-        /// <param name="session"> Session used for sending the request </param>
-        public void Logout(Session session)
-        {
-            session.ThrowIfInvalid();
-            session.Get("http://www.elitepvpers.com/forum/login.php?do=logout&logouthash=" + session.SecurityToken);
-        }
-
-
         /// <summary>
         /// Updates the user by requesting the profile information
         /// </summary>

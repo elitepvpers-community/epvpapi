@@ -53,6 +53,12 @@ namespace epvpapi.Connection
             }
         }
 
+        public Session(User user, string md5Password):
+            this(user)
+        {
+            Login(md5Password);
+        }
+
         public Session(User user)
         {
             Cookies = new CookieContainer();
@@ -68,6 +74,40 @@ namespace epvpapi.Connection
         }
 
         /// <summary>
+        /// Creates a session and performs POST and GET Requests in order to log-in the session user
+        /// </summary>
+        /// <param name="md5Password"> Encrypted password of the used user </param>
+        /// <returns> <c>Session</c> object containing cookies and tokens for further usage </returns>
+        public void Login(string md5Password)
+        {
+            Response res = Post("http://www.elitepvpers.com/forum/login.php?do=login",
+                                        new List<KeyValuePair<string, string>>()
+                                        {
+                                            new KeyValuePair<string, string>("vb_login_username", User.Name),
+                                            new KeyValuePair<string, string>("cookieuser", "1"),
+                                            new KeyValuePair<string, string>("s", String.Empty),
+                                            new KeyValuePair<string, string>("securitytoken", "guest"),
+                                            new KeyValuePair<string, string>("do", "login"),
+                                            new KeyValuePair<string, string>("vb_login_md5password", md5Password),
+                                            new KeyValuePair<string, string>("vb_login_md5password_utf", md5Password)
+                                        });
+
+            Update();
+            if (String.IsNullOrEmpty(SecurityToken))
+                throw new InvalidCredentialsException("Credentials entered for user " + User.Name + " were invalid");
+        }
+
+
+        /// <summary>
+        /// Log-out the session user and destroys the session
+        /// </summary>
+        public void Logout()
+        {
+            ThrowIfInvalid();
+            Get("http://www.elitepvpers.com/forum/login.php?do=logout&logouthash=" + SecurityToken);
+        }
+
+        /// <summary>
         /// Updates session relevant information such as the SecurityToken
         /// </summary>
         public void Update()
@@ -76,7 +116,7 @@ namespace epvpapi.Connection
             SecurityToken = new Regex("SECURITYTOKEN = \"(\\S+)\";").Match(res.ToString()).Groups[1].Value;
 
             // Update the user associated with the session
-            User.Update(this);
+            // User.Update(this);
         }
 
         public void ThrowIfInvalid()
