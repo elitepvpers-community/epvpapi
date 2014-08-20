@@ -48,5 +48,15 @@ namespace epvpapi
         {
             return parent.Descendants(name);
         }
+
+        // -> http://stackoverflow.com/questions/419019/split-list-into-sublists-with-linq
+        public static List<List<T>> Split<T>(this List<T> source, uint elementsPerSplit)
+        {
+            return source
+                .Select((x, i) => new { Index = i, Value = x })
+                .GroupBy(x => x.Index / elementsPerSplit)
+                .Select(x => x.Select(v => v.Value).ToList())
+                .ToList();
+        }
     }
 }
