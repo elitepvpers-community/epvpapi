@@ -1,4 +1,5 @@
-﻿using epvpapi.Connection;
+﻿using System.ComponentModel;
+using epvpapi.Connection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,22 @@ namespace epvpapi.TBM
     /// </summary>
     public class Transaction : UniqueObject
     {
+        /// <summary>
+        /// Available ratings which can be done
+        /// </summary>
+        [Flags]
+        public enum Ratings
+        {
+            [Description("Keine")]
+            NotRated = -100,
+            [Description("Positive")]
+            Positive = 1,
+            [Description("Negative")]
+            Negative = -1,
+            [Description("Neutral")]
+            Neutral = 0,
+        };
+        
         /// <summary>
         /// User that sent the <c>EliteGold</c>
         /// </summary>
@@ -47,8 +64,22 @@ namespace epvpapi.TBM
             Time = new DateTime();
         }
 
+        public bool Rate(Ratings rating, string comment, Session session)
+        {
+            if (rating == Ratings.NotRated) return false;
+            session.Post("http://www.elitepvpers.com/theblackmarket/transaction/" + ID,
+                new List<KeyValuePair<string, string>>()
+                {
+                    new KeyValuePair<string, string>("rating", Convert.ToInt32(rating).ToString()),
+                    new KeyValuePair<string, string>("comment", comment),
+                    new KeyValuePair<string, string>("s", String.Empty),
+                    new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
+                });
+            return true;
+        }
 
-         /// <summary>
+
+        /// <summary>
         /// Fetches all Transactions that have been both received and sent
         /// </summary>
         /// <param name="session"> Session used for sending the request </param>
