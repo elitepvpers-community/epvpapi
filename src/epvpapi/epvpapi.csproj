@@ -75,6 +75,7 @@
     <Compile Include="Section.cs" />
     <Compile Include="SectionPost.cs" />
     <Compile Include="SectionThread.cs" />
+    <Compile Include="Shoutbox.cs" />
     <Compile Include="SocialGroup.cs" />
     <Compile Include="SocialGroupPost.cs" />
     <Compile Include="SocialGroupThread.cs" />
