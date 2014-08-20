@@ -94,44 +94,37 @@ namespace epvpapi
                     HtmlDocument doc = new HtmlDocument();
                     doc.LoadHtml(res.ToString());
 
+                    // every shoutbox entry got 3 td nodes. One for the time, one for the username and one for the actual messages
+                    // the target nodes are identified by their unique valign: top attribute
                     List<HtmlNode> tdNodes = new List<HtmlNode>(doc.DocumentNode.GetElementsByTagName("td"));
                     List<HtmlNode> shoutboxNodes = new List<HtmlNode>(tdNodes.Where(node => node.Attributes.Any(attribute => attribute.Name == "valign" && attribute.Value == "top")));
 
                     List<List<HtmlNode>> shoutboxNodeGroups = shoutboxNodes.Split(3);
-
+                    
                     Shouts = new List<Shout>();
                     foreach(var shoutboxNodeGroup in shoutboxNodeGroups)
                     {
                         if (shoutboxNodeGroup.Count != 3) continue; // every node group needs to have exactly 3 nodes in order to be valid
 
                         DateTime time = new DateTime();
-                        HtmlNode timetdNode = shoutboxNodeGroup.ElementAt(0);
-                        if (timetdNode != null)
-                            if (timetdNode.ChildNodes.ElementAt(1) != null)
-                                if (timetdNode.ChildNodes.ElementAt(1).FirstChild != null)
-                                    if (timetdNode.ChildNodes.ElementAt(1).FirstChild.NextSibling != null)
-                                        if (timetdNode.ChildNodes.ElementAt(1).FirstChild.NextSibling.FirstChild != null)
-                                        {
-                                            Match match = new Regex(@"\s*(\S+)&nbsp;").Match(timetdNode.ChildNodes.ElementAt(1).FirstChild.NextSibling.FirstChild.InnerText);
-                                            string matchedTime = match.Groups.Count > 1 ? match.Groups[1].Value : String.Empty;
-                                            DateTime.TryParse(matchedTime, out time);
-                                        }
+                        HtmlNode timeNode = shoutboxNodeGroup.ElementAt(0).SelectSingleNode(@"span[1]/span[1]");
+
+                        if (timeNode != null)
+                        {
+                            Match match = new Regex(@"\s*(\S+)&nbsp;").Match(timeNode.InnerText);
+                            string matchedTime = match.Groups.Count > 1 ? match.Groups[1].Value : String.Empty;
+                            DateTime.TryParse(matchedTime, out time);
+                        }
 
                         string username = "";
-                        HtmlNode userNametdNode = shoutboxNodeGroup.ElementAt(1);
-                        if(userNametdNode != null)
-                            if(userNametdNode.ChildNodes.ElementAt(1) != null)
-                                if(userNametdNode.ChildNodes.ElementAt(1).FirstChild != null)
-                                    if(userNametdNode.ChildNodes.ElementAt(1).FirstChild.NextSibling != null)
-                                        if(userNametdNode.ChildNodes.ElementAt(1).FirstChild.NextSibling.FirstChild != null)
-                                            if(userNametdNode.ChildNodes.ElementAt(1).FirstChild.NextSibling.FirstChild.NextSibling != null)
-                                                username = userNametdNode.ChildNodes.ElementAt(1).FirstChild.NextSibling.FirstChild.NextSibling.InnerText;
+                        HtmlNode userNameNode = shoutboxNodeGroup.ElementAt(1).SelectSingleNode(@"span[1]/a[1]/span[1]");
+                        if (userNameNode != null)
+                            username = userNameNode.InnerText;
 
                         string message = "";
-                        HtmlNode messagetdNode = shoutboxNodeGroup.ElementAt(2);
-                        if (messagetdNode != null)
-                            if (messagetdNode.ChildNodes.ElementAt(1) != null)
-                                message = messagetdNode.ChildNodes.ElementAt(1).InnerText;
+                        HtmlNode messageNode = shoutboxNodeGroup.ElementAt(2).SelectSingleNode(@"span[1]");
+                        if (messageNode != null)
+                            message = messageNode.InnerText;
 
                         Shouts.Add(new Shout(new User(username), message, time));
                     }
