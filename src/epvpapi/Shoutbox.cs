@@ -141,8 +141,10 @@ namespace epvpapi
             /// <param name="firstPage"> Index of the first page to fetch </param>
             /// <param name="pageCount"> Amount of pages to get. The higher this count, the more data will be generated and received </param>
             /// <param name="session"> Session used for sending the request </param>
+            /// <param name="updateShoutbox"> When set to true, additional shoutbox information will be updated on the fly. This does not cause any major
+            /// resources to be used since the information can be parsed from the same <c>HtmlDocument</c> as the channel history </param>
             /// <returns> Shouts listed in the channel history that could be obtained and parsed </returns>
-            public List<Shout> History(Session session, uint pageCount = 10, uint firstPage = 1)
+            public List<Shout> History(Session session, uint pageCount = 10, uint firstPage = 1, bool updateShoutbox = true)
             {
                 session.ThrowIfInvalid();
 
@@ -180,6 +182,9 @@ namespace epvpapi
                         shoutList.Add(new Shout(new PremiumUser(userName), message, time));
                     }
                 }
+
+                if (updateShoutbox)
+                    Shoutbox.Update(session);
 
                 return shoutList;
             }
