@@ -140,10 +140,48 @@ namespace epvpapi
             /// </summary>
             /// <param name="firstPage"> Index of the first page to fetch </param>
             /// <param name="pageCount"> Amount of pages to get. The higher this count, the more data will be generated and received </param>
-            /// <returns></returns>
-            public static List<Shout> History(uint pageCount = 10, uint firstPage = 1)
+            /// <param name="session"> Session used for sending the request </param>
+            /// <returns> Shouts listed in the channel history that could be obtained and parsed </returns>
+            public List<Shout> History(Session session, uint pageCount = 10, uint firstPage = 1)
             {
-                throw new NotImplementedException();
+                session.ThrowIfInvalid();
+
+                List<Shout> shoutList = new List<Shout>();
+                for(int i = 0; i < pageCount; ++i)
+                {
+                    Response res = session.Get("http://www.elitepvpers.com/forum/mgc_cb_evo.php?do=view_archives&page=" + (firstPage + i));
+                    
+                    HtmlDocument doc = new HtmlDocument();
+                    doc.LoadHtml(res.ToString());
+
+                    HtmlNode messagesRootNode = doc.DocumentNode.SelectSingleNode("/html[1]/body[1]/table[2]/tr[2]/td[1]/table[1]/tr[5]/td[1]/table[1]/tr[2]/td[1]/div[1]/div[1]/div[1]/table[1]/tr[1]/td[3]/table[1]");
+                    if (messagesRootNode == null) throw new ParsingFailedException("Parsing channel history failed, root node is invalid or was not found");
+
+                    List<HtmlNode> messageNodes = new List<HtmlNode>(messagesRootNode.GetElementsByTagName("tr"));
+                    if (messageNodes.Count < 1) throw new ParsingFailedException("Parsing channel history failed, message nodes could not be retrieved");
+                    messageNodes.RemoveAt(0); // remove the table header
+
+                    foreach(HtmlNode messageNode in messageNodes)
+                    {
+                        List<HtmlNode> subNodes = new List<HtmlNode>(messageNode.GetElementsByTagName("td"));
+                        if (subNodes.Count != 4) continue; // every message node got exactly 4 subnodes where action, date, user and message are stored
+
+                        HtmlNode dateNode = messageNode.SelectSingleNode("td[2]/span[1]");
+                        DateTime time = new DateTime();
+                        if (dateNode != null)
+                            DateTime.TryParse(dateNode.InnerText, out time);
+
+                        HtmlNode userNode = messageNode.SelectSingleNode("td[3]/span[1]/a[1]/span[1]");
+                        string userName = (userNode != null) ? userNode.InnerText : "";
+
+                        HtmlNode textNode = messageNode.SelectSingleNode("td[4]/span[1]");
+                        string message = (textNode != null) ? textNode.InnerText : "";
+
+                        shoutList.Add(new Shout(new User(userName), message, time));
+                    }
+                }
+
+                return shoutList;
             }
 
         };

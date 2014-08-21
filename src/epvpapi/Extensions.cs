@@ -43,10 +43,9 @@ namespace epvpapi
         }
 
 
-        // -> http://stackoverflow.com/questions/10260255/getelementsbytagname-in-htmlagilitypack
-        public static IEnumerable<HtmlNode> GetElementsByTagName(this HtmlNode parent, string name)
+        public static IEnumerable<HtmlNode> GetElementsByTagName(this HtmlNode baseNode, string tagName)
         {
-            return parent.Descendants(name);
+            return baseNode.ChildNodes.Where(node => node.Name == tagName);
         }
 
         // -> http://stackoverflow.com/questions/419019/split-list-into-sublists-with-linq
