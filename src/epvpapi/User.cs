@@ -128,49 +128,44 @@ namespace epvpapi
             HtmlDocument doc = new HtmlDocument();
             doc.LoadHtml(responseContent);
 
-            try
+            HtmlNode userNameBoxNode = doc.GetElementbyId("username_box"); // root element
+            if (userNameBoxNode == null) throw new ParsingFailedException("User could not be parsed, root node is invalid or was not found");
+                
+            HtmlNode userNameNode = userNameBoxNode.SelectSingleNode("h1[1]/span[1]");
+            if (userNameNode != null)
             {
-                HtmlNode userNode = doc.GetElementbyId("username_box"); // root element
-                HtmlNode userNameNode = null;
-                HtmlNode userRankNode = null;
-
-                // Determine if the user is member of at least one usergroup. If not, the reputation_rank element won't show up
-                if(userNode.FirstChild.Id == "reputation_rank")
-                {
-                    userNameNode = userNode.NextSibling.FirstChild;
-                    userRankNode = userNode.NextSibling.NextSibling.NextSibling;
-                }
-                else
-                {
-                    userNameNode = userNode.FirstChild.NextSibling;
-                    userRankNode = userNode.FirstChild.NextSibling.NextSibling.NextSibling;
-                }
-
                 Name = userNameNode.InnerText;
-                Namecolor = userNameNode.Attributes.Count != 0 ? userNode.Attributes.First().Value : "black"; // In case the user has no special color, the <span> element will be missing and no attributes are used
-                Title = userRankNode.InnerText;
-
-                // In case the user has no special color, the status image shows up on another slightly modified node path
-                HtmlNode userStatusNode = Namecolor != "black" ? userNameNode.NextSibling.NextSibling : userNameNode.FirstChild.NextSibling;
-                string userStatusLink = userStatusNode.Attributes["src"].Value;
-                if (userStatusLink.Contains("invisible"))
-                    CurrentStatus = Status.Invisible;
-                else if (userStatusLink.Contains("offline"))
-                    CurrentStatus = Status.Offline;
-                else if (userStatusLink.Contains("online"))
-                    CurrentStatus = Status.Online;
-
-                HtmlNode lastActivityNode = doc.GetElementbyId("activity_info").FirstChild;
-                if (lastActivityNode != null)
-                {
-                    lastActivityNode = lastActivityNode.NextSibling;
-                    LastActivity.Day = lastActivityNode.FirstChild.NextSibling.NextSibling.InnerText;
-                    LastActivity.Time = lastActivityNode.FirstChild.NextSibling.NextSibling.NextSibling.InnerText;
-                }
             }
-            catch(System.NullReferenceException exception)
+            else
             {
-                throw new ParsingFailedException("Parsing user from response content failed", exception);
+                // In case the user has no special color, the <span> element will be missing and no attributes are used
+                userNameNode = userNameBoxNode.SelectSingleNode("h1[1]");
+                Name = (userNameNode != null) ? userNameNode.InnerText : String.Empty;
+            }
+
+            HtmlNode userRankNode = userNameBoxNode.SelectSingleNode("h2[1]");
+            Title = (userRankNode != null) ? userRankNode.InnerText : String.Empty;
+
+            Namecolor = userNameNode.Attributes.Count != 0 ? userNameNode.Attributes.First().Value : "black";
+
+
+            HtmlNode userStatusNode = userNameBoxNode.SelectSingleNode("h1[1]/img[1]");
+            string userStatusLink = userStatusNode.Attributes["src"].Value;
+            if (userStatusLink.Contains("invisible"))
+                CurrentStatus = Status.Invisible;
+            else if (userStatusLink.Contains("offline"))
+                CurrentStatus = Status.Offline;
+            else if (userStatusLink.Contains("online"))
+                CurrentStatus = Status.Online;
+
+            HtmlNode lastActivityNode = doc.GetElementbyId("last_online");
+            if (lastActivityNode != null)
+            {
+                HtmlNode lastActivityDateNode = lastActivityNode.SelectSingleNode("text()[2]");
+                LastActivity.Day = (lastActivityDateNode != null) ? lastActivityDateNode.InnerText.Strip() : String.Empty;
+
+                HtmlNode lastActivityTimeNode = lastActivityNode.SelectSingleNode("span[2]");
+                LastActivity.Time = (lastActivityTimeNode != null) ? lastActivityTimeNode.InnerText.Strip() : String.Empty;
             }
         }
     }

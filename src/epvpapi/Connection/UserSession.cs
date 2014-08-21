@@ -58,6 +58,14 @@ namespace epvpapi.Connection
                 throw new InvalidCredentialsException("Credentials entered for user " + User.Name + " were invalid");
         }
 
+        public override void Update()
+        {
+            base.Update();
+
+            // Update the user associated with the session
+            User.Update(this);
+        }
+
         /// <summary>
         /// Small wrapper function for throwing an exception if the session is invalid
         /// </summary>

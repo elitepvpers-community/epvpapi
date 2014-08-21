@@ -71,9 +71,6 @@ namespace epvpapi.Connection
         {
             Response res = Get("http://www.elitepvpers.com/forum/");
             SecurityToken = new Regex("SECURITYTOKEN = \"(\\S+)\";").Match(res.ToString()).Groups[1].Value;
-
-            // Update the user associated with the session
-            // User.Update(this);
         }
 
 
