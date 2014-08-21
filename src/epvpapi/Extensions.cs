@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace epvpapi
@@ -56,6 +57,16 @@ namespace epvpapi
                 .GroupBy(x => x.Index / elementsPerSplit)
                 .Select(x => x.Select(v => v.Value).ToList())
                 .ToList();
+        }
+
+        /// <summary>
+        /// Strips every sort of whitespaces from the string
+        /// </summary>
+        /// <param name="target"> String being stripped </param>
+        /// <returns> Stripped string </returns>
+        public static string Strip(this string target)
+        {
+            return Regex.Replace(target, @"\s*", "");
         }
     }
 }

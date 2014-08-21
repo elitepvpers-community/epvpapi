@@ -175,7 +175,7 @@ namespace epvpapi
                         string userName = (userNode != null) ? userNode.InnerText : "";
 
                         HtmlNode textNode = messageNode.SelectSingleNode("td[4]/span[1]");
-                        string message = (textNode != null) ? textNode.InnerText : "";
+                        string message = (textNode != null) ? textNode.InnerText.Strip() : "";
 
                         shoutList.Add(new Shout(new User(userName), message, time));
                     }
