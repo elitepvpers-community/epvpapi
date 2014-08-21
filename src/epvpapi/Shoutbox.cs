@@ -24,11 +24,11 @@ namespace epvpapi
             /// </summary>
             public class Shout
             {
-                public User User { get; set; }
+                public PremiumUser User { get; set; }
                 public string Message { get; set; }
                 public DateTime Time { get; set; }
 
-                public Shout(User user, string message, DateTime time)
+                public Shout(PremiumUser user, string message, DateTime time)
                 {
                     User = user;
                     Message = message;
@@ -126,7 +126,7 @@ namespace epvpapi
                         if (messageNode != null)
                             message = messageNode.InnerText;
 
-                        Shouts.Add(new Shout(new User(username), message, time));
+                        Shouts.Add(new Shout(new PremiumUser(username), message, time));
                     }
                 }
                 catch (HtmlWebException exception)
@@ -177,7 +177,7 @@ namespace epvpapi
                         HtmlNode textNode = messageNode.SelectSingleNode("td[4]/span[1]");
                         string message = (textNode != null) ? textNode.InnerText.Strip() : "";
 
-                        shoutList.Add(new Shout(new User(userName), message, time));
+                        shoutList.Add(new Shout(new PremiumUser(userName), message, time));
                     }
                 }
 
