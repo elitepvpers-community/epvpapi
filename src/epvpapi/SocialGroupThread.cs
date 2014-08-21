@@ -33,7 +33,7 @@ namespace epvpapi
         /// <param name="socialGroup"> SocialGroup where to create the <c>SocialGroupThread</c></param>
         /// <param name="startPost"> Represents the content and title of the <c>SocialGroupThread</c> </param>
         /// <returns> Freshly created <c>SocialGroupThread</c></returns>
-        public static SocialGroupThread Create(Session session, SocialGroup socialGroup, SocialGroupPost startPost)
+        public static SocialGroupThread Create(UserSession<User> session, SocialGroup socialGroup, SocialGroupPost startPost)
         {
             session.ThrowIfInvalid();
 
@@ -92,7 +92,7 @@ namespace epvpapi
         /// </summary>
         /// <param name="session"> Session that is used for sending the request </param>
         /// <param name="post"> Reply to post </param>
-        public void Reply(Session session, SocialGroupPost post)
+        public void Reply(UserSession<User> session, SocialGroupPost post)
         {
             session.ThrowIfInvalid();
 

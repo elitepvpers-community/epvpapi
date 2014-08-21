@@ -144,7 +144,7 @@ namespace epvpapi
             /// <param name="updateShoutbox"> When set to true, additional shoutbox information will be updated on the fly. This does not cause any major
             /// resources to be used since the information can be parsed from the same <c>HtmlDocument</c> as the channel history </param>
             /// <returns> Shouts listed in the channel history that could be obtained and parsed </returns>
-            public List<Shout> History(Session session, uint pageCount = 10, uint firstPage = 1, bool updateShoutbox = true)
+            public List<Shout> History(UserSession<PremiumUser> session, uint pageCount = 10, uint firstPage = 1, bool updateShoutbox = true)
             {
                 session.ThrowIfInvalid();
 
@@ -226,7 +226,7 @@ namespace epvpapi
         /// Updates statistics and information about the shoutbox
         /// </summary>
         /// <param name="session"> Session used for storing personal shoutbox data into the session user field </param>
-        public static void Update(Session session)
+        public static void Update(UserSession<PremiumUser> session)
         {
             Response res = session.Get("http://www.elitepvpers.com/forum/mgc_cb_evo.php?do=view_archives&page=1");
             HtmlDocument document = new HtmlDocument();
@@ -244,7 +244,7 @@ namespace epvpapi
         /// <remarks>
         /// No requests will be send, the specified <c>HtmlDocument</c> will be used to parse the data
         /// </remarks>
-        public static void Update(Session session, HtmlDocument document)
+        public static void Update(UserSession<PremiumUser> session, HtmlDocument document)
         {
             HtmlNode statsBodyNode = document.DocumentNode.SelectSingleNode("/html[1]/body[1]/table[2]/tr[2]/td[1]/table[1]/tr[5]/td[1]/table[1]/tr[2]/td[1]/div[1]/div[1]/div[1]/table[1]/tr[1]/td[1]/table[1]");
             if (statsBodyNode == null) throw new ParsingFailedException("Updating the shoutbox information failed, root node is invalid or was not found");
@@ -276,7 +276,7 @@ namespace epvpapi
             MessageCountCurrentDay = (totalMessages24HoursValueNode != null) ? Convert.ToUInt32(totalMessages24HoursValueNode.InnerText) : 0;
 
             HtmlNode ownMessagesValueNode = additionalInfoNodes.ElementAt(2).SelectSingleNode("td[2]");
-            int ownMessages = (ownMessagesValueNode != null) ? Convert.ToInt32(ownMessagesValueNode.InnerText) : 0;
+            session.User.ShoutboxMessages = (ownMessagesValueNode != null) ? Convert.ToUInt32(ownMessagesValueNode.InnerText) : 0;
         }
     }
 }

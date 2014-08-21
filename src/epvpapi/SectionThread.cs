@@ -49,7 +49,7 @@ namespace epvpapi
         /// <param name="startPost"> Represents the content and title of the <c>SectionThread</c> </param>
         /// <param name="closed"> If true, the thread state is closed meaning that no one (except the staff) can answer to this thread </param>
         /// <returns> Freshly created <c>SectionThread</c> </returns>
-        public static SectionThread Create(Session session, Section section, SectionPost startPost, bool closed)
+        public static SectionThread Create(UserSession<User> session, Section section, SectionPost startPost, bool closed)
         {
             session.ThrowIfInvalid();
 
@@ -173,7 +173,7 @@ namespace epvpapi
         /// <remarks>
         /// The ID of the thread has to be given in order to reply
         /// </remarks>
-        public void Reply(Session session, SectionPost post)
+        public void Reply(UserSession<User> session, SectionPost post)
         {
             if (ID == 0) throw new ArgumentException("ID must not be empty");
 

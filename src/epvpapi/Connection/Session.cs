@@ -9,22 +9,20 @@ using System.Threading.Tasks;
 
 namespace epvpapi.Connection
 {
+    /// <summary>
+    /// Represents a simple websession
+    /// </summary>
     public class Session
     {
         /// <summary>
         /// Cookies used in the <c>Session</c>
         /// </summary>
-        public CookieContainer Cookies { get; private set; }
+        public CookieContainer Cookies { get; protected set; }
 
         /// <summary>
         /// Represents an unique ID identifiying the <c>Session</c> which has to be transmitted during nearly all requests
         /// </summary>
-        public string SecurityToken { get; private set; }
-
-        /// <summary>
-        /// <c>User</c> which created the session, logged-in <c>User</c>
-        /// </summary>
-        public User User { get; private set; }
+        public string SecurityToken { get; protected set; }
 
         /// <summary>
         /// <c>WebProxy</c> for using the Library when behind a Proxy
@@ -53,54 +51,14 @@ namespace epvpapi.Connection
             }
         }
 
-        public Session(User user, string md5Password):
-            this(user)
-        {
-            Login(md5Password);
-        }
-
-        public Session(User user)
-        {
-            Cookies = new CookieContainer();
-            User = user;
-        }
-
-        public Session(User user, WebProxy proxy)
-        {
-            Cookies = new CookieContainer();
-            User = user;
-            Proxy = proxy;
-            UseProxy = true;
-        }
-
-        /// <summary>
-        /// Logs in the session user
-        /// </summary>
-        /// <param name="md5Password"> Hashed password (MD5) of the session user </param>
-        public void Login(string md5Password)
-        {
-            Response res = Post("http://www.elitepvpers.com/forum/login.php?do=login",
-                                        new List<KeyValuePair<string, string>>()
-                                        {
-                                            new KeyValuePair<string, string>("vb_login_username", User.Name),
-                                            new KeyValuePair<string, string>("cookieuser", "1"),
-                                            new KeyValuePair<string, string>("s", String.Empty),
-                                            new KeyValuePair<string, string>("securitytoken", "guest"),
-                                            new KeyValuePair<string, string>("do", "login"),
-                                            new KeyValuePair<string, string>("vb_login_md5password", md5Password),
-                                            new KeyValuePair<string, string>("vb_login_md5password_utf", md5Password)
-                                        });
-
-            Update();
-            if (String.IsNullOrEmpty(SecurityToken))
-                throw new InvalidCredentialsException("Credentials entered for user " + User.Name + " were invalid");
-        }
+        public Session()
+        { }
 
 
         /// <summary>
         /// Logs out the session user and destroys the session
         /// </summary>
-        public void Logout()
+        public virtual void Destroy()
         {
             ThrowIfInvalid();
             Get("http://www.elitepvpers.com/forum/login.php?do=logout&logouthash=" + SecurityToken);
@@ -109,7 +67,7 @@ namespace epvpapi.Connection
         /// <summary>
         /// Updates required session information such as the SecurityToken
         /// </summary>
-        public void Update()
+        public virtual void Update()
         {
             Response res = Get("http://www.elitepvpers.com/forum/");
             SecurityToken = new Regex("SECURITYTOKEN = \"(\\S+)\";").Match(res.ToString()).Groups[1].Value;
@@ -118,14 +76,14 @@ namespace epvpapi.Connection
             // User.Update(this);
         }
 
+
         /// <summary>
         /// Small wrapper function for throwing an exception if the session is invalid
         /// </summary>
-        public void ThrowIfInvalid()
+        public virtual void ThrowIfInvalid()
         {
             if (!Valid) throw new InvalidSessionException("Session is not valid, Cookies: " + Cookies.Count +
-                                                          " | Security Token: " + SecurityToken +
-                                                          " | User: " + User.Name);
+                                                          " | Security Token: " + SecurityToken);
         }
 
         /// <summary> Performs a HTTP GET request </summary>
