@@ -177,16 +177,16 @@ namespace epvpapi
         }
 
         /// <summary>
-        /// Retrieves the profile ID and name from the given URL and converts them into a valid <c>User</c> object
+        /// Retrieves the profile ID of the given URL
         /// </summary>
         /// <param name="url"> URL being parsed </param>
-        /// <returns> Valid <c>User</c> object containing profile ID and name from the given URL </returns>
-        public static User FromURL(string url)
+        /// <returns> Retrieved profile ID </returns>
+        public static uint FromURL(string url)
         {
-            var match = Regex.Match(url, @"http://www.elitepvpers.com/forum/members/(\d+)-(\S+).html");
-            if(match.Groups.Count < 3) throw new ParsingFailedException("User could not be exported from the given URL");
+            var match = Regex.Match(url, @"http://www.elitepvpers.com/forum/members/(\d+)-\S+.html");
+            if(match.Groups.Count < 2) throw new ParsingFailedException("User could not be exported from the given URL");
             
-            return new User(match.Groups[2].Value, Convert.ToUInt32(match.Groups[1].Value));
+            return Convert.ToUInt32(match.Groups[1].Value);
         }
     }
 }

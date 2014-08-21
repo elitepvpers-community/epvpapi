@@ -173,13 +173,17 @@ namespace epvpapi
                         if (dateNode != null)
                             DateTime.TryParse(dateNode.InnerText, out time);
 
-                        HtmlNode userNode = messageNode.SelectSingleNode("td[3]/span[1]/a[1]/span[1]");
-                        string userName = (userNode != null) ? userNode.InnerText : "";
+                        HtmlNode userNode = messageNode.SelectSingleNode("td[3]/span[1]/a[1]");
+                        if(userNode == null) continue;
+ 
+                        HtmlNode userNameNode = userNode.SelectSingleNode("span[1]");
+                        string userName = (userNameNode != null) ? userNameNode.InnerText : "";
+                        uint userProfileID = PremiumUser.FromURL(userNode.Attributes["href"].Value);
 
                         HtmlNode textNode = messageNode.SelectSingleNode("td[4]/span[1]");
                         string message = (textNode != null) ? textNode.InnerText.Strip() : "";
 
-                        shoutList.Add(new Shout(new PremiumUser(userName), message, time));
+                        shoutList.Add(new Shout(new PremiumUser(userName, userProfileID), message, time));
                     }
                 }
 
