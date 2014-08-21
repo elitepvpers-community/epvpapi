@@ -55,7 +55,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Activity.cs" />
     <Compile Include="Blog.cs" />
     <Compile Include="Connection\UserSession.cs" />
     <Compile Include="EliteGold.cs" />

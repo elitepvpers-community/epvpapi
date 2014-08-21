@@ -66,9 +66,9 @@ namespace epvpapi
 
 
         /// <summary>
-        /// Indicates the last activity of the user
+        /// The last activity of the user given is <c>DateTime</c> format
         /// </summary>
-        public Activity LastActivity { get; set; }
+        public DateTime LastActivity { get; set; }
 
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace epvpapi
         {
             Name = name;
             Blog = new Blog();
-            LastActivity = new Activity();
+            LastActivity = new DateTime();
             Groups |= Usergroups.None;
         }
 
@@ -162,10 +162,17 @@ namespace epvpapi
             if (lastActivityNode != null)
             {
                 HtmlNode lastActivityDateNode = lastActivityNode.SelectSingleNode("text()[2]");
-                LastActivity.Day = (lastActivityDateNode != null) ? lastActivityDateNode.InnerText.Strip() : String.Empty;
+                string date = (lastActivityDateNode != null) ? lastActivityDateNode.InnerText.Strip() : String.Empty;
+
+                if (date == "Heute" || date == "Today")
+                    date = DateTime.Now.Date.ToString("dd/MM/yyyy");
 
                 HtmlNode lastActivityTimeNode = lastActivityNode.SelectSingleNode("span[2]");
-                LastActivity.Time = (lastActivityTimeNode != null) ? lastActivityTimeNode.InnerText.Strip() : String.Empty;
+                string time = (lastActivityTimeNode != null) ? lastActivityTimeNode.InnerText.Strip() : String.Empty;
+
+                DateTime parsedDateTime = new DateTime();
+                DateTime.TryParse(date + " " + time, out parsedDateTime);
+                LastActivity = parsedDateTime; 
             }
         }
     }
