@@ -11,6 +11,11 @@ namespace epvpapi
     public class PrivateMessage : Post
     {
         /// <summary>
+        /// User that sent the message
+        /// </summary>
+        User Sender { get; set; }
+
+        /// <summary>
         /// Recipients of the message
         /// </summary>
         List<User> Recipients { get; set; }
@@ -31,6 +36,7 @@ namespace epvpapi
             : base(id, content, title)
         {
             Recipients = recipients;
+            Sender = new User();
         }
 
         /// <summary>
@@ -74,6 +80,10 @@ namespace epvpapi
     
         }
 
+        /// <summary>
+        /// Retrieves information about the messages such as title, content and sender
+        /// </summary>
+        /// <param name="session"> Session used for sending the request </param>
         public void Update(Session session)
         {
             session.ThrowIfInvalid();
@@ -88,7 +98,20 @@ namespace epvpapi
 
             HtmlNode userNode = messageRootNode.SelectSingleNode("tr[2]/td[1]/div[1]/a[1]");
             string userName = (userNode.SelectSingleNode("span[1]") != null) ? userNode.SelectSingleNode("span[1]").InnerText : "";
-            User sender = (userNode != null) ? new User(userName, User.FromURL(userNode.Attributes["href"].Value)) : new User(userName);
+            Sender = (userNode != null) ? new User(userName, User.FromURL(userNode.Attributes["href"].Value)) : new User(userName);
+
+            HtmlNode messageNode = doc.GetElementbyId("td_post_");
+            if(messageNode != null)
+            {
+                HtmlNode titleNode = messageNode.SelectSingleNode("div[1]/strong[1]");
+                Title = (titleNode != null) ? titleNode.InnerText : "";
+
+                // The actual message content is stored within several nodes. There may be different tags (such as <a> for links, linebreaks...)
+                // This is why just all descendent text nodes are retrieved.
+                List<HtmlNode> contentNodes = new List<HtmlNode>(messageNode.SelectSingleNode("div[2]").Descendants()
+                                                                .Where(node => node.Name == "#text" && node.InnerText.Strip() != ""));
+                contentNodes.ForEach(node => Content += node.InnerText);
+            }
         }
     }
 }
