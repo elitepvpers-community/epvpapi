@@ -46,7 +46,7 @@ namespace epvpapi
         /// <remarks>
         /// The names of the recipients have to be given in order to send the message
         /// </remarks>
-        public void Send(Session session)
+        public void Send<T>(UserSession<T> session) where T : User
         {
             session.ThrowIfInvalid();
 
