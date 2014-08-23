@@ -1,4 +1,5 @@
 ﻿using epvpapi.Connection;
+using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +28,7 @@ namespace epvpapi
         {  }
 
         public PrivateMessage(uint id, string content, List<User> recipients, string title = null)
-            : base(content, title)
+            : base(id, content, title)
         {
             Recipients = recipients;
         }
@@ -71,6 +72,23 @@ namespace epvpapi
                              new KeyValuePair<string, string>("parseurl", (Settings & Options.ParseURL).ToString())
                          });
     
+        }
+
+        public void Update(Session session)
+        {
+            session.ThrowIfInvalid();
+            if (ID == 0) throw new System.ArgumentException("ID must not be emtpy");
+
+            Response res = session.Get("http://www.elitepvpers.com/forum/private.php?do=showpm&pmid=" + ID.ToString());
+            HtmlDocument doc = new HtmlDocument();
+            doc.LoadHtml(res.ToString());
+
+            HtmlNode messageRootNode = doc.GetElementbyId("post");
+            if (messageRootNode == null) throw new ParsingFailedException("Private message could not be parsed, root node wasn't found or is invalid");
+
+            HtmlNode userNode = messageRootNode.SelectSingleNode("tr[2]/td[1]/div[1]/a[1]");
+            string userName = (userNode.SelectSingleNode("span[1]") != null) ? userNode.SelectSingleNode("span[1]").InnerText : "";
+            User sender = (userNode != null) ? new User(userName, User.FromURL(userNode.Attributes["href"].Value)) : new User(userName);
         }
     }
 }

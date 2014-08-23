@@ -13,12 +13,12 @@ namespace epvpapi
         /// </summary>
         public string Title { get; set; }
 
-        public Post(uint id, string content = null)
-            : base(id, content)
+        public Post(string content, string title = null)
+            : this(0, content, title)
         { }
 
-        public Post(string content, string title = null)
-            : base(content)
+        public Post(uint id, string content = null, string title = null)
+            : base(id, content)
         {
             Title = title;
         }
