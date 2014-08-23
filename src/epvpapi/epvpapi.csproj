@@ -69,6 +69,7 @@
     <Compile Include="ParsingFailedException.cs" />
     <Compile Include="Post.cs" />
     <Compile Include="PremiumUser.cs" />
+    <Compile Include="PrivateMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Connection\RequestFailedException.cs" />
     <Compile Include="Connection\Response.cs" />

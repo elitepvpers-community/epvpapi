@@ -183,7 +183,7 @@ namespace epvpapi
         /// <returns> Retrieved profile ID </returns>
         public static uint FromURL(string url)
         {
-            var match = Regex.Match(url, @"http://www.elitepvpers.com/forum/members/(\d+)-\S+.html");
+            var match = Regex.Match(url, @"(?:http://www.elitepvpers.com/forum/)?members/(\d+)-\S+.html");
             if(match.Groups.Count < 2) throw new ParsingFailedException("User could not be exported from the given URL");
             
             return Convert.ToUInt32(match.Groups[1].Value);
