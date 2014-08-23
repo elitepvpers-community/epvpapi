@@ -13,12 +13,12 @@ namespace epvpapi
         /// <summary>
         /// User that sent the message
         /// </summary>
-        User Sender { get; set; }
+        public User Sender { get; set; }
 
         /// <summary>
         /// Recipients of the message
         /// </summary>
-        List<User> Recipients { get; set; }
+        public List<User> Recipients { get; set; }
 
         public PrivateMessage(uint id, string content = null)
             : this(id, content, new List<User>())
