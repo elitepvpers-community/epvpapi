@@ -3,6 +3,7 @@ References
 
 * [Sessions and Library extensions](https://github.com/Mostey/epvpapi/wiki/Sessions) 
 * [Shoutbox](https://github.com/Mostey/epvpapi/wiki/Shoutbox)
+* [Private Messages](https://github.com/Mostey/epvpapi/wiki/Private-Messages)
 
 License
 ===
