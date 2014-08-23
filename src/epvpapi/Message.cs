@@ -26,7 +26,12 @@ namespace epvpapi
             /// <summary>
             /// If set, the signature of the logged in user will be displayed beneath the message
             /// </summary>
-            ShowSignature = 2
+            ShowSignature = 2,
+
+            /// <summary>
+            /// If set, every time a message will be send, a copy will be saved and stored somewhere
+            /// </summary>
+            SaveCopy = 3
         }
 
         /// <summary>
