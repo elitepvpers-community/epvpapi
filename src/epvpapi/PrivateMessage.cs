@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace epvpapi
 {
-    public class PrivateMessage : Post
+    public class PrivateMessage : Post, IReportable
     {
         /// <summary>
         /// User that sent the message
@@ -112,6 +112,22 @@ namespace epvpapi
                                                                 .Where(node => node.Name == "#text" && node.InnerText.Strip() != ""));
                 contentNodes.ForEach(node => Content += node.InnerText);
             }
+        }
+
+        public void Report(Session session, string reason)
+        {
+            session.ThrowIfInvalid();
+
+            session.Post("http://www.elitepvpers.com/forum/private.php?do=sendemail",
+                         new List<KeyValuePair<string, string>>()
+                         {
+                             new KeyValuePair<string, string>("s", String.Empty),
+                             new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
+                             new KeyValuePair<string, string>("reason", reason),
+                             new KeyValuePair<string, string>("pmid", ID.ToString()),
+                             new KeyValuePair<string, string>("do", "sendemail"),
+                             new KeyValuePair<string, string>("url", "http://www.elitepvpers.com/forum/private.php?do=showpm&pmid=" + ID.ToString())
+                         });
         }
     }
 }
