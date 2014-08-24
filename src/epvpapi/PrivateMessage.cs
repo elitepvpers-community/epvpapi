@@ -10,6 +10,12 @@ namespace epvpapi
 {
     public class PrivateMessage : Post, IReportable
     {
+        public enum Folder
+        {
+            Sent = -1,
+            Received = 0
+        }
+
         /// <summary>
         /// User that sent the message
         /// </summary>
