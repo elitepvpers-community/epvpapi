@@ -185,10 +185,13 @@ namespace epvpapi
             document.LoadHtml(res.ToString());
 
             HtmlNode formRootNode = document.GetElementbyId("pmform");
-            if (formRootNode == null) throw new ParsingFailedException("");
+            if (formRootNode == null) throw new ParsingFailedException("Root node of the message form wasn't found or is invalid");
             formRootNode = formRootNode.ParentNode;
 
+            if (formRootNode == null) throw new ParsingFailedException("Root node of the message form wasn't found or is invalid");
             HtmlNode tborderNode = formRootNode.SelectSingleNode("table[2]");
+            if (tborderNode == null) throw new ParsingFailedException("The table node holding the messages wasn't found or is invalid");
+
             List<HtmlNode> categoryNodes = new List<HtmlNode>(tborderNode.GetElementsByTagName("tbody").Where(node => node.Id != String.Empty));
 
             List<PrivateMessage> fetchedMessages = new List<PrivateMessage>();
@@ -203,28 +206,44 @@ namespace epvpapi
                     HtmlNode dateNode = tdBaseNode.SelectSingleNode("div[1]/span[1]");
                     string date = (dateNode != null) ? dateNode.InnerText : "";
 
-                    HtmlNode titleNode = tdBaseNode.SelectSingleNode("div[1]/a[1]");
-                    string title = (titleNode != null) ? titleNode.InnerText : "";
-
                     HtmlNode timeNode = tdBaseNode.SelectSingleNode("div[2]/span[1]");
                     string time = (timeNode != null) ? timeNode.InnerText : "";
 
+                    bool messageUnread = false;
+
+                    string title = "";
+                    HtmlNode titleNode = tdBaseNode.SelectSingleNode("div[1]/a[1]");
+                    if (titleNode == null)
+                    {
+                        // Unread messages are shown with bold font
+                        titleNode = tdBaseNode.SelectSingleNode("div[1]/a[1]/strong[1]");
+                        title = (titleNode != null) ? titleNode.InnerText : "";
+                        messageUnread = true;
+                    }
+                    else
+                        title = (titleNode != null) ? titleNode.InnerText : "";
+
+                    string userName = "";
                     HtmlNode userNameNode = tdBaseNode.SelectSingleNode("div[2]/span[2]");
-                    string userName = (userNameNode != null) ? userNameNode.InnerText : "";
+                    if (userNameNode == null)
+                    {
+                        // Unread messages are shown with bold font
+                        userNameNode = tdBaseNode.SelectSingleNode("div[2]/strong[1]/span[1]");
+                        userName = (userNameNode != null) ? userNameNode.InnerText : "";
+                        messageUnread = true;
+                    }
+                    else
+                        userName = (userNameNode != null) ? userNameNode.InnerText : "";
 
                     DateTime dateTime = new DateTime();
                     DateTime.TryParseExact(date + " " + time, "MM-dd-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime);
 
                     User sender = new User(userName);
-                    HtmlNode senderProfileLinkNode = tdBaseNode.SelectSingleNode("div[2]/span[2]");
-                    if (senderProfileLinkNode != null)
-                    {
-                        Match regexMatch = Regex.Match(senderProfileLinkNode.Attributes["onclick"].Value, @"window.location='(\S+)';");
-                        if (regexMatch.Groups.Count > 1)
-                            sender = new User(userName, User.FromURL(regexMatch.Groups[1].Value));
-                    }
+                    Match regexMatch = Regex.Match(userNameNode.Attributes["onclick"].Value, @"window.location='(\S+)';"); // the profile link is stored within a javascript page redirect command
+                    if (regexMatch.Groups.Count > 1)
+                        sender = new User(userName, User.FromURL(regexMatch.Groups[1].Value));
 
-                    fetchedMessages.Add(new PrivateMessage(pmID, String.Empty, new List<User>() { this }, sender, title, dateTime));
+                    fetchedMessages.Add(new PrivateMessage(pmID, String.Empty, new List<User>() { this }, sender, title, dateTime, messageUnread));
                 }
             }
 

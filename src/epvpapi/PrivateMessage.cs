@@ -20,6 +20,11 @@ namespace epvpapi
         /// </summary>
         public List<User> Recipients { get; set; }
 
+        /// <summary>
+        /// If true, the message is marked as new message that wasn't read yet
+        /// </summary>
+        public bool Unread { get; set; }
+
 
         public PrivateMessage(uint id, string content = null)
             : this(id, content, new List<User>())
@@ -42,10 +47,15 @@ namespace epvpapi
         { }
 
         public PrivateMessage(uint id, string content, List<User> recipients, User sender, string title, DateTime date)
+            : this(id, content, recipients, sender, title, date, false)
+        { }
+
+        public PrivateMessage(uint id, string content, List<User> recipients, User sender, string title, DateTime date, bool unread)
             : base(id, content, title, date)
         {
             Recipients = recipients;
             Sender = sender;
+            Unread = unread;
         }
 
         /// <summary>
