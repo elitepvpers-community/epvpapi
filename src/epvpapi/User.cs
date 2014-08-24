@@ -3,6 +3,7 @@ using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -175,6 +176,109 @@ namespace epvpapi
                 LastActivity = parsedDateTime; 
             }
         }
+
+        /// <summary>
+        /// Gets all private messages stored in the specified folder
+        /// </summary>
+        /// <param name="session"> Session used for sending the request </param>
+        /// <param name="firstPage"> Index of the first page to request </param>
+        /// <param name="pageCount"> How many pages will be requested </param>
+        /// <param name="folder"> 
+        /// The folder where the private messages are stored. Either a pre-defined folder (such as <c>PrivateMessage.Folder.Received</c>
+        /// or <c>PrivateMessage.Folder.Sent</c>) can be used or you can specify your own folder you've created by transmitting the folder ID 
+        /// </param>
+        /// <returns> All private messages that could be retrieved </returns>
+        /// <remarks>
+        /// Every page contains 100 messages - if available
+        /// </remarks>
+        public List<PrivateMessage> GetPrivateMessages(Session session, uint firstPage = 1, uint pageCount = 1, PrivateMessage.Folder folder = PrivateMessage.Folder.Received)
+        {
+            List<PrivateMessage> fetchedMessages = new List<PrivateMessage>();
+
+            for (int i = 0; i < pageCount; ++i)
+            {
+                // setting 'pp' to 100 will get you exactly 100 messages per page. This is the highest count that can be set.
+                Response res = session.Get("http://www.elitepvpers.com/forum/private.php?folderid=" + Convert.ToInt32(folder) + "&pp=100&sort=date&page=" + i);
+                HtmlDocument document = new HtmlDocument();
+                document.LoadHtml(res.ToString());
+
+                HtmlNode formRootNode = document.GetElementbyId("pmform");
+                if (formRootNode == null) continue;
+                formRootNode = formRootNode.ParentNode;
+
+                if (formRootNode == null) continue;
+                HtmlNode tborderNode = formRootNode.SelectSingleNode("table[2]");
+                if (tborderNode == null) continue;
+
+                // Get the amount of messages stored in the specified folder
+                // If the amount of messages is lower than the specified page count * 100, adjust the pageCount variable to fit
+                // Otherwise, vBulletin will redirect you to the previous page if it can't find the page index causing duplicate messages
+                HtmlNode messageCountNode = tborderNode.SelectSingleNode("thead[1]/tr[1]/td[1]/span[1]/label[1]/strong[1]");
+                if (messageCountNode == null) break;
+
+                uint messageCount = Convert.ToUInt32(messageCountNode.InnerText);
+                if (messageCount == 0)
+                    break;
+                else 
+                    pageCount = (uint) Math.Ceiling((double) messageCount / 100);
+
+                List<HtmlNode> categoryNodes = new List<HtmlNode>(tborderNode.GetElementsByTagName("tbody").Where(node => node.Id != String.Empty));
+                foreach (var subNodes in categoryNodes.Select(categoryNode => categoryNode.GetElementsByTagName("tr")))
+                {
+                    foreach (var subNode in subNodes)
+                    {
+                        HtmlNode tdBaseNode = subNode.SelectSingleNode("td[3]");
+                        if (tdBaseNode == null) continue;
+                        uint pmID = Convert.ToUInt32(new string(tdBaseNode.Id.Skip(1).ToArray())); // skip the first character that is always prefixed before the actual id
+
+                        HtmlNode dateNode = tdBaseNode.SelectSingleNode("div[1]/span[1]");
+                        string date = (dateNode != null) ? dateNode.InnerText : "";
+
+                        HtmlNode timeNode = tdBaseNode.SelectSingleNode("div[2]/span[1]");
+                        string time = (timeNode != null) ? timeNode.InnerText : "";
+
+                        bool messageUnread = false;
+
+                        string title = "";
+                        HtmlNode titleNode = tdBaseNode.SelectSingleNode("div[1]/a[1]");
+                        if (titleNode == null)
+                        {
+                            // Unread messages are shown with bold font
+                            titleNode = tdBaseNode.SelectSingleNode("div[1]/a[1]/strong[1]");
+                            title = (titleNode != null) ? titleNode.InnerText : "";
+                            messageUnread = true;
+                        }
+                        else
+                            title = (titleNode != null) ? titleNode.InnerText : "";
+
+                        string userName = "";
+                        HtmlNode userNameNode = tdBaseNode.SelectSingleNode("div[2]/span[2]");
+                        if (userNameNode == null)
+                        {
+                            // Unread messages are shown with bold font
+                            userNameNode = tdBaseNode.SelectSingleNode("div[2]/strong[1]/span[1]");
+                            userName = (userNameNode != null) ? userNameNode.InnerText : "";
+                            messageUnread = true;
+                        }
+                        else
+                            userName = (userNameNode != null) ? userNameNode.InnerText : "";
+
+                        DateTime dateTime = new DateTime();
+                        DateTime.TryParseExact(date + " " + time, "MM-dd-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime);
+
+                        User sender = new User(userName);
+                        Match regexMatch = Regex.Match(userNameNode.Attributes["onclick"].Value, @"window.location='(\S+)';"); // the profile link is stored within a javascript page redirect command
+                        if (regexMatch.Groups.Count > 1)
+                            sender = new User(userName, User.FromURL(regexMatch.Groups[1].Value));
+
+                        fetchedMessages.Add(new PrivateMessage(pmID, String.Empty, new List<User>() { this }, sender, title, dateTime, messageUnread));
+                    }
+                }
+            }
+
+            return fetchedMessages;
+        }
+
 
         /// <summary>
         /// Retrieves the profile ID of the given URL

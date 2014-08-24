@@ -18,7 +18,11 @@ namespace epvpapi
         { }
 
         public Post(uint id, string content = null, string title = null)
-            : base(id, content)
+            : this(id, content, title, DateTime.Now)
+        { }
+
+        public Post(uint id, string content, string title, DateTime date)
+            : base(id, content, date)
         {
             Title = title;
         }
