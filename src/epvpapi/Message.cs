@@ -44,12 +44,22 @@ namespace epvpapi
         /// </summary>
         public Options Settings { get; set; }
 
-        public Message(uint id, string content = null)
+        /// <summary>
+        /// Date and time when the message was created
+        /// </summary>
+        public DateTime Date { get; set; }
+
+        public Message(uint id, string content, DateTime date)
             : base(id)
         {
             Content = content;
             Settings |= Options.ParseURL | Options.ShowSignature;
+            Date = date;
         }
+
+        public Message(uint id, string content = null)
+            : this(id, content, DateTime.Now)
+        { }
 
         public Message(string content = null)
             : this(0, content)

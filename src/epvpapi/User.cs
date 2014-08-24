@@ -3,6 +3,7 @@ using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -211,14 +212,23 @@ namespace epvpapi
                     HtmlNode userNameNode = tdBaseNode.SelectSingleNode("div[2]/span[2]");
                     string userName = (userNameNode != null) ? userNameNode.InnerText : "";
 
+                    DateTime dateTime = new DateTime();
+                    DateTime.TryParseExact(date + " " + time, "MM-dd-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime);
+
+                    User sender = new User(userName);
                     HtmlNode senderProfileLinkNode = tdBaseNode.SelectSingleNode("div[2]/span[2]");
-                    if (senderProfileLinkNode == null) continue;
-                    Match regexMatch = Regex.Match(senderProfileLinkNode.Attributes["onclick"].Value, @"window.location='(\S+)';");
-                    User sender = (regexMatch.Groups.Count > 1) ? new User(userName, User.FromURL(regexMatch.Groups[1].Value)) : new User(userName);
+                    if (senderProfileLinkNode != null)
+                    {
+                        Match regexMatch = Regex.Match(senderProfileLinkNode.Attributes["onclick"].Value, @"window.location='(\S+)';");
+                        if (regexMatch.Groups.Count > 1)
+                            sender = new User(userName, User.FromURL(regexMatch.Groups[1].Value));
+                    }
+
+                    fetchedMessages.Add(new PrivateMessage(pmID, String.Empty, new List<User>() { this }, sender, title, dateTime));
                 }
             }
 
-            return new List<PrivateMessage>();
+            return fetchedMessages;
         }
 
 

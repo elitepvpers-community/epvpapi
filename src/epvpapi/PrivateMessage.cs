@@ -20,6 +20,7 @@ namespace epvpapi
         /// </summary>
         public List<User> Recipients { get; set; }
 
+
         public PrivateMessage(uint id, string content = null)
             : this(id, content, new List<User>())
         { }
@@ -33,10 +34,18 @@ namespace epvpapi
         {  }
 
         public PrivateMessage(uint id, string content, List<User> recipients, string title = null)
-            : base(id, content, title)
+            : this(id, content, recipients, new User(), title)
+        { }
+
+        public PrivateMessage(uint id, string content, List<User> recipients, User sender, string title)
+            : this(id, content, recipients, sender, title, DateTime.Now)
+        { }
+
+        public PrivateMessage(uint id, string content, List<User> recipients, User sender, string title, DateTime date)
+            : base(id, content, title, date)
         {
             Recipients = recipients;
-            Sender = new User();
+            Sender = sender;
         }
 
         /// <summary>
