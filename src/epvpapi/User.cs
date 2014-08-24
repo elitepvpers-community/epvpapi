@@ -176,6 +176,52 @@ namespace epvpapi
             }
         }
 
+
+        public List<PrivateMessage> GetPrivateMessages(Session session)
+        {
+            Response res = session.Get("http://www.elitepvpers.com/forum/private.php");
+            HtmlDocument document = new HtmlDocument();
+            document.LoadHtml(res.ToString());
+
+            HtmlNode formRootNode = document.GetElementbyId("pmform");
+            if (formRootNode == null) throw new ParsingFailedException("");
+            formRootNode = formRootNode.ParentNode;
+
+            HtmlNode tborderNode = formRootNode.SelectSingleNode("table[2]");
+            List<HtmlNode> categoryNodes = new List<HtmlNode>(tborderNode.GetElementsByTagName("tbody").Where(node => node.Id != String.Empty));
+
+            List<PrivateMessage> fetchedMessages = new List<PrivateMessage>();
+            foreach (var subNodes in categoryNodes.Select(categoryNode => categoryNode.GetElementsByTagName("tr")))
+            {
+                foreach(var subNode in subNodes)
+                {
+                    HtmlNode tdBaseNode = subNode.SelectSingleNode("td[3]");
+                    if (tdBaseNode == null) continue;
+                    uint pmID = Convert.ToUInt32(new string(tdBaseNode.Id.Skip(1).ToArray())); // skip the first character that is always prefixed before the actual id
+
+                    HtmlNode dateNode = tdBaseNode.SelectSingleNode("div[1]/span[1]");
+                    string date = (dateNode != null) ? dateNode.InnerText : "";
+
+                    HtmlNode titleNode = tdBaseNode.SelectSingleNode("div[1]/a[1]");
+                    string title = (titleNode != null) ? titleNode.InnerText : "";
+
+                    HtmlNode timeNode = tdBaseNode.SelectSingleNode("div[2]/span[1]");
+                    string time = (timeNode != null) ? timeNode.InnerText : "";
+
+                    HtmlNode userNameNode = tdBaseNode.SelectSingleNode("div[2]/span[2]");
+                    string userName = (userNameNode != null) ? userNameNode.InnerText : "";
+
+                    HtmlNode senderProfileLinkNode = tdBaseNode.SelectSingleNode("div[2]/span[2]");
+                    if (senderProfileLinkNode == null) continue;
+                    Match regexMatch = Regex.Match(senderProfileLinkNode.Attributes["onclick"].Value, @"window.location='(\S+)';");
+                    User sender = (regexMatch.Groups.Count > 1) ? new User(userName, User.FromURL(regexMatch.Groups[1].Value)) : new User(userName);
+                }
+            }
+
+            return new List<PrivateMessage>();
+        }
+
+
         /// <summary>
         /// Retrieves the profile ID of the given URL
         /// </summary>
