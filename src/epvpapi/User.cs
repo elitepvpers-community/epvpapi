@@ -177,6 +177,24 @@ namespace epvpapi
             }
         }
 
+
+        /// <summary>
+        /// Gets all private messages stored in the specified folder
+        /// </summary>
+        /// <param name="session"> Session used for sending the request </param>
+        /// <param name="folder"> 
+        /// The folder where the private messages are stored. Either a pre-defined folder (such as <c>PrivateMessage.Folder.Received</c>
+        /// or <c>PrivateMessage.Folder.Sent</c>) can be used or you can specify your own folder you've created by transmitting the folder ID 
+        /// </param>
+        /// <returns> All private messages that could be retrieved </returns>
+        /// <remarks>
+        /// Every page contains 100 messages - if available
+        /// </remarks>
+        public List<PrivateMessage> GetPrivateMessages(Session session, PrivateMessage.Folder folder)
+        {
+            return GetPrivateMessages(session, 1, 1, folder);
+        }
+
         /// <summary>
         /// Gets all private messages stored in the specified folder
         /// </summary>
@@ -191,14 +209,14 @@ namespace epvpapi
         /// <remarks>
         /// Every page contains 100 messages - if available
         /// </remarks>
-        public List<PrivateMessage> GetPrivateMessages(Session session, uint firstPage = 1, uint pageCount = 1, PrivateMessage.Folder folder = PrivateMessage.Folder.Received)
+        public List<PrivateMessage> GetPrivateMessages(Session session, uint firstPage, uint pageCount, PrivateMessage.Folder folder)
         {
             List<PrivateMessage> fetchedMessages = new List<PrivateMessage>();
 
             for (int i = 0; i < pageCount; ++i)
             {
                 // setting 'pp' to 100 will get you exactly 100 messages per page. This is the highest count that can be set.
-                Response res = session.Get("http://www.elitepvpers.com/forum/private.php?folderid=" + Convert.ToInt32(folder) + "&pp=100&sort=date&page=" + i);
+                Response res = session.Get("http://www.elitepvpers.com/forum/private.php?folderid=" + folder.ID + "&pp=100&sort=date&page=" + i);
                 HtmlDocument document = new HtmlDocument();
                 document.LoadHtml(res.ToString());
 
@@ -271,7 +289,12 @@ namespace epvpapi
                         if (regexMatch.Groups.Count > 1)
                             sender = new User(userName, User.FromURL(regexMatch.Groups[1].Value));
 
-                        fetchedMessages.Add(new PrivateMessage(pmID, String.Empty, new List<User>() { this }, sender, title, dateTime, messageUnread));
+                        // Messages that were send are labeled with the user that received the message. If messages were received, they were labeled with the sender
+                        // so we need to know wether the folder stores received or sent messages
+                        if(folder.StorageType == PrivateMessage.Folder.Storage.Received)
+                            fetchedMessages.Add(new PrivateMessage(pmID, String.Empty, new List<User>() { this }, sender, title, dateTime, messageUnread));
+                        else
+                            fetchedMessages.Add(new PrivateMessage(pmID, String.Empty, new List<User>() { sender }, this, title, dateTime, messageUnread));
                     }
                 }
             }
