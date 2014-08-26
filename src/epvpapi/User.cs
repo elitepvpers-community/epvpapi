@@ -216,6 +216,7 @@ namespace epvpapi
             Blog = new Blog();
             LastActivity = new DateTime();
             Groups = new List<Usergroup>();
+            Namecolor = "black";
         }
 
         /// <summary>
@@ -257,7 +258,12 @@ namespace epvpapi
             HtmlNode userTitleNode = userNameBoxNode.SelectSingleNode("h2[1]");
             Title = (userTitleNode != null) ? userTitleNode.InnerText : String.Empty;
 
-            Namecolor = userNameNode.Attributes.Count != 0 ? userNameNode.Attributes.First().Value : "black";
+            if(userNameNode.Attributes.Contains("style"))
+            {
+                Match match = Regex.Match(userNameNode.Attributes["style"].Value, @"color:(\S+)");
+                if (match.Groups.Count > 1)
+                    Namecolor = match.Groups[1].Value;
+            }
 
             // Fetch the user title badges. User who do not belong to any group or who don't got any badges, will be lacking of the 'rank' element in their profile page
             HtmlNode userRankNode = doc.GetElementbyId("rank");
