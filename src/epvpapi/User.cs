@@ -19,24 +19,135 @@ namespace epvpapi
         /// <summary>
         /// Available usergroups an user can have 
         /// </summary>
-        [Flags]
-        public enum Usergroups
+        public class Usergroup
         {
-            [Description("Keine")]
-            None,
-            [Description("Premium")]
-            Premium,
-            [Description("Level 2")]
-            Level2,
-            [Description("Level 3")]
-            Level3,
-            [Description("Moderator")]
-            Moderator,
-            [Description("Global Moderator")]
-            GlobalModerator,
-            [Description("Administrator")]
-            Administrator
-        };
+            public string Name { get; set; }
+            public string File { get; set; }
+            public string Path { get; set; }
+
+            public static Usergroup Premium
+            {
+                get { return new Usergroup("Premium", "premium.png"); }
+            }
+
+            public static Usergroup Level2
+            {
+                get { return new Usergroup("Level 2", "level2.png"); }
+            }
+
+            public static Usergroup Level3
+            {
+                get { return new Usergroup("Level 3", "level3.png"); }
+            }
+
+            public static Usergroup Moderator
+            {
+                get { return new Usergroup("Moderator", "moderator.png"); }
+            }
+
+            public static Usergroup GlobalModerator
+            {
+                get { return new Usergroup("Global Moderator", "globalmod.png"); }
+            }
+
+            public static Usergroup Administrator
+            {
+                get { return new Usergroup("Administrator", "coadmin.png"); }
+            }
+
+            public static Usergroup EliteGoldTrader
+            {
+                get { return new Usergroup("elite*gold Trader", "egtrader.png"); }
+            }
+
+            public static Usergroup FormerVolunteer
+            {
+                get { return new Usergroup("Former Volunteer", "formervolunteer.png"); }
+            }
+
+            public static Usergroup FormerStaff
+            {
+                get { return new Usergroup("Former Staff", "formerstaff.png"); }
+            }
+
+            public static Usergroup Guardian
+            {
+                get { return new Usergroup("Guardian", "guard.png"); }
+            }
+
+            public static Usergroup Translator
+            {
+                get { return new Usergroup("Translator", "translator.png"); }
+            }
+
+            public static Usergroup Editor
+            {
+                get { return new Usergroup("Editor", "editor.png"); }
+            }
+
+            public static Usergroup EventPlanner
+            {
+                get { return new Usergroup("Event Planner", "eventplanner.png"); }
+            }
+
+            public static Usergroup Podcaster
+            {
+                get { return new Usergroup("Podcaster", "podcaster.png"); }
+            }
+
+            public static Usergroup Broadcaster
+            {
+                get { return new Usergroup("Broadcaster", "broadcaster.png"); }
+            }
+
+            public static Usergroup IDVerified
+            {
+                get { return new Usergroup("ID Verified", "idverified.png"); }
+            }
+
+            public static Usergroup Founder
+            {
+                get { return new Usergroup("Founder", "founder.png"); }
+            }
+
+            private static string _DefaultDirectory = "http://cdn.elitepvpers.org/forum/images/teamicons/relaunch/";
+            public static string DefaultDirectory
+            {
+                get { return _DefaultDirectory; }
+            }
+
+            public Usergroup(string name = null, string file = null):
+                this(name, file, DefaultDirectory + file)
+            { }
+
+            public Usergroup(string name, string file, string path)
+            {
+                Name = name;
+                File = file;
+                Path = path;
+            }
+
+            public static bool FromURL(string url, out Usergroup group)
+            {
+                group = new Usergroup();
+                Match match = Regex.Match(url, @"http://cdn.elitepvpers.org/forum/images/teamicons/relaunch/(\S+)");
+                if (match.Groups.Count < 2) return false;
+
+                var availableUsergroups = typeof(Usergroup).GetProperties().Where(property => property.PropertyType == typeof(Usergroup));
+                
+                foreach(var reflectedUsergroup in availableUsergroups)
+                {
+                    Usergroup usergroup = (reflectedUsergroup.GetValue(null) as Usergroup);
+                    if (usergroup.File == match.Groups[1].Value)
+                    {
+                        group = usergroup;
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        }
 
         public enum Status
         {
@@ -65,12 +176,10 @@ namespace epvpapi
         /// </summary>
         public Status CurrentStatus { get; set; }
 
-
         /// <summary>
         /// The last activity of the user given is <c>DateTime</c> format
         /// </summary>
         public DateTime LastActivity { get; set; }
-
 
         /// <summary>
         /// Amount of thanks the user has given
@@ -90,8 +199,40 @@ namespace epvpapi
         /// <summary>
         /// List of usergroups the user has
         /// </summary>
-        public Usergroups Groups { get; set; }
+        public List<Usergroup> Groups { get; set; }
 
+        /// <summary>
+        /// Additional information that can be entered by the user. Listed under tab 'About'
+        /// </summary>
+        public string Biography { get; set; }
+
+        /// <summary>
+        /// Additional information that can be entered by the user. Listed under tab 'About'
+        /// </summary>
+        public string Location { get; set; }
+
+        /// <summary>
+        /// Additional information that can be entered by the user. Listed under tab 'About'
+        /// </summary>
+        public string Interests { get; set; }
+
+        /// <summary>
+        /// Additional information that can be entered by the user. Listed under tab 'About'
+        /// </summary>
+        public string Occupation { get; set; }
+
+        /// <summary>
+        /// Additional information that can be entered by the user. Listed under tab 'About'
+        /// </summary>
+        public string SteamID { get; set; }
+
+        /// <summary>
+        /// Web URL to the profile page
+        /// </summary>
+        public string URL 
+        {
+            get { return "http://www.elitepvpers.com/forum/members/" + ID + "-" + Name.ToLower() + ".html"; }
+        }
 
         public User(uint id = 0)
             : this(null, id)
@@ -105,32 +246,24 @@ namespace epvpapi
             Name = name;
             Blog = new Blog();
             LastActivity = new DateTime();
-            Groups |= Usergroups.None;
+            Groups = new List<Usergroup>();
+            Namecolor = "black";
         }
 
         /// <summary>
         /// Updates the user by requesting the profile
         /// </summary>
         /// <param name="session"> Session used for sending the request </param>
-        public void Update(Session session)
+        public void Update<T>(UserSession<T> session) where T : User
         {
             session.ThrowIfInvalid();
             Response res = session.Get("http://www.elitepvpers.com/forum/members/" + ID.ToString() + "--.html");
-            Parse(res.ToString());
-        }
 
-
-        /// <summary>
-        /// Parses the responseContent in order to fetch all available information of the user
-        /// </summary>
-        /// <param name="responseContent"> Plain HTML response content </param>
-        private void Parse(string responseContent)
-        {
             HtmlDocument doc = new HtmlDocument();
-            doc.LoadHtml(responseContent);
+            doc.LoadHtml(res.ToString());
 
             HtmlNode userNameBoxNode = doc.GetElementbyId("username_box"); // root element
-            if (userNameBoxNode == null) throw new ParsingFailedException("User could not be parsed, root node is invalid or was not found");
+            if (userNameBoxNode == null) throw new ParsingFailedException("Root node is invalid or was not found");
                 
             HtmlNode userNameNode = userNameBoxNode.SelectSingleNode("h1[1]/span[1]");
             if (userNameNode != null)
@@ -144,21 +277,47 @@ namespace epvpapi
                 Name = (userNameNode != null) ? userNameNode.InnerText : String.Empty;
             }
 
-            HtmlNode userRankNode = userNameBoxNode.SelectSingleNode("h2[1]");
-            Title = (userRankNode != null) ? userRankNode.InnerText : String.Empty;
+            HtmlNode userTitleNode = userNameBoxNode.SelectSingleNode("h2[1]");
+            Title = (userTitleNode != null) ? userTitleNode.InnerText : String.Empty;
 
-            Namecolor = userNameNode.Attributes.Count != 0 ? userNameNode.Attributes.First().Value : "black";
+            if(userNameNode.Attributes.Contains("style"))
+            {
+                Match match = Regex.Match(userNameNode.Attributes["style"].Value, @"color:(\S+)");
+                if (match.Groups.Count > 1)
+                    Namecolor = match.Groups[1].Value;
+            }
 
+            // Fetch the user title badges. User who do not belong to any group or who don't got any badges, will be lacking of the 'rank' element in their profile page
+            HtmlNode userRankNode = doc.GetElementbyId("rank");
+            if(userRankNode != null)
+            {
+                List<HtmlNode> rankNodes = new List<HtmlNode>(userRankNode.GetElementsByTagName("img")); // every rank badge got his very own 'img' element
+
+                foreach(var node in rankNodes)
+                {
+                    if (!node.Attributes.Contains("src")) continue;
+
+                    Usergroup parsedGroup = new Usergroup();
+                    if (Usergroup.FromURL(node.Attributes["src"].Value, out parsedGroup)) // 'src' holds the url to the rank image
+                        Groups.Add(parsedGroup);
+                }
+            }
 
             HtmlNode userStatusNode = userNameBoxNode.SelectSingleNode("h1[1]/img[1]");
-            string userStatusLink = userStatusNode.Attributes["src"].Value;
-            if (userStatusLink.Contains("invisible"))
-                CurrentStatus = Status.Invisible;
-            else if (userStatusLink.Contains("offline"))
-                CurrentStatus = Status.Offline;
-            else if (userStatusLink.Contains("online"))
-                CurrentStatus = Status.Online;
-
+            if(userStatusNode != null)
+            {
+                if(userStatusNode.Attributes.Contains("src"))
+                {
+                    string userStatusLink = userStatusNode.Attributes["src"].Value;
+                    if (userStatusLink.Contains("invisible"))
+                        CurrentStatus = Status.Invisible;
+                    else if (userStatusLink.Contains("offline"))
+                        CurrentStatus = Status.Offline;
+                    else if (userStatusLink.Contains("online"))
+                        CurrentStatus = Status.Online;
+                }
+            }
+         
             HtmlNode lastActivityNode = doc.GetElementbyId("last_online");
             if (lastActivityNode != null)
             {
@@ -174,6 +333,25 @@ namespace epvpapi
                 DateTime parsedDateTime = new DateTime();
                 DateTime.TryParse(date + " " + time, out parsedDateTime);
                 LastActivity = parsedDateTime; 
+            }
+
+            // In case the user is the logged in user, all fields are editable and therefore got his own ids. 
+            if (this == session.User)
+            {
+                HtmlNode biographyNode = doc.GetElementbyId("profilefield_value_1");
+                Biography = (biographyNode != null) ? biographyNode.SelectSingleNode("text()[1]").InnerText.Strip() : "";
+
+                HtmlNode locationNode = doc.GetElementbyId("profilefield_value_2");
+                Location = (locationNode != null) ? locationNode.SelectSingleNode("text()[1]").InnerText.Strip() : "";
+
+                HtmlNode interestsNode = doc.GetElementbyId("profilefield_value_3");
+                Interests = (interestsNode != null) ? interestsNode.SelectSingleNode("text()[1]").InnerText.Strip() : "";
+
+                HtmlNode occupationNode = doc.GetElementbyId("profilefield_value_4");
+                Occupation = (occupationNode != null) ? occupationNode.SelectSingleNode("text()[1]").InnerText.Strip() : "";
+
+                HtmlNode steamIDNode = doc.GetElementbyId("profilefield_value_8");
+                SteamID = (steamIDNode != null) ? steamIDNode.SelectSingleNode("text()[1]").InnerText.Strip() : "";
             }
         }
 

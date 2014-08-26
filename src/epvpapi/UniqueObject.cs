@@ -16,18 +16,10 @@ namespace epvpapi
         /// </summary>
         public uint ID { get; set; }
 
-        /// <summary>
-        /// Web URL
-        /// </summary>
-        public string Link { get; set; }
-
         /// <param name="id"> Unique identifier </param>
-        public UniqueObject(uint id)
+        public UniqueObject(uint id = 0)
         {
             ID = id;
         }
-
-        public UniqueObject()
-        { }
     }
 }
