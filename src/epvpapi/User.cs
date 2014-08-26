@@ -181,7 +181,6 @@ namespace epvpapi
         /// </summary>
         public DateTime LastActivity { get; set; }
 
-
         /// <summary>
         /// Amount of thanks the user has given
         /// </summary>
@@ -202,6 +201,38 @@ namespace epvpapi
         /// </summary>
         public List<Usergroup> Groups { get; set; }
 
+        /// <summary>
+        /// Additional information that can be entered by the user. Listed under tab 'About'
+        /// </summary>
+        public string Biography { get; set; }
+
+        /// <summary>
+        /// Additional information that can be entered by the user. Listed under tab 'About'
+        /// </summary>
+        public string Location { get; set; }
+
+        /// <summary>
+        /// Additional information that can be entered by the user. Listed under tab 'About'
+        /// </summary>
+        public string Interests { get; set; }
+
+        /// <summary>
+        /// Additional information that can be entered by the user. Listed under tab 'About'
+        /// </summary>
+        public string Occupation { get; set; }
+
+        /// <summary>
+        /// Additional information that can be entered by the user. Listed under tab 'About'
+        /// </summary>
+        public string SteamID { get; set; }
+
+        /// <summary>
+        /// Web URL to the profile page
+        /// </summary>
+        public string URL 
+        {
+            get { return "http://www.elitepvpers.com/forum/members/" + ID + "-" + Name.ToLower() + ".html"; }
+        }
 
         public User(uint id = 0)
             : this(null, id)
@@ -223,25 +254,16 @@ namespace epvpapi
         /// Updates the user by requesting the profile
         /// </summary>
         /// <param name="session"> Session used for sending the request </param>
-        public void Update(Session session)
+        public void Update<T>(UserSession<T> session) where T : User
         {
             session.ThrowIfInvalid();
             Response res = session.Get("http://www.elitepvpers.com/forum/members/" + ID.ToString() + "--.html");
-            Parse(res.ToString());
-        }
 
-
-        /// <summary>
-        /// Parses the responseContent in order to fetch all available information of the user
-        /// </summary>
-        /// <param name="responseContent"> Plain HTML response content </param>
-        private void Parse(string responseContent)
-        {
             HtmlDocument doc = new HtmlDocument();
-            doc.LoadHtml(responseContent);
+            doc.LoadHtml(res.ToString());
 
             HtmlNode userNameBoxNode = doc.GetElementbyId("username_box"); // root element
-            if (userNameBoxNode == null) throw new ParsingFailedException("User could not be parsed, root node is invalid or was not found");
+            if (userNameBoxNode == null) throw new ParsingFailedException("Root node is invalid or was not found");
                 
             HtmlNode userNameNode = userNameBoxNode.SelectSingleNode("h1[1]/span[1]");
             if (userNameNode != null)
@@ -282,14 +304,20 @@ namespace epvpapi
             }
 
             HtmlNode userStatusNode = userNameBoxNode.SelectSingleNode("h1[1]/img[1]");
-            string userStatusLink = userStatusNode.Attributes["src"].Value;
-            if (userStatusLink.Contains("invisible"))
-                CurrentStatus = Status.Invisible;
-            else if (userStatusLink.Contains("offline"))
-                CurrentStatus = Status.Offline;
-            else if (userStatusLink.Contains("online"))
-                CurrentStatus = Status.Online;
-
+            if(userStatusNode != null)
+            {
+                if(userStatusNode.Attributes.Contains("src"))
+                {
+                    string userStatusLink = userStatusNode.Attributes["src"].Value;
+                    if (userStatusLink.Contains("invisible"))
+                        CurrentStatus = Status.Invisible;
+                    else if (userStatusLink.Contains("offline"))
+                        CurrentStatus = Status.Offline;
+                    else if (userStatusLink.Contains("online"))
+                        CurrentStatus = Status.Online;
+                }
+            }
+         
             HtmlNode lastActivityNode = doc.GetElementbyId("last_online");
             if (lastActivityNode != null)
             {
@@ -305,6 +333,25 @@ namespace epvpapi
                 DateTime parsedDateTime = new DateTime();
                 DateTime.TryParse(date + " " + time, out parsedDateTime);
                 LastActivity = parsedDateTime; 
+            }
+
+            // In case the user is the logged in user, all fields are editable and therefore got his own ids. 
+            if (this == session.User)
+            {
+                HtmlNode biographyNode = doc.GetElementbyId("profilefield_value_1");
+                Biography = (biographyNode != null) ? biographyNode.SelectSingleNode("text()[1]").InnerText.Strip() : "";
+
+                HtmlNode locationNode = doc.GetElementbyId("profilefield_value_2");
+                Location = (locationNode != null) ? locationNode.SelectSingleNode("text()[1]").InnerText.Strip() : "";
+
+                HtmlNode interestsNode = doc.GetElementbyId("profilefield_value_3");
+                Interests = (interestsNode != null) ? interestsNode.SelectSingleNode("text()[1]").InnerText.Strip() : "";
+
+                HtmlNode occupationNode = doc.GetElementbyId("profilefield_value_4");
+                Occupation = (occupationNode != null) ? occupationNode.SelectSingleNode("text()[1]").InnerText.Strip() : "";
+
+                HtmlNode steamIDNode = doc.GetElementbyId("profilefield_value_8");
+                SteamID = (steamIDNode != null) ? steamIDNode.SelectSingleNode("text()[1]").InnerText.Strip() : "";
             }
         }
 
