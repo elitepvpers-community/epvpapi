@@ -65,6 +65,51 @@ namespace epvpapi
                 get { return new Usergroup("Former Volunteer", "formervolunteer.png"); }
             }
 
+            public static Usergroup FormerStaff
+            {
+                get { return new Usergroup("Former Staff", "formerstaff.png"); }
+            }
+
+            public static Usergroup Guardian
+            {
+                get { return new Usergroup("Guardian", "guard.png"); }
+            }
+
+            public static Usergroup Translator
+            {
+                get { return new Usergroup("Translator", "translator.png"); }
+            }
+
+            public static Usergroup Editor
+            {
+                get { return new Usergroup("Editor", "editor.png"); }
+            }
+
+            public static Usergroup EventPlanner
+            {
+                get { return new Usergroup("Event Planner", "eventplanner.png"); }
+            }
+
+            public static Usergroup Podcaster
+            {
+                get { return new Usergroup("Podcaster", "podcaster.png"); }
+            }
+
+            public static Usergroup Broadcaster
+            {
+                get { return new Usergroup("Broadcaster", "broadcaster.png"); }
+            }
+
+            public static Usergroup IDVerified
+            {
+                get { return new Usergroup("ID Verified", "idverified.png"); }
+            }
+
+            public static Usergroup Founder
+            {
+                get { return new Usergroup("Founder", "founder.png"); }
+            }
+
             private static string _DefaultDirectory = "http://cdn.elitepvpers.org/forum/images/teamicons/relaunch/";
             public static string DefaultDirectory
             {
