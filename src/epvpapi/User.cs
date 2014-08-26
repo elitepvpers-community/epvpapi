@@ -19,24 +19,90 @@ namespace epvpapi
         /// <summary>
         /// Available usergroups an user can have 
         /// </summary>
-        [Flags]
-        public enum Usergroups
+        public class Usergroup
         {
-            [Description("Keine")]
-            None,
-            [Description("Premium")]
-            Premium,
-            [Description("Level 2")]
-            Level2,
-            [Description("Level 3")]
-            Level3,
-            [Description("Moderator")]
-            Moderator,
-            [Description("Global Moderator")]
-            GlobalModerator,
-            [Description("Administrator")]
-            Administrator
-        };
+            public string Name { get; set; }
+            public string File { get; set; }
+            public string Path { get; set; }
+
+            public static Usergroup Premium
+            {
+                get { return new Usergroup("Premium", "premium.png"); }
+            }
+
+            public static Usergroup Level2
+            {
+                get { return new Usergroup("Level 2", "level2.png"); }
+            }
+
+            public static Usergroup Level3
+            {
+                get { return new Usergroup("Level 3", "level3.png"); }
+            }
+
+            public static Usergroup Moderator
+            {
+                get { return new Usergroup("Moderator", "moderator.png"); }
+            }
+
+            public static Usergroup GlobalModerator
+            {
+                get { return new Usergroup("Global Moderator", "globalmod.png"); }
+            }
+
+            public static Usergroup Administrator
+            {
+                get { return new Usergroup("Administrator", "coadmin.png"); }
+            }
+
+            public static Usergroup EliteGoldTrader
+            {
+                get { return new Usergroup("elite*gold Trader", "egtrader.png"); }
+            }
+
+            public static Usergroup FormerVolunteer
+            {
+                get { return new Usergroup("Former Volunteer", "formervolunteer.png"); }
+            }
+
+            private static string _DefaultDirectory = "http://cdn.elitepvpers.org/forum/images/teamicons/relaunch/";
+            public static string DefaultDirectory
+            {
+                get { return _DefaultDirectory; }
+            }
+
+            public Usergroup(string name = null, string file = null):
+                this(name, file, DefaultDirectory + file)
+            { }
+
+            public Usergroup(string name, string file, string path)
+            {
+                Name = name;
+                File = file;
+                Path = path;
+            }
+
+            public static bool FromURL(string url, out Usergroup group)
+            {
+                group = new Usergroup();
+                Match match = Regex.Match(url, @"http://cdn.elitepvpers.org/forum/images/teamicons/relaunch/(\S+)");
+                if (match.Groups.Count < 2) return false;
+
+                var availableUsergroups = typeof(Usergroup).GetProperties().Where(property => property.PropertyType == typeof(Usergroup));
+                
+                foreach(var reflectedUsergroup in availableUsergroups)
+                {
+                    Usergroup usergroup = (reflectedUsergroup.GetValue(null) as Usergroup);
+                    if (usergroup.File == match.Groups[1].Value)
+                    {
+                        group = usergroup;
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        }
 
         public enum Status
         {
@@ -65,7 +131,6 @@ namespace epvpapi
         /// </summary>
         public Status CurrentStatus { get; set; }
 
-
         /// <summary>
         /// The last activity of the user given is <c>DateTime</c> format
         /// </summary>
@@ -90,7 +155,7 @@ namespace epvpapi
         /// <summary>
         /// List of usergroups the user has
         /// </summary>
-        public Usergroups Groups { get; set; }
+        public List<Usergroup> Groups { get; set; }
 
 
         public User(uint id = 0)
@@ -105,7 +170,7 @@ namespace epvpapi
             Name = name;
             Blog = new Blog();
             LastActivity = new DateTime();
-            Groups |= Usergroups.None;
+            Groups = new List<Usergroup>();
         }
 
         /// <summary>
@@ -144,11 +209,26 @@ namespace epvpapi
                 Name = (userNameNode != null) ? userNameNode.InnerText : String.Empty;
             }
 
-            HtmlNode userRankNode = userNameBoxNode.SelectSingleNode("h2[1]");
-            Title = (userRankNode != null) ? userRankNode.InnerText : String.Empty;
+            HtmlNode userTitleNode = userNameBoxNode.SelectSingleNode("h2[1]");
+            Title = (userTitleNode != null) ? userTitleNode.InnerText : String.Empty;
 
             Namecolor = userNameNode.Attributes.Count != 0 ? userNameNode.Attributes.First().Value : "black";
 
+            // Fetch the user title badges. User who do not belong to any group or who don't got any badges, will be lacking of the 'rank' element in their profile page
+            HtmlNode userRankNode = doc.GetElementbyId("rank");
+            if(userRankNode != null)
+            {
+                List<HtmlNode> rankNodes = new List<HtmlNode>(userRankNode.GetElementsByTagName("img")); // every rank badge got his very own 'img' element
+
+                foreach(var node in rankNodes)
+                {
+                    if (!node.Attributes.Contains("src")) continue;
+
+                    Usergroup parsedGroup = new Usergroup();
+                    if (Usergroup.FromURL(node.Attributes["src"].Value, out parsedGroup)) // 'src' holds the url to the rank image
+                        Groups.Add(parsedGroup);
+                }
+            }
 
             HtmlNode userStatusNode = userNameBoxNode.SelectSingleNode("h1[1]/img[1]");
             string userStatusLink = userStatusNode.Attributes["src"].Value;
