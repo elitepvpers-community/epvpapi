@@ -424,61 +424,83 @@ namespace epvpapi
             if(statisticsRootNode != null)
             {
                 statisticsRootNode = statisticsRootNode.SelectSingleNode("div[1]");
-                if (statisticsRootNode != null)
+
+                // Loop through the fields since vBulletin sorts them dynamically according to rank and certain user settings
+                foreach(var statisticsGroup in statisticsRootNode.GetElementsByTagName("fieldset"))
                 {
-                    var postGroupNode = statisticsRootNode.SelectSingleNode("fieldset[1]");
-                    if(postGroupNode != null)
-                    {
-                        var postsNode = postGroupNode.SelectSingleNode("ul[1]/li[1]/text()[1]");
-                        Posts = (postsNode != null) ? (uint) Convert.ToDouble(postsNode.InnerText) : 0;
+                    string legendCaption = statisticsGroup.SelectSingleNode("legend[1]").InnerText;
 
-                        var postsPerDayNode = postGroupNode.SelectSingleNode("ul[1]/li[2]/text()[1]");
-                        PostsPerDay = (postsPerDayNode != null) ? Convert.ToDouble(postsPerDayNode.InnerText) : 0;
+                    if (legendCaption == "Beiträge" || legendCaption == "Total Posts")
+                    {
+                        var postsNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
+                        Posts = (postsNode != null) ? (uint)Convert.ToDouble(postsNode.InnerText) : 0;
+
+                        var postsPerDayNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[1]");
+                        PostsPerDay = (postsPerDayNode != null) ? Convert.ToDouble(postsPerDayNode.InnerText) : 0;             
                     }
-
-                    if (session.User.Groups.Any(group => group == Usergroup.Moderator)) // for some reason, visitor messages are only visible for moderators+
+                    else if (legendCaption == "Profilnachrichten" || legendCaption == "Visitor Messages")
                     {
-                        HtmlNode visitorMessagesGroupNode = statisticsRootNode.SelectSingleNode("fieldset[2]");
+                        var visitorMessagesNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
+                        VisitorMessages = (visitorMessagesNode != null) ? (uint)Convert.ToDouble(visitorMessagesNode.InnerText) : 0;
 
-                        if (visitorMessagesGroupNode != null)
+                        var lastVisitorMessageNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[1]");
+                        if (lastVisitorMessageNode != null)
                         {
-                            var visitorMessagesNode = visitorMessagesGroupNode.SelectSingleNode("ul[1]/li[1]/text()[1]");
-                            VisitorMessages = (visitorMessagesNode != null) ? (uint)Convert.ToDouble(visitorMessagesNode.InnerText) : 0;
-
-                            var lastVisitorMessageNode = visitorMessagesGroupNode.SelectSingleNode("ul[1]/li[2]/text()[1]");
                             DateTime lastVisitorMessage = new DateTime();
-                            if (lastVisitorMessageNode != null)
-                                DateTime.TryParseExact(lastVisitorMessageNode.InnerText, "MM-dd-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out lastVisitorMessage);
+                            if (lastVisitorMessageNode.InnerText.Contains("Today") || lastVisitorMessageNode.InnerText.Contains("Heute"))
+                            {
+                                Match match = Regex.Match(lastVisitorMessageNode.InnerText, @"\S+ (\S+)");
+                                string time = (match.Groups.Count > 1) ? match.Groups[1].Value : "";
+                                DateTime.TryParseExact(DateTime.Now.ToString("MM-dd-yyyy") + " " + time, "MM-dd-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out lastVisitorMessage);
+                            }
+                            else
+                            {
+                                DateTime.TryParseExact(lastVisitorMessageNode.InnerText.Strip(), "MM-dd-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out lastVisitorMessage);
+                            }
 
                             LastVisitorMessage = lastVisitorMessage;
                         }
+                    }
+                    else if (legendCaption == "Vergebene Thanks" || legendCaption == "Thanks Given")
+                    {
+                        var givenThanksNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
+                        ThanksGiven = (givenThanksNode != null) ? (uint)Convert.ToDouble(givenThanksNode.InnerText) : 0;
 
-
-                        // usernotes are also only visible for moderators+
-                        HtmlNode userNotesGroupNode = statisticsRootNode.SelectSingleNode("fieldset[3]");
-                        if(userNotesGroupNode != null)
+                        // The received thanks count is stored within the span element and is trailed after the language dependent definition.
+                        // Unlike other elements, the count is not seperated and therefore needs some regex in order to extract the count
+                        var thanksReceivedNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/span[1]");
+                        if (thanksReceivedNode != null)
                         {
-                            var userNotesNode = visitorMessagesGroupNode.SelectSingleNode("ul[1]/li[1]/text()[1]");
-                            UserNotes = (userNotesNode != null) ? (uint) Convert.ToDouble(userNotesNode.InnerText) : 0;
-
-                            var lastNoteDateNode = visitorMessagesGroupNode.SelectSingleNode("ul[1]/li[2]/text()[1]");
-                            var lastNoteTimeNode = visitorMessagesGroupNode.SelectSingleNode("ul[1]/li[2]/span[2]");
-
-                            if(lastNoteDateNode != null && lastNoteTimeNode != null)
-                            {
-                                DateTime lastUserNote = new DateTime();
-                                DateTime.TryParseExact(lastNoteDateNode.InnerText + " " + lastNoteTimeNode.InnerText, "MM-dd-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out lastUserNote);
-                                LastUserNote = lastUserNote;
-                            }
+                            Match match = Regex.Match(thanksReceivedNode.InnerText, @"\S+\s*([0-9.]+)"); // language independent
+                            if (match.Groups.Count > 1)
+                                ThanksReceived = (uint)Convert.ToDouble(match.Groups[1].Value);
                         }
                     }
+                    else if (legendCaption == "Diverse Informationen" || legendCaption == "General Information")
+                    {
+                        // in progress
+                    }
+                    else if (legendCaption == "Benutzernotizen" || legendCaption == "User Notes")
+                    {
+                        var userNotesNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
+                        UserNotes = (userNotesNode != null) ? (uint)Convert.ToDouble(userNotesNode.InnerText) : 0;
 
-                    var thanksGroupNode = statisticsRootNode.SelectSingleNode("fieldset[4]");
-                    var blogGroupNode = statisticsRootNode.SelectSingleNode("fieldset[5]");
-                    var otherGroupNode = statisticsRootNode.SelectSingleNode("fieldset[6]");
+                        var lastNoteDateNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[1]");
+                        var lastNoteTimeNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/span[2]");
+
+                        if (lastNoteDateNode != null && lastNoteTimeNode != null)
+                        {
+                            DateTime lastUserNote = new DateTime();
+                            DateTime.TryParseExact(lastNoteDateNode.InnerText + " " + lastNoteTimeNode.InnerText, "MM-dd-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out lastUserNote);
+                            LastUserNote = lastUserNote;
+                        }
+                    }
+                    else if (legendCaption == "Blog")
+                    {
+                        // in progress
+                    }
                 }
             }
-
         }
 
 
