@@ -202,6 +202,26 @@ namespace epvpapi
         public double PostsPerDay { get; set; }
 
         /// <summary>
+        /// Total amount of <c>VisitorMessage</c>s the user has received
+        /// </summary>
+        public uint VisitorMessages { get; set; }
+
+        /// <summary>
+        /// Date and time of the last <c>VisitorMessage</c> that was received
+        /// </summary>
+        public DateTime LastVisitorMessage { get; set; }
+
+        /// <summary>
+        /// Total amount of user notes the user has
+        /// </summary>
+        public uint UserNotes { get; set; }
+
+        /// <summary>
+        /// Date and time of the last user note entry
+        /// </summary>
+        public DateTime LastUserNote { get; set; }
+
+        /// <summary>
         /// The associated user blog
         /// </summary>
         public Blog Blog { get; set; }
@@ -258,6 +278,7 @@ namespace epvpapi
             LastActivity = new DateTime();
             Groups = new List<Usergroup>();
             Namecolor = "black";
+            LastVisitorMessage = new DateTime();
         }
 
         /// <summary>
@@ -415,8 +436,43 @@ namespace epvpapi
                         PostsPerDay = (postsPerDayNode != null) ? Convert.ToDouble(postsPerDayNode.InnerText) : 0;
                     }
 
-                    var visitorMessagesGroupNode = statisticsRootNode.SelectSingleNode("fieldset[2]");
-                    var userNotesGroupNode = statisticsRootNode.SelectSingleNode("fieldset[3]");
+                    if (session.User.Groups.Any(group => group == Usergroup.Moderator)) // for some reason, visitor messages are only visible for moderators+
+                    {
+                        HtmlNode visitorMessagesGroupNode = statisticsRootNode.SelectSingleNode("fieldset[2]");
+
+                        if (visitorMessagesGroupNode != null)
+                        {
+                            var visitorMessagesNode = visitorMessagesGroupNode.SelectSingleNode("ul[1]/li[1]/text()[1]");
+                            VisitorMessages = (visitorMessagesNode != null) ? (uint)Convert.ToDouble(visitorMessagesNode.InnerText) : 0;
+
+                            var lastVisitorMessageNode = visitorMessagesGroupNode.SelectSingleNode("ul[1]/li[2]/text()[1]");
+                            DateTime lastVisitorMessage = new DateTime();
+                            if (lastVisitorMessageNode != null)
+                                DateTime.TryParseExact(lastVisitorMessageNode.InnerText, "MM-dd-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out lastVisitorMessage);
+
+                            LastVisitorMessage = lastVisitorMessage;
+                        }
+
+
+                        // usernotes are also only visible for moderators+
+                        HtmlNode userNotesGroupNode = statisticsRootNode.SelectSingleNode("fieldset[3]");
+                        if(userNotesGroupNode != null)
+                        {
+                            var userNotesNode = visitorMessagesGroupNode.SelectSingleNode("ul[1]/li[1]/text()[1]");
+                            UserNotes = (userNotesNode != null) ? (uint) Convert.ToDouble(userNotesNode.InnerText) : 0;
+
+                            var lastNoteDateNode = visitorMessagesGroupNode.SelectSingleNode("ul[1]/li[2]/text()[1]");
+                            var lastNoteTimeNode = visitorMessagesGroupNode.SelectSingleNode("ul[1]/li[2]/span[2]");
+
+                            if(lastNoteDateNode != null && lastNoteTimeNode != null)
+                            {
+                                DateTime lastUserNote = new DateTime();
+                                DateTime.TryParseExact(lastNoteDateNode.InnerText + " " + lastNoteTimeNode.InnerText, "MM-dd-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out lastUserNote);
+                                LastUserNote = lastUserNote;
+                            }
+                        }
+                    }
+
                     var thanksGroupNode = statisticsRootNode.SelectSingleNode("fieldset[4]");
                     var blogGroupNode = statisticsRootNode.SelectSingleNode("fieldset[5]");
                     var otherGroupNode = statisticsRootNode.SelectSingleNode("fieldset[6]");
