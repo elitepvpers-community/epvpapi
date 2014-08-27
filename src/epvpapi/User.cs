@@ -365,6 +365,10 @@ namespace epvpapi
                 DateTime.TryParse(date + " " + time, out parsedDateTime);
                 LastActivity = parsedDateTime; 
             }
+            else
+            {
+                CurrentStatus = Status.Invisible;
+            }
 
             
             // Parsing additional information
