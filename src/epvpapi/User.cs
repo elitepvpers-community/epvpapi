@@ -353,6 +353,39 @@ namespace epvpapi
                 HtmlNode steamIDNode = doc.GetElementbyId("profilefield_value_8");
                 SteamID = (steamIDNode != null) ? steamIDNode.SelectSingleNode("text()[1]").InnerText.Strip() : "";
             }
+            else // otherwise, fields are not owning an id
+            {
+                HtmlNode aboutMeTabNode = doc.GetElementbyId("collapseobj_aboutme");
+                if(aboutMeTabNode != null)
+                {
+                    HtmlNode profilefieldlistNode = aboutMeTabNode.SelectSingleNode("div[1]/ul[1]/li[1]/dl[1]");
+                    if(profilefieldlistNode != null)
+                    {
+                        List<HtmlNode> fieldNodes = new List<HtmlNode>(profilefieldlistNode.GetElementsByTagName("dt"));
+                        List<HtmlNode> valueNodes = new List<HtmlNode>(profilefieldlistNode.GetElementsByTagName("dd"));
+
+                        if(fieldNodes.Count == valueNodes.Count)
+                        {
+                            foreach(var fieldNode in fieldNodes)
+                            {
+                                string actualValue = valueNodes.ElementAt(fieldNodes.IndexOf(fieldNode)).InnerText;
+
+                                if (fieldNode.InnerText == "Biography")
+                                    Biography = actualValue;
+                                else if (fieldNode.InnerText == "Location")
+                                    Location = actualValue;
+                                else if (fieldNode.InnerText == "Interests")
+                                    Interests = actualValue;
+                                else if (fieldNode.InnerText == "Occupation")
+                                    Occupation = actualValue;
+                                else if (fieldNode.InnerText == "Steam ID")
+                                    SteamID = actualValue;
+                            }
+                        }
+                    }
+                }
+
+            }
         }
 
 
