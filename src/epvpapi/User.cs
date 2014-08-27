@@ -192,6 +192,16 @@ namespace epvpapi
         public uint ThanksReceived { get; set; }
 
         /// <summary>
+        /// Total amount of posts the user has written
+        /// </summary>
+        public uint Posts { get; set; }
+
+        /// <summary>
+        /// Average amount of posts written per day
+        /// </summary>
+        public double PostsPerDay { get; set; }
+
+        /// <summary>
         /// The associated user blog
         /// </summary>
         public Blog Blog { get; set; }
@@ -335,6 +345,8 @@ namespace epvpapi
                 LastActivity = parsedDateTime; 
             }
 
+            
+            // Parsing additional information
             // In case the user is the logged in user, all fields are editable and therefore got his own ids. 
             if (this == session.User)
             {
@@ -384,8 +396,33 @@ namespace epvpapi
                         }
                     }
                 }
-
             }
+
+            // Statistics
+            HtmlNode statisticsRootNode = doc.GetElementbyId("collapseobj_stats");
+            if(statisticsRootNode != null)
+            {
+                statisticsRootNode = statisticsRootNode.SelectSingleNode("div[1]");
+                if (statisticsRootNode != null)
+                {
+                    var postGroupNode = statisticsRootNode.SelectSingleNode("fieldset[1]");
+                    if(postGroupNode != null)
+                    {
+                        var postsNode = postGroupNode.SelectSingleNode("ul[1]/li[1]/text()[1]");
+                        Posts = (postsNode != null) ? (uint) Convert.ToDouble(postsNode.InnerText) : 0;
+
+                        var postsPerDayNode = postGroupNode.SelectSingleNode("ul[1]/li[2]/text()[1]");
+                        PostsPerDay = (postsPerDayNode != null) ? Convert.ToDouble(postsPerDayNode.InnerText) : 0;
+                    }
+
+                    var visitorMessagesGroupNode = statisticsRootNode.SelectSingleNode("fieldset[2]");
+                    var userNotesGroupNode = statisticsRootNode.SelectSingleNode("fieldset[3]");
+                    var thanksGroupNode = statisticsRootNode.SelectSingleNode("fieldset[4]");
+                    var blogGroupNode = statisticsRootNode.SelectSingleNode("fieldset[5]");
+                    var otherGroupNode = statisticsRootNode.SelectSingleNode("fieldset[6]");
+                }
+            }
+
         }
 
 
