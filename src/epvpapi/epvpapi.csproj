@@ -82,6 +82,7 @@
     <Compile Include="SocialGroup.cs" />
     <Compile Include="SocialGroupPost.cs" />
     <Compile Include="SocialGroupThread.cs" />
+    <Compile Include="TBM\Profile.cs" />
     <Compile Include="TBM\SecretWord.cs" />
     <Compile Include="TBM\Transaction.cs" />
     <Compile Include="Thread.cs" />

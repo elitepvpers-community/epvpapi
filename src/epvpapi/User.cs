@@ -1,4 +1,5 @@
 ﻿using epvpapi.Connection;
+using epvpapi.TBM;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
@@ -248,6 +249,11 @@ namespace epvpapi
         public EliteGold EliteGold { get; set; }
 
         /// <summary>
+        /// Represents the TBM profile including positive, neutral and negative ratings
+        /// </summary>
+        public Profile TBMProfile { get; set; }
+
+        /// <summary>
         /// Amount of thanks the user has given
         /// </summary>
         public uint ThanksGiven { get; set; }
@@ -347,6 +353,7 @@ namespace epvpapi
             LastVisitorMessage = new DateTime();
             JoinDate = new DateTime();
             EliteGold = new EliteGold();
+            TBMProfile = new Profile();
         }
 
         protected void ParseAbout<T>(UserSession<T> session, HtmlDocument doc) where T : User
@@ -601,7 +608,18 @@ namespace epvpapi
                 else if (keyNode.InnerText.Contains("elite*gold"))
                 {
                     var eliteGoldValueNode = miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].SelectSingleNode("text()[1]");
-                    EliteGold = new EliteGold(Convert.ToInt32(eliteGoldValueNode.InnerText));
+                    EliteGold = (eliteGoldValueNode != null) ? new EliteGold(Convert.ToInt32(eliteGoldValueNode.InnerText)) : EliteGold;
+                }
+                else if (keyNode.InnerText.Contains("The Black Market"))
+                {
+                    var positiveRatingsNode = miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].SelectSingleNode("span[1]");
+                    TBMProfile.Positive = (positiveRatingsNode != null) ? Convert.ToUInt32(positiveRatingsNode.InnerText) : TBMProfile.Positive;
+
+                    var neutralRatingsNode = miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].SelectSingleNode("text()[1]");
+                    TBMProfile.Neutral = (neutralRatingsNode != null) ? Convert.ToUInt32(new string(neutralRatingsNode.InnerText.Skip(1).Take(1).ToArray())) : TBMProfile.Neutral;
+
+                    var negativeRatingsNode = miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].SelectSingleNode("span[2]");
+                    TBMProfile.Negative = (negativeRatingsNode != null) ? Convert.ToUInt32(negativeRatingsNode.InnerText) : TBMProfile.Negative;
                 }
             }
         }
