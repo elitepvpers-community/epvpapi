@@ -343,7 +343,11 @@ namespace epvpapi
         /// </summary>
         public string URL 
         {
-            get { return "http://www.elitepvpers.com/forum/members/" + ID + "-" + Name.ToLower() + ".html"; }
+            get 
+            {
+                string escapedUserName = Regex.Replace(Name, "([^a-zA-Z0-9]+)", "-").ToLower(); // by default, all usernames are escaped in links by vBulletin itself
+                return "http://www.elitepvpers.com/forum/members/" + ID + "-" + escapedUserName + ".html";
+            }
         }
 
         public User(uint id = 0)
