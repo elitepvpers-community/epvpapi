@@ -1,4 +1,5 @@
 ﻿using epvpapi.Connection;
+using epvpapi.TBM;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
@@ -21,38 +22,87 @@ namespace epvpapi
         /// </summary>
         public class Rank
         {
+            /// <summary>
+            /// Name of the Rank
+            /// </summary>
             public string Name { get; set; }
+            /// <summary>
+            /// Filename and extension of the rank badge
+            /// </summary>
             public string File { get; set; }
+
+            /// <summary>
+            /// Absolute path to the rank badge file
+            /// </summary>
             public string Path { get; set; }
+            
+            /// <summary>
+            /// Rights representing privileges that users owning the rank are obtaining
+            /// </summary>
+            public Rights AccessRights { get; set; }
+
+            [Flags]
+            public enum Rights
+            {
+                /// <summary>
+                /// Access to private forums which are not accessible for normal users
+                /// </summary>
+                PrivateForumAccess = 1,
+
+                /// <summary>
+                /// Partial moderation rights for moderating one or more sections
+                /// </summary>
+                Moderation = 2,
+                
+                /// <summary>
+                /// Global moderation rights for moderating all sections
+                /// </summary>
+                GlobalModeration = 4,
+
+                /// <summary>
+                /// Highest privilege, maintaining the forum 
+                /// </summary>
+                ForumManagement = 8
+            }
+
+            public static bool operator >(Rank lhs, Rank rhs)
+            {
+                return lhs.AccessRights > rhs.AccessRights;
+            }
+
+            public static bool operator <(Rank lhs, Rank rhs)
+            {
+                return lhs.AccessRights < rhs.AccessRights;
+            }
 
             public static Rank Premium
             {
-                get { return new Rank("Premium", "premium.png"); }
+                get { return new Rank("Premium", "premium.png", Rights.PrivateForumAccess); }
             }
 
             public static Rank Level2
             {
-                get { return new Rank("Level 2", "level2.png"); }
+                get { return new Rank("Level 2", "level2.png", Rights.PrivateForumAccess); }
             }
 
             public static Rank Level3
             {
-                get { return new Rank("Level 3", "level3.png"); }
+                get { return new Rank("Level 3", "level3.png", Rights.PrivateForumAccess); }
             }
 
             public static Rank Moderator
             {
-                get { return new Rank("Moderator", "moderator.png"); }
+                get { return new Rank("Moderator", "moderator.png", Rights.Moderation | Rights.PrivateForumAccess); }
             }
 
             public static Rank GlobalModerator
             {
-                get { return new Rank("Global Moderator", "globalmod.png"); }
+                get { return new Rank("Global Moderator", "globalmod.png", Rights.Moderation | Rights.GlobalModeration | Rights.PrivateForumAccess); }
             }
 
             public static Rank Administrator
             {
-                get { return new Rank("Administrator", "coadmin.png"); }
+                get { return new Rank("Administrator", "coadmin.png", Rights.Moderation | Rights.GlobalModeration | Rights.PrivateForumAccess | Rights.ForumManagement); }
             }
 
             public static Rank EliteGoldTrader
@@ -77,27 +127,27 @@ namespace epvpapi
 
             public static Rank Translator
             {
-                get { return new Rank("Translator", "translator.png"); }
+                get { return new Rank("Translator", "translator.png", Rights.PrivateForumAccess); }
             }
 
             public static Rank Editor
             {
-                get { return new Rank("Editor", "editor.png"); }
+                get { return new Rank("Editor", "editor.png", Rights.PrivateForumAccess); }
             }
 
             public static Rank EventPlanner
             {
-                get { return new Rank("Event Planner", "eventplanner.png"); }
+                get { return new Rank("Event Planner", "eventplanner.png", Rights.PrivateForumAccess); }
             }
 
             public static Rank Podcaster
             {
-                get { return new Rank("Podcaster", "podcaster.png"); }
+                get { return new Rank("Podcaster", "podcaster.png", Rights.PrivateForumAccess); }
             }
 
             public static Rank Broadcaster
             {
-                get { return new Rank("Broadcaster", "broadcaster.png"); }
+                get { return new Rank("Broadcaster", "broadcaster.png", Rights.PrivateForumAccess); }
             }
 
             public static Rank IDVerified
@@ -116,17 +166,24 @@ namespace epvpapi
                 get { return _DefaultDirectory; }
             }
 
-            public Rank(string name = null, string file = null):
-                this(name, file, DefaultDirectory + file)
+            public Rank(string name = null, string file = null, Rights accessRights = 0) :
+                this(name, file, DefaultDirectory + file, accessRights)
             { }
 
-            public Rank(string name, string file, string path)
+            public Rank(string name, string file, string path, Rights accessRights)
             {
                 Name = name;
                 File = file;
                 Path = path;
+                AccessRights = accessRights;
             }
 
+            /// <summary>
+            /// Parses an url to a given badge file and returns the associated <c>Rank</c> object matching the file
+            /// </summary>
+            /// <param name="url"> URL to parse </param>
+            /// <param name="group"> <c>Rank</c> object where the parsed result will be stored </param>
+            /// <returns> true on success, false on failure </returns>
             public static bool FromURL(string url, out Rank group)
             {
                 group = new Rank();
@@ -182,6 +239,21 @@ namespace epvpapi
         public DateTime LastActivity { get; set; }
 
         /// <summary>
+        /// Date the user joined elitepvpers
+        /// </summary>
+        public DateTime JoinDate { get; set; }
+
+        /// <summary>
+        /// Amount of elite*gold the user got
+        /// </summary>
+        public int EliteGold { get; set; }
+
+        /// <summary>
+        /// Represents the TBM profile including positive, neutral and negative ratings
+        /// </summary>
+        public Profile TBMProfile { get; set; }
+
+        /// <summary>
         /// Amount of thanks the user has given
         /// </summary>
         public uint ThanksGiven { get; set; }
@@ -220,6 +292,16 @@ namespace epvpapi
         /// Date and time of the last user note entry
         /// </summary>
         public DateTime LastUserNote { get; set; }
+
+        /// <summary>
+        /// Amount of users entered the user's name into the recommandations field on registering
+        /// </summary>
+        public uint Recommendations { get; set; }
+
+        /// <summary>
+        /// Last (visible) users that visited the users profile
+        /// </summary>
+        public List<User> LastVisitors { get; set; }
 
         /// <summary>
         /// The associated user blog
@@ -279,6 +361,8 @@ namespace epvpapi
             Ranks = new List<Rank>();
             Namecolor = "black";
             LastVisitorMessage = new DateTime();
+            JoinDate = new DateTime();
+            TBMProfile = new Profile();
         }
 
         protected void ParseAbout<T>(UserSession<T> session, HtmlDocument doc) where T : User
@@ -336,7 +420,7 @@ namespace epvpapi
             }
         }
 
-        protected void ParseStatistics(HtmlDocument doc)
+        protected void ParseStatistics<T>(UserSession<T> session, HtmlDocument doc) where T : User
         {
             // Statistics
             HtmlNode statisticsRootNode = doc.GetElementbyId("collapseobj_stats");
@@ -397,7 +481,13 @@ namespace epvpapi
                     }
                     else if (legendCaption == "Diverse Informationen" || legendCaption == "General Information")
                     {
-                        // in progress
+                        HtmlNode recommendationsNode = null;
+                        if (CurrentStatus != Status.Invisible || this == session.User)
+                            recommendationsNode = statisticsGroup.SelectSingleNode("ul[1]/li[3]/text()[1]");
+                        else
+                            recommendationsNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[1]");
+
+                        Recommendations = (recommendationsNode != null) ? Convert.ToUInt32(recommendationsNode.InnerText) : 0;
                     }
                     else if (legendCaption == "Benutzernotizen" || legendCaption == "User Notes")
                     {
@@ -443,6 +533,30 @@ namespace epvpapi
             else
             {
                 CurrentStatus = Status.Invisible;
+            }
+        }
+
+        protected void ParseLastVisitors(HtmlDocument doc)
+        {
+            var lastVisitorsRootNode = doc.GetElementbyId("collapseobj_visitors");
+            if (lastVisitorsRootNode == null) return;
+
+            lastVisitorsRootNode = lastVisitorsRootNode.SelectSingleNode("div[1]/ol[1]");
+            if (lastVisitorsRootNode == null) return;
+
+            LastVisitors = new List<User>();
+            foreach(var visitorNode in lastVisitorsRootNode.GetElementsByTagName("li"))
+            {
+                var profileLinkNode = visitorNode.SelectSingleNode("a[1]");
+                if (profileLinkNode == null) continue;
+                string profileLink = (profileLinkNode.Attributes.Contains("href")) ? profileLinkNode.Attributes["href"].Value : "";
+                    
+                var userNameNode = profileLinkNode.SelectSingleNode("span[1]");
+                if (userNameNode == null) // non-ranked users got their name wrapped in the 'a' element
+                    userNameNode = profileLinkNode;
+
+                LastVisitors.Add(new User(userNameNode.InnerText, User.FromURL(profileLink)));
+               
             }
         }
 
@@ -508,6 +622,47 @@ namespace epvpapi
             }
         }
 
+        public void ParseMiniStats(HtmlDocument document)
+        {
+            var miniStatsRootNode = document.GetElementbyId("collapseobj_stats_mini");
+            if (miniStatsRootNode == null) return;
+
+            miniStatsRootNode = miniStatsRootNode.SelectSingleNode("div[1]/table[1]/tr[1]/td[1]/dl[1]");
+            if (miniStatsRootNode == null) return;
+
+            var miniStatsNodes = new List<HtmlNode>(miniStatsRootNode.GetElementsByTagName("dt"));
+            var miniStatsValueNodes = new List<HtmlNode>(miniStatsRootNode.GetElementsByTagName("dd"));
+
+            if (miniStatsNodes.Count != miniStatsValueNodes.Count) return;
+
+            // loop through the key nodes since they can also occur occasionally (depends on what the user selects to be shown in the profile and/or the rank)
+            foreach(var keyNode in miniStatsNodes)
+            {
+                if (keyNode.InnerText == "Registriert seit" || keyNode.InnerText == "Join Date")
+                {
+                    DateTime parsedDateTime = new DateTime();
+                    DateTime.TryParseExact(miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].InnerText, "MM-dd-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDateTime);
+                    JoinDate = parsedDateTime;
+                }
+                else if (keyNode.InnerText.Contains("elite*gold"))
+                {
+                    var eliteGoldValueNode = miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].SelectSingleNode("text()[1]");
+                    EliteGold = (eliteGoldValueNode != null) ? Convert.ToInt32(eliteGoldValueNode.InnerText) : EliteGold;
+                }
+                else if (keyNode.InnerText.Contains("The Black Market"))
+                {
+                    var positiveRatingsNode = miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].SelectSingleNode("span[1]");
+                    TBMProfile.Positive = (positiveRatingsNode != null) ? Convert.ToUInt32(positiveRatingsNode.InnerText) : TBMProfile.Positive;
+
+                    var neutralRatingsNode = miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].SelectSingleNode("text()[1]");
+                    TBMProfile.Neutral = (neutralRatingsNode != null) ? Convert.ToUInt32(new string(neutralRatingsNode.InnerText.Skip(1).Take(1).ToArray())) : TBMProfile.Neutral;
+
+                    var negativeRatingsNode = miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].SelectSingleNode("span[2]");
+                    TBMProfile.Negative = (negativeRatingsNode != null) ? Convert.ToUInt32(negativeRatingsNode.InnerText) : TBMProfile.Negative;
+                }
+            }
+        }
+
         /// <summary>
         /// Updates the user by requesting the profile
         /// </summary>
@@ -524,7 +679,9 @@ namespace epvpapi
             ParseLastActivity(doc);
             ParseAbout(session, doc);
             ParseRanks(doc);
-            ParseStatistics(doc);                  
+            ParseStatistics(session, doc);
+            ParseMiniStats(doc);
+            ParseLastVisitors(doc);
         }
 
 
