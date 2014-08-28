@@ -238,6 +238,16 @@ namespace epvpapi
         public DateTime LastActivity { get; set; }
 
         /// <summary>
+        /// Date the user joined elitepvpers
+        /// </summary>
+        public DateTime JoinDate { get; set; }
+
+        /// <summary>
+        /// Amount of elite*gold the user has
+        /// </summary>
+        public EliteGold EliteGold { get; set; }
+
+        /// <summary>
         /// Amount of thanks the user has given
         /// </summary>
         public uint ThanksGiven { get; set; }
@@ -335,6 +345,8 @@ namespace epvpapi
             Ranks = new List<Rank>();
             Namecolor = "black";
             LastVisitorMessage = new DateTime();
+            JoinDate = new DateTime();
+            EliteGold = new EliteGold();
         }
 
         protected void ParseAbout<T>(UserSession<T> session, HtmlDocument doc) where T : User
@@ -564,6 +576,36 @@ namespace epvpapi
             }
         }
 
+        public void ParseMiniStats(HtmlDocument document)
+        {
+            var miniStatsRootNode = document.GetElementbyId("collapseobj_stats_mini");
+            if (miniStatsRootNode == null) return;
+
+            miniStatsRootNode = miniStatsRootNode.SelectSingleNode("div[1]/table[1]/tr[1]/td[1]/dl[1]");
+            if (miniStatsRootNode == null) return;
+
+            var miniStatsNodes = new List<HtmlNode>(miniStatsRootNode.GetElementsByTagName("dt"));
+            var miniStatsValueNodes = new List<HtmlNode>(miniStatsRootNode.GetElementsByTagName("dd"));
+
+            if (miniStatsNodes.Count != miniStatsValueNodes.Count) return;
+
+            // loop through the key nodes since they can also occur occasionally (depends on what the user selects to be shown in the profile and/or the rank)
+            foreach(var keyNode in miniStatsNodes)
+            {
+                if (keyNode.InnerText == "Registriert seit" || keyNode.InnerText == "Join Date")
+                {
+                    DateTime parsedDateTime = new DateTime();
+                    DateTime.TryParseExact(miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].InnerText, "MM-dd-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDateTime);
+                    JoinDate = parsedDateTime;
+                }
+                else if (keyNode.InnerText.Contains("elite*gold"))
+                {
+                    var eliteGoldValueNode = miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].SelectSingleNode("text()[1]");
+                    EliteGold = new EliteGold(Convert.ToInt32(eliteGoldValueNode.InnerText));
+                }
+            }
+        }
+
         /// <summary>
         /// Updates the user by requesting the profile
         /// </summary>
@@ -580,7 +622,8 @@ namespace epvpapi
             ParseLastActivity(doc);
             ParseAbout(session, doc);
             ParseRanks(doc);
-            ParseStatistics(doc);                  
+            ParseStatistics(doc);
+            ParseMiniStats(doc);
         }
 
 
