@@ -21,38 +21,87 @@ namespace epvpapi
         /// </summary>
         public class Rank
         {
+            /// <summary>
+            /// Name of the Rank
+            /// </summary>
             public string Name { get; set; }
+            /// <summary>
+            /// Filename and extension of the rank badge
+            /// </summary>
             public string File { get; set; }
+
+            /// <summary>
+            /// Absolute path to the rank badge file
+            /// </summary>
             public string Path { get; set; }
+            
+            /// <summary>
+            /// Rights representing privileges that users owning the rank are obtaining
+            /// </summary>
+            public Rights AccessRights { get; set; }
+
+            [Flags]
+            public enum Rights
+            {
+                /// <summary>
+                /// Access to private forums which are not accessible for normal users
+                /// </summary>
+                PrivateForumAccess = 1,
+
+                /// <summary>
+                /// Partial moderation rights for moderating one or more sections
+                /// </summary>
+                Moderation = 2,
+                
+                /// <summary>
+                /// Global moderation rights for moderating all sections
+                /// </summary>
+                GlobalModeration = 4,
+
+                /// <summary>
+                /// Highest privilege, maintaining the forum 
+                /// </summary>
+                ForumManagement = 8
+            }
+
+            public static bool operator >(Rank lhs, Rank rhs)
+            {
+                return lhs.AccessRights > rhs.AccessRights;
+            }
+
+            public static bool operator <(Rank lhs, Rank rhs)
+            {
+                return lhs.AccessRights < rhs.AccessRights;
+            }
 
             public static Rank Premium
             {
-                get { return new Rank("Premium", "premium.png"); }
+                get { return new Rank("Premium", "premium.png", Rights.PrivateForumAccess); }
             }
 
             public static Rank Level2
             {
-                get { return new Rank("Level 2", "level2.png"); }
+                get { return new Rank("Level 2", "level2.png", Rights.PrivateForumAccess); }
             }
 
             public static Rank Level3
             {
-                get { return new Rank("Level 3", "level3.png"); }
+                get { return new Rank("Level 3", "level3.png", Rights.PrivateForumAccess); }
             }
 
             public static Rank Moderator
             {
-                get { return new Rank("Moderator", "moderator.png"); }
+                get { return new Rank("Moderator", "moderator.png", Rights.Moderation | Rights.PrivateForumAccess); }
             }
 
             public static Rank GlobalModerator
             {
-                get { return new Rank("Global Moderator", "globalmod.png"); }
+                get { return new Rank("Global Moderator", "globalmod.png", Rights.Moderation | Rights.GlobalModeration | Rights.PrivateForumAccess); }
             }
 
             public static Rank Administrator
             {
-                get { return new Rank("Administrator", "coadmin.png"); }
+                get { return new Rank("Administrator", "coadmin.png", Rights.Moderation | Rights.GlobalModeration | Rights.PrivateForumAccess | Rights.ForumManagement); }
             }
 
             public static Rank EliteGoldTrader
@@ -77,27 +126,27 @@ namespace epvpapi
 
             public static Rank Translator
             {
-                get { return new Rank("Translator", "translator.png"); }
+                get { return new Rank("Translator", "translator.png", Rights.PrivateForumAccess); }
             }
 
             public static Rank Editor
             {
-                get { return new Rank("Editor", "editor.png"); }
+                get { return new Rank("Editor", "editor.png", Rights.PrivateForumAccess); }
             }
 
             public static Rank EventPlanner
             {
-                get { return new Rank("Event Planner", "eventplanner.png"); }
+                get { return new Rank("Event Planner", "eventplanner.png", Rights.PrivateForumAccess); }
             }
 
             public static Rank Podcaster
             {
-                get { return new Rank("Podcaster", "podcaster.png"); }
+                get { return new Rank("Podcaster", "podcaster.png", Rights.PrivateForumAccess); }
             }
 
             public static Rank Broadcaster
             {
-                get { return new Rank("Broadcaster", "broadcaster.png"); }
+                get { return new Rank("Broadcaster", "broadcaster.png", Rights.PrivateForumAccess); }
             }
 
             public static Rank IDVerified
@@ -116,17 +165,24 @@ namespace epvpapi
                 get { return _DefaultDirectory; }
             }
 
-            public Rank(string name = null, string file = null):
-                this(name, file, DefaultDirectory + file)
+            public Rank(string name = null, string file = null, Rights accessRights = 0) :
+                this(name, file, DefaultDirectory + file, accessRights)
             { }
 
-            public Rank(string name, string file, string path)
+            public Rank(string name, string file, string path, Rights accessRights)
             {
                 Name = name;
                 File = file;
                 Path = path;
+                AccessRights = accessRights;
             }
 
+            /// <summary>
+            /// Parses an url to a given badge file and returns the associated <c>Rank</c> object matching the file
+            /// </summary>
+            /// <param name="url"> URL to parse </param>
+            /// <param name="group"> <c>Rank</c> object where the parsed result will be stored </param>
+            /// <returns> true on success, false on failure </returns>
             public static bool FromURL(string url, out Rank group)
             {
                 group = new Rank();
