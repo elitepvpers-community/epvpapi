@@ -244,9 +244,9 @@ namespace epvpapi
         public DateTime JoinDate { get; set; }
 
         /// <summary>
-        /// Amount of elite*gold the user has
+        /// Amount of elite*gold the user got
         /// </summary>
-        public EliteGold EliteGold { get; set; }
+        public int EliteGold { get; set; }
 
         /// <summary>
         /// Represents the TBM profile including positive, neutral and negative ratings
@@ -357,7 +357,6 @@ namespace epvpapi
             Namecolor = "black";
             LastVisitorMessage = new DateTime();
             JoinDate = new DateTime();
-            EliteGold = new EliteGold();
             TBMProfile = new Profile();
         }
 
@@ -619,7 +618,7 @@ namespace epvpapi
                 else if (keyNode.InnerText.Contains("elite*gold"))
                 {
                     var eliteGoldValueNode = miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].SelectSingleNode("text()[1]");
-                    EliteGold = (eliteGoldValueNode != null) ? new EliteGold(Convert.ToInt32(eliteGoldValueNode.InnerText)) : EliteGold;
+                    EliteGold = (eliteGoldValueNode != null) ? Convert.ToInt32(eliteGoldValueNode.InnerText) : EliteGold;
                 }
                 else if (keyNode.InnerText.Contains("The Black Market"))
                 {
