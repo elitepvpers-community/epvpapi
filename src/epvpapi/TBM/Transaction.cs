@@ -24,9 +24,9 @@ namespace epvpapi.TBM
         User Receiver { get; set; }
 
         /// <summary>
-        /// Amount of <c>EliteGold</c> that was sent
+        /// Amount of elite*gold that was sent
         /// </summary>
-        EliteGold Value { get; set; }
+        int EliteGold { get; set; }
 
         /// <summary>
         /// Optional note describing the <c>Transaction</c>
@@ -43,7 +43,6 @@ namespace epvpapi.TBM
         {
             Sender = new User();
             Receiver = new User();
-            Value = new EliteGold();
             Time = new DateTime();
         }
 
@@ -68,7 +67,7 @@ namespace epvpapi.TBM
                     transaction.Note = jsonTransaction.note;
                     transaction.Sender = new User(Convert.ToString(jsonTransaction.eg_fromusername), Convert.ToUInt32(jsonTransaction.eg_from));
                     transaction.Receiver = new User(Convert.ToString(jsonTransaction.eg_tousername), Convert.ToUInt32(jsonTransaction.eg_to));
-                    transaction.Value = new EliteGold(Convert.ToInt32(jsonTransaction.amount));
+                    transaction.EliteGold = Convert.ToInt32(jsonTransaction.amount);
                     transaction.Time = ((double)(Convert.ToDouble(jsonTransaction.dateline))).ToDateTime();
 
                     receivedTransactions.Add(transaction);
@@ -103,7 +102,7 @@ namespace epvpapi.TBM
                     transaction.Note = jsonTransaction.note;
                     transaction.Sender = new User(Convert.ToString(jsonTransaction.eg_fromusername), Convert.ToUInt32(jsonTransaction.eg_from));
                     transaction.Receiver = session.User;
-                    transaction.Value = new EliteGold(Convert.ToInt32(jsonTransaction.amount));
+                    transaction.EliteGold = Convert.ToInt32(jsonTransaction.amount);
                     transaction.Time = ((double)(Convert.ToDouble(jsonTransaction.dateline))).ToDateTime();
 
                     receivedTransactions.Add(transaction);
@@ -138,7 +137,7 @@ namespace epvpapi.TBM
                     transaction.Note = jsonTransaction.note;
                     transaction.Receiver = new User(Convert.ToString(jsonTransaction.eg_tousername), Convert.ToUInt32(jsonTransaction.eg_to));
                     transaction.Sender = session.User;
-                    transaction.Value = new EliteGold(Convert.ToInt32(jsonTransaction.amount));
+                    transaction.EliteGold = Convert.ToInt32(jsonTransaction.amount);
                     transaction.Time = ((double)(Convert.ToDouble(jsonTransaction.dateline))).ToDateTime();
 
                     sentTransactions.Add(transaction);
