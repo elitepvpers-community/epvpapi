@@ -60,13 +60,13 @@ namespace epvpapi
         }
 
         /// <summary>
-        /// Strips every sort of whitespaces from the string
+        /// Strips every sort of line breaks from the string. Also removes leading and trailing whitespaces 
         /// </summary>
         /// <param name="target"> String being stripped </param>
         /// <returns> Stripped string </returns>
         public static string Strip(this string target)
         {
-            return Regex.Replace(target, @"\s*", "");
+            return Regex.Replace(target, @"(^ +)|(\r\n|\n|\r|\t)|( +)$", "");
         }
     }
 }

@@ -19,24 +19,135 @@ namespace epvpapi
         /// <summary>
         /// Available usergroups an user can have 
         /// </summary>
-        [Flags]
-        public enum Usergroups
+        public class Rank
         {
-            [Description("Keine")]
-            None,
-            [Description("Premium")]
-            Premium,
-            [Description("Level 2")]
-            Level2,
-            [Description("Level 3")]
-            Level3,
-            [Description("Moderator")]
-            Moderator,
-            [Description("Global Moderator")]
-            GlobalModerator,
-            [Description("Administrator")]
-            Administrator
-        };
+            public string Name { get; set; }
+            public string File { get; set; }
+            public string Path { get; set; }
+
+            public static Rank Premium
+            {
+                get { return new Rank("Premium", "premium.png"); }
+            }
+
+            public static Rank Level2
+            {
+                get { return new Rank("Level 2", "level2.png"); }
+            }
+
+            public static Rank Level3
+            {
+                get { return new Rank("Level 3", "level3.png"); }
+            }
+
+            public static Rank Moderator
+            {
+                get { return new Rank("Moderator", "moderator.png"); }
+            }
+
+            public static Rank GlobalModerator
+            {
+                get { return new Rank("Global Moderator", "globalmod.png"); }
+            }
+
+            public static Rank Administrator
+            {
+                get { return new Rank("Administrator", "coadmin.png"); }
+            }
+
+            public static Rank EliteGoldTrader
+            {
+                get { return new Rank("elite*gold Trader", "egtrader.png"); }
+            }
+
+            public static Rank FormerVolunteer
+            {
+                get { return new Rank("Former Volunteer", "formervolunteer.png"); }
+            }
+
+            public static Rank FormerStaff
+            {
+                get { return new Rank("Former Staff", "formerstaff.png"); }
+            }
+
+            public static Rank Guardian
+            {
+                get { return new Rank("Guardian", "guard.png"); }
+            }
+
+            public static Rank Translator
+            {
+                get { return new Rank("Translator", "translator.png"); }
+            }
+
+            public static Rank Editor
+            {
+                get { return new Rank("Editor", "editor.png"); }
+            }
+
+            public static Rank EventPlanner
+            {
+                get { return new Rank("Event Planner", "eventplanner.png"); }
+            }
+
+            public static Rank Podcaster
+            {
+                get { return new Rank("Podcaster", "podcaster.png"); }
+            }
+
+            public static Rank Broadcaster
+            {
+                get { return new Rank("Broadcaster", "broadcaster.png"); }
+            }
+
+            public static Rank IDVerified
+            {
+                get { return new Rank("ID Verified", "idverified.png"); }
+            }
+
+            public static Rank Founder
+            {
+                get { return new Rank("Founder", "founder.png"); }
+            }
+
+            private static string _DefaultDirectory = "http://cdn.elitepvpers.org/forum/images/teamicons/relaunch/";
+            public static string DefaultDirectory
+            {
+                get { return _DefaultDirectory; }
+            }
+
+            public Rank(string name = null, string file = null):
+                this(name, file, DefaultDirectory + file)
+            { }
+
+            public Rank(string name, string file, string path)
+            {
+                Name = name;
+                File = file;
+                Path = path;
+            }
+
+            public static bool FromURL(string url, out Rank group)
+            {
+                group = new Rank();
+                Match match = Regex.Match(url, @"http://cdn.elitepvpers.org/forum/images/teamicons/relaunch/(\S+)");
+                if (match.Groups.Count < 2) return false;
+
+                var availableUsergroups = typeof(Rank).GetProperties().Where(property => property.PropertyType == typeof(Rank));
+                
+                foreach(var reflectedUsergroup in availableUsergroups)
+                {
+                    Rank usergroup = (reflectedUsergroup.GetValue(null) as Rank);
+                    if (usergroup.File == match.Groups[1].Value)
+                    {
+                        group = usergroup;
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        }
 
         public enum Status
         {
@@ -65,12 +176,10 @@ namespace epvpapi
         /// </summary>
         public Status CurrentStatus { get; set; }
 
-
         /// <summary>
         /// The last activity of the user given is <c>DateTime</c> format
         /// </summary>
         public DateTime LastActivity { get; set; }
-
 
         /// <summary>
         /// Amount of thanks the user has given
@@ -83,15 +192,77 @@ namespace epvpapi
         public uint ThanksReceived { get; set; }
 
         /// <summary>
+        /// Total amount of posts the user has written
+        /// </summary>
+        public uint Posts { get; set; }
+
+        /// <summary>
+        /// Average amount of posts written per day
+        /// </summary>
+        public double PostsPerDay { get; set; }
+
+        /// <summary>
+        /// Total amount of <c>VisitorMessage</c>s the user has received
+        /// </summary>
+        public uint VisitorMessages { get; set; }
+
+        /// <summary>
+        /// Date and time of the last <c>VisitorMessage</c> that was received
+        /// </summary>
+        public DateTime LastVisitorMessage { get; set; }
+
+        /// <summary>
+        /// Total amount of user notes the user has
+        /// </summary>
+        public uint UserNotes { get; set; }
+
+        /// <summary>
+        /// Date and time of the last user note entry
+        /// </summary>
+        public DateTime LastUserNote { get; set; }
+
+        /// <summary>
         /// The associated user blog
         /// </summary>
         public Blog Blog { get; set; }
 
         /// <summary>
-        /// List of usergroups the user has
+        /// List of ranks the user got
         /// </summary>
-        public Usergroups Groups { get; set; }
+        public List<Rank> Ranks { get; set; }
 
+        /// <summary>
+        /// Additional information that can be entered by the user. Listed under tab 'About'
+        /// </summary>
+        public string Biography { get; set; }
+
+        /// <summary>
+        /// Additional information that can be entered by the user. Listed under tab 'About'
+        /// </summary>
+        public string Location { get; set; }
+
+        /// <summary>
+        /// Additional information that can be entered by the user. Listed under tab 'About'
+        /// </summary>
+        public string Interests { get; set; }
+
+        /// <summary>
+        /// Additional information that can be entered by the user. Listed under tab 'About'
+        /// </summary>
+        public string Occupation { get; set; }
+
+        /// <summary>
+        /// Additional information that can be entered by the user. Listed under tab 'About'
+        /// </summary>
+        public string SteamID { get; set; }
+
+        /// <summary>
+        /// Web URL to the profile page
+        /// </summary>
+        public string URL 
+        {
+            get { return "http://www.elitepvpers.com/forum/members/" + ID + "-" + Name.ToLower() + ".html"; }
+        }
 
         public User(uint id = 0)
             : this(null, id)
@@ -105,60 +276,154 @@ namespace epvpapi
             Name = name;
             Blog = new Blog();
             LastActivity = new DateTime();
-            Groups |= Usergroups.None;
+            Ranks = new List<Rank>();
+            Namecolor = "black";
+            LastVisitorMessage = new DateTime();
         }
 
-        /// <summary>
-        /// Updates the user by requesting the profile
-        /// </summary>
-        /// <param name="session"> Session used for sending the request </param>
-        public void Update(Session session)
+        protected void ParseAbout<T>(UserSession<T> session, HtmlDocument doc) where T : User
         {
-            session.ThrowIfInvalid();
-            Response res = session.Get("http://www.elitepvpers.com/forum/members/" + ID.ToString() + "--.html");
-            Parse(res.ToString());
+            // Parsing additional information
+            // In case the user is the logged in user, all fields are editable and therefore got his own ids. 
+            if (this == session.User)
+            {
+                HtmlNode biographyNode = doc.GetElementbyId("profilefield_value_1");
+                Biography = (biographyNode != null) ? biographyNode.SelectSingleNode("text()[1]").InnerText.Strip() : "";
+
+                HtmlNode locationNode = doc.GetElementbyId("profilefield_value_2");
+                Location = (locationNode != null) ? locationNode.SelectSingleNode("text()[1]").InnerText.Strip() : "";
+
+                HtmlNode interestsNode = doc.GetElementbyId("profilefield_value_3");
+                Interests = (interestsNode != null) ? interestsNode.SelectSingleNode("text()[1]").InnerText.Strip() : "";
+
+                HtmlNode occupationNode = doc.GetElementbyId("profilefield_value_4");
+                Occupation = (occupationNode != null) ? occupationNode.SelectSingleNode("text()[1]").InnerText.Strip() : "";
+
+                HtmlNode steamIDNode = doc.GetElementbyId("profilefield_value_8");
+                SteamID = (steamIDNode != null) ? steamIDNode.SelectSingleNode("text()[1]").InnerText.Strip() : "";
+            }
+            else // otherwise, fields are not owning an id
+            {
+                HtmlNode aboutMeTabNode = doc.GetElementbyId("collapseobj_aboutme");
+                if (aboutMeTabNode != null)
+                {
+                    HtmlNode profilefieldlistNode = aboutMeTabNode.SelectSingleNode("div[1]/ul[1]/li[1]/dl[1]");
+                    if (profilefieldlistNode != null)
+                    {
+                        List<HtmlNode> fieldNodes = new List<HtmlNode>(profilefieldlistNode.GetElementsByTagName("dt"));
+                        List<HtmlNode> valueNodes = new List<HtmlNode>(profilefieldlistNode.GetElementsByTagName("dd"));
+
+                        if (fieldNodes.Count == valueNodes.Count)
+                        {
+                            foreach (var fieldNode in fieldNodes)
+                            {
+                                string actualValue = valueNodes.ElementAt(fieldNodes.IndexOf(fieldNode)).InnerText;
+
+                                if (fieldNode.InnerText == "Biography")
+                                    Biography = actualValue;
+                                else if (fieldNode.InnerText == "Location")
+                                    Location = actualValue;
+                                else if (fieldNode.InnerText == "Interests")
+                                    Interests = actualValue;
+                                else if (fieldNode.InnerText == "Occupation")
+                                    Occupation = actualValue;
+                                else if (fieldNode.InnerText == "Steam ID")
+                                    SteamID = actualValue;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
-
-        /// <summary>
-        /// Parses the responseContent in order to fetch all available information of the user
-        /// </summary>
-        /// <param name="responseContent"> Plain HTML response content </param>
-        private void Parse(string responseContent)
+        protected void ParseStatistics(HtmlDocument doc)
         {
-            HtmlDocument doc = new HtmlDocument();
-            doc.LoadHtml(responseContent);
-
-            HtmlNode userNameBoxNode = doc.GetElementbyId("username_box"); // root element
-            if (userNameBoxNode == null) throw new ParsingFailedException("User could not be parsed, root node is invalid or was not found");
-                
-            HtmlNode userNameNode = userNameBoxNode.SelectSingleNode("h1[1]/span[1]");
-            if (userNameNode != null)
+            // Statistics
+            HtmlNode statisticsRootNode = doc.GetElementbyId("collapseobj_stats");
+            if (statisticsRootNode != null)
             {
-                Name = userNameNode.InnerText;
+                statisticsRootNode = statisticsRootNode.SelectSingleNode("div[1]");
+
+                // Loop through the fields since vBulletin sorts them dynamically according to rank and certain user settings
+                foreach (var statisticsGroup in statisticsRootNode.GetElementsByTagName("fieldset"))
+                {
+                    string legendCaption = statisticsGroup.SelectSingleNode("legend[1]").InnerText;
+
+                    if (legendCaption == "Beiträge" || legendCaption == "Total Posts")
+                    {
+                        var postsNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
+                        Posts = (postsNode != null) ? (uint)Convert.ToDouble(postsNode.InnerText) : 0;
+
+                        var postsPerDayNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[1]");
+                        PostsPerDay = (postsPerDayNode != null) ? Convert.ToDouble(postsPerDayNode.InnerText) : 0;
+                    }
+                    else if (legendCaption == "Profilnachrichten" || legendCaption == "Visitor Messages")
+                    {
+                        var visitorMessagesNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
+                        VisitorMessages = (visitorMessagesNode != null) ? (uint)Convert.ToDouble(visitorMessagesNode.InnerText) : 0;
+
+                        var lastVisitorMessageNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[1]");
+                        if (lastVisitorMessageNode != null)
+                        {
+                            DateTime lastVisitorMessage = new DateTime();
+                            if (lastVisitorMessageNode.InnerText.Contains("Today") || lastVisitorMessageNode.InnerText.Contains("Heute"))
+                            {
+                                Match match = Regex.Match(lastVisitorMessageNode.InnerText, @"\S+ (\S+)");
+                                string time = (match.Groups.Count > 1) ? match.Groups[1].Value : "";
+                                DateTime.TryParseExact(DateTime.Now.ToString("MM-dd-yyyy") + " " + time, "MM-dd-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out lastVisitorMessage);
+                            }
+                            else
+                            {
+                                DateTime.TryParseExact(lastVisitorMessageNode.InnerText.Strip(), "MM-dd-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out lastVisitorMessage);
+                            }
+
+                            LastVisitorMessage = lastVisitorMessage;
+                        }
+                    }
+                    else if (legendCaption == "Vergebene Thanks" || legendCaption == "Thanks Given")
+                    {
+                        var givenThanksNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
+                        ThanksGiven = (givenThanksNode != null) ? (uint)Convert.ToDouble(givenThanksNode.InnerText) : 0;
+
+                        // The received thanks count is stored within the span element and is trailed after the language dependent definition.
+                        // Unlike other elements, the count is not seperated and therefore needs some regex in order to extract the count
+                        var thanksReceivedNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/span[1]");
+                        if (thanksReceivedNode != null)
+                        {
+                            Match match = Regex.Match(thanksReceivedNode.InnerText, @"\S+\s*([0-9.]+)"); // language independent
+                            if (match.Groups.Count > 1)
+                                ThanksReceived = (uint)Convert.ToDouble(match.Groups[1].Value);
+                        }
+                    }
+                    else if (legendCaption == "Diverse Informationen" || legendCaption == "General Information")
+                    {
+                        // in progress
+                    }
+                    else if (legendCaption == "Benutzernotizen" || legendCaption == "User Notes")
+                    {
+                        var userNotesNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
+                        UserNotes = (userNotesNode != null) ? (uint)Convert.ToDouble(userNotesNode.InnerText) : 0;
+
+                        var lastNoteDateNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[1]");
+                        var lastNoteTimeNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/span[2]");
+
+                        if (lastNoteDateNode != null && lastNoteTimeNode != null)
+                        {
+                            DateTime lastUserNote = new DateTime();
+                            DateTime.TryParseExact(lastNoteDateNode.InnerText + " " + lastNoteTimeNode.InnerText, "MM-dd-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out lastUserNote);
+                            LastUserNote = lastUserNote;
+                        }
+                    }
+                    else if (legendCaption == "Blog")
+                    {
+                        // in progress
+                    }
+                }
             }
-            else
-            {
-                // In case the user has no special color, the <span> element will be missing and no attributes are used
-                userNameNode = userNameBoxNode.SelectSingleNode("h1[1]");
-                Name = (userNameNode != null) ? userNameNode.InnerText : String.Empty;
-            }
+        }
 
-            HtmlNode userRankNode = userNameBoxNode.SelectSingleNode("h2[1]");
-            Title = (userRankNode != null) ? userRankNode.InnerText : String.Empty;
-
-            Namecolor = userNameNode.Attributes.Count != 0 ? userNameNode.Attributes.First().Value : "black";
-
-
-            HtmlNode userStatusNode = userNameBoxNode.SelectSingleNode("h1[1]/img[1]");
-            string userStatusLink = userStatusNode.Attributes["src"].Value;
-            if (userStatusLink.Contains("invisible"))
-                CurrentStatus = Status.Invisible;
-            else if (userStatusLink.Contains("offline"))
-                CurrentStatus = Status.Offline;
-            else if (userStatusLink.Contains("online"))
-                CurrentStatus = Status.Online;
-
+        protected void ParseLastActivity(HtmlDocument doc)
+        {
             HtmlNode lastActivityNode = doc.GetElementbyId("last_online");
             if (lastActivityNode != null)
             {
@@ -173,8 +438,93 @@ namespace epvpapi
 
                 DateTime parsedDateTime = new DateTime();
                 DateTime.TryParse(date + " " + time, out parsedDateTime);
-                LastActivity = parsedDateTime; 
+                LastActivity = parsedDateTime;
             }
+            else
+            {
+                CurrentStatus = Status.Invisible;
+            }
+        }
+
+        protected void ParseRanks(HtmlDocument doc)
+        {
+            // Fetch the user title badges. User who do not belong to any group or who don't got any badges, will be lacking of the 'rank' element in their profile page
+            HtmlNode userRankNode = doc.GetElementbyId("rank");
+            if (userRankNode != null)
+            {
+                List<HtmlNode> rankNodes = new List<HtmlNode>(userRankNode.GetElementsByTagName("img")); // every rank badge got his very own 'img' element
+
+                foreach (var node in rankNodes)
+                {
+                    if (!node.Attributes.Contains("src")) continue;
+
+                    Rank parsedRank = new Rank();
+                    if (Rank.FromURL(node.Attributes["src"].Value, out parsedRank)) // 'src' holds the url to the rank image
+                        Ranks.Add(parsedRank);
+                }
+            }
+        }
+
+        protected void ParseGeneral(HtmlDocument doc)
+        {
+            HtmlNode userNameBoxNode = doc.GetElementbyId("username_box"); // root element
+            if (userNameBoxNode == null) throw new ParsingFailedException("Root node is invalid or was not found");
+
+            HtmlNode userNameNode = userNameBoxNode.SelectSingleNode("h1[1]/span[1]");
+            if (userNameNode != null)
+            {
+                Name = userNameNode.InnerText;
+            }
+            else
+            {
+                // In case the user has no special color, the <span> element will be missing and no attributes are used
+                userNameNode = userNameBoxNode.SelectSingleNode("h1[1]");
+                Name = (userNameNode != null) ? userNameNode.InnerText : String.Empty;
+            }
+
+            HtmlNode userTitleNode = userNameBoxNode.SelectSingleNode("h2[1]");
+            Title = (userTitleNode != null) ? userTitleNode.InnerText : String.Empty;
+
+            if (userNameNode.Attributes.Contains("style"))
+            {
+                Match match = Regex.Match(userNameNode.Attributes["style"].Value, @"color:(\S+)");
+                if (match.Groups.Count > 1)
+                    Namecolor = match.Groups[1].Value;
+            }
+
+            HtmlNode userStatusNode = userNameBoxNode.SelectSingleNode("h1[1]/img[1]");
+            if (userStatusNode != null)
+            {
+                if (userStatusNode.Attributes.Contains("src"))
+                {
+                    string userStatusLink = userStatusNode.Attributes["src"].Value;
+                    if (userStatusLink.Contains("invisible"))
+                        CurrentStatus = Status.Invisible;
+                    else if (userStatusLink.Contains("offline"))
+                        CurrentStatus = Status.Offline;
+                    else if (userStatusLink.Contains("online"))
+                        CurrentStatus = Status.Online;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Updates the user by requesting the profile
+        /// </summary>
+        /// <param name="session"> Session used for sending the request </param>
+        public void Update<T>(UserSession<T> session) where T : User
+        {
+            session.ThrowIfInvalid();
+            Response res = session.Get("http://www.elitepvpers.com/forum/members/" + ID.ToString() + "--.html");
+
+            HtmlDocument doc = new HtmlDocument();
+            doc.LoadHtml(res.ToString());
+
+            ParseGeneral(doc);
+            ParseLastActivity(doc);
+            ParseAbout(session, doc);
+            ParseRanks(doc);
+            ParseStatistics(doc);                  
         }
 
 
