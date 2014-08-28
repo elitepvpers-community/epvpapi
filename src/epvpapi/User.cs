@@ -294,6 +294,11 @@ namespace epvpapi
         public DateTime LastUserNote { get; set; }
 
         /// <summary>
+        /// Amount of users entered the user's name into the recommandations field on registering
+        /// </summary>
+        public uint Recommendations { get; set; }
+
+        /// <summary>
         /// The associated user blog
         /// </summary>
         public Blog Blog { get; set; }
@@ -411,7 +416,7 @@ namespace epvpapi
             }
         }
 
-        protected void ParseStatistics(HtmlDocument doc)
+        protected void ParseStatistics<T>(UserSession<T> session, HtmlDocument doc) where T : User
         {
             // Statistics
             HtmlNode statisticsRootNode = doc.GetElementbyId("collapseobj_stats");
@@ -472,7 +477,13 @@ namespace epvpapi
                     }
                     else if (legendCaption == "Diverse Informationen" || legendCaption == "General Information")
                     {
-                        // in progress
+                        HtmlNode recommendationsNode = null;
+                        if (CurrentStatus != Status.Invisible || this == session.User)
+                            recommendationsNode = statisticsGroup.SelectSingleNode("ul[1]/li[3]/text()[1]");
+                        else
+                            recommendationsNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[1]");
+
+                        Recommendations = (recommendationsNode != null) ? Convert.ToUInt32(recommendationsNode.InnerText) : 0;
                     }
                     else if (legendCaption == "Benutzernotizen" || legendCaption == "User Notes")
                     {
@@ -640,7 +651,7 @@ namespace epvpapi
             ParseLastActivity(doc);
             ParseAbout(session, doc);
             ParseRanks(doc);
-            ParseStatistics(doc);
+            ParseStatistics(session, doc);
             ParseMiniStats(doc);
         }
 
