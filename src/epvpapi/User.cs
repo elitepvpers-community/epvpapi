@@ -299,6 +299,11 @@ namespace epvpapi
         public uint Recommendations { get; set; }
 
         /// <summary>
+        /// Last (visible) users that visited the users profile
+        /// </summary>
+        public List<User> LastVisitors { get; set; }
+
+        /// <summary>
         /// The associated user blog
         /// </summary>
         public Blog Blog { get; set; }
@@ -531,6 +536,30 @@ namespace epvpapi
             }
         }
 
+        protected void ParseLastVisitors(HtmlDocument doc)
+        {
+            var lastVisitorsRootNode = doc.GetElementbyId("collapseobj_visitors");
+            if (lastVisitorsRootNode == null) return;
+
+            lastVisitorsRootNode = lastVisitorsRootNode.SelectSingleNode("div[1]/ol[1]");
+            if (lastVisitorsRootNode == null) return;
+
+            LastVisitors = new List<User>();
+            foreach(var visitorNode in lastVisitorsRootNode.GetElementsByTagName("li"))
+            {
+                var profileLinkNode = visitorNode.SelectSingleNode("a[1]");
+                if (profileLinkNode == null) continue;
+                string profileLink = (profileLinkNode.Attributes.Contains("href")) ? profileLinkNode.Attributes["href"].Value : "";
+                    
+                var userNameNode = profileLinkNode.SelectSingleNode("span[1]");
+                if (userNameNode == null) // non-ranked users got their name wrapped in the 'a' element
+                    userNameNode = profileLinkNode;
+
+                LastVisitors.Add(new User(userNameNode.InnerText, User.FromURL(profileLink)));
+               
+            }
+        }
+
         protected void ParseRanks(HtmlDocument doc)
         {
             // Fetch the user title badges. User who do not belong to any group or who don't got any badges, will be lacking of the 'rank' element in their profile page
@@ -652,6 +681,7 @@ namespace epvpapi
             ParseRanks(doc);
             ParseStatistics(session, doc);
             ParseMiniStats(doc);
+            ParseLastVisitors(doc);
         }
 
 
