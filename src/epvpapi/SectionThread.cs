@@ -89,8 +89,9 @@ namespace epvpapi
         /// <remarks>
         /// Not tested yet!
         /// </remarks>
-        public void Delete(Session session, string reason)
+        public void Delete<T>(UserSession<T> session, string reason) where T : User
         {
+            if (session.User.GetHighestRank() < User.Rank.GlobalModerator) throw new InsufficientAccessException("You don't have enough access rights to delete this thread");
             if (ID == 0) throw new System.ArgumentException("ID must not be empty");
 
             session.Post("http://www.elitepvpers.com/forum/postings.php",

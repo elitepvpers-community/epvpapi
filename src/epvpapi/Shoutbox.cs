@@ -76,6 +76,8 @@ namespace epvpapi
             /// <param name="session"> Session used for sending the request </param>
             public void Update(Session session)
             {
+                session.ThrowIfInvalid();
+
                 Response res = session.Post("http://www.elitepvpers.com/forum/mgc_cb_evo_ajax.php",
                                             new List<KeyValuePair<string, string>>
                                             {
@@ -116,15 +118,11 @@ namespace epvpapi
                             DateTime.TryParse(matchedTime, out time);
                         }
 
-                        string username = "";
                         HtmlNode userNameNode = shoutboxNodeGroup.ElementAt(1).SelectSingleNode(@"span[1]/a[1]/span[1]");
-                        if (userNameNode != null)
-                            username = userNameNode.InnerText;
+                        string username = (userNameNode != null) ? userNameNode.InnerText : "";
 
-                        string message = "";
                         HtmlNode messageNode = shoutboxNodeGroup.ElementAt(2).SelectSingleNode(@"span[1]");
-                        if (messageNode != null)
-                            message = messageNode.InnerText;
+                        string message = (messageNode != null) ? messageNode.InnerText : "";
 
                         Shouts.Add(new Shout(new PremiumUser(username), message, time));
                     }
@@ -232,6 +230,8 @@ namespace epvpapi
         /// <param name="session"> Session used for storing personal shoutbox data into the session user field </param>
         public static void Update(UserSession<PremiumUser> session)
         {
+            session.ThrowIfInvalid();
+
             Response res = session.Get("http://www.elitepvpers.com/forum/mgc_cb_evo.php?do=view_archives&page=1");
             HtmlDocument document = new HtmlDocument();
             document.LoadHtml(res.ToString());

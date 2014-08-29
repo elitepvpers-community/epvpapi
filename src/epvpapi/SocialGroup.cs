@@ -107,9 +107,10 @@ namespace epvpapi
         /// Deletes the <c>SocialGroup</c>
         /// </summary>
         /// <param name="session"> Session that is used for sending the request </param>
-        public void Delete(Session session)
+        public void Delete<T>(UserSession<T> session) where T : User
         {
-            if (ID == 0) throw new ArgumentException("Group ID must not be empty");
+            if (session.User.GetHighestRank() < User.Rank.GlobalModerator && session.User != Maintainer) throw new InsufficientAccessException("You don't have enough access rights to delete this group");
+            if (ID == 0) throw new ArgumentException("Group ID must not be zero");
             session.ThrowIfInvalid();
 
             session.Post("http://www.elitepvpers.com/forum/group.php?do=delete",
@@ -133,7 +134,7 @@ namespace epvpapi
         /// <param name="user"> User that will be requested to be the new owner </param>
         public void RequestTransfer(Session session, User user)
         {
-            if (ID == 0) throw new ArgumentException("Group ID must not be empty");
+            if (ID == 0) throw new ArgumentException("Group ID must not be zero");
             session.ThrowIfInvalid();
 
             session.Post("http://www.elitepvpers.com/forum/group.php?do=dotransfer&groupid=" + ID.ToString(),
@@ -155,7 +156,7 @@ namespace epvpapi
         /// <param name="session"> Session that is used for sending the request </param>
         public void AcceptTransfer(Session session)
         {
-            if (ID == 0) throw new ArgumentException("Group ID must not be empty");
+            if (ID == 0) throw new ArgumentException("Group ID must not be zero");
             session.ThrowIfInvalid();
 
             session.Post("http://www.elitepvpers.com/forum/groups/" + ID.ToString() + "--.html",
@@ -180,7 +181,7 @@ namespace epvpapi
         /// <param name="settings"> Additional options that can be set  </param>
         public void Edit(Session session, string description, Access access, Options settings)
         {
-            if (ID == 0) throw new ArgumentException("Group ID must not be empty");
+            if (ID == 0) throw new ArgumentException("Group ID must not be zero");
             session.ThrowIfInvalid();
 
             session.Post("http://www.elitepvpers.com/forum/group.php?do=doedit",
@@ -215,7 +216,7 @@ namespace epvpapi
         /// <param name="user"> User to kick </param>
         public void Kick(Session session, User user)
         {
-            if (ID == 0) throw new ArgumentException("Group ID must not be empty");
+            if (ID == 0) throw new ArgumentException("Group ID must not be zero");
             session.ThrowIfInvalid();
 
             session.Post("http://www.elitepvpers.com/forum/group.php?do=pendingmembers",
@@ -237,7 +238,7 @@ namespace epvpapi
         /// <param name="user"> User to invite </param>
         public void Invite(Session session, User user)
         {
-            if (ID == 0) throw new ArgumentException("Group ID must not be empty");
+            if (ID == 0) throw new ArgumentException("Group ID must not be zero");
             session.ThrowIfInvalid();
 
             session.Post("http://www.elitepvpers.com/forum/group.php?do=sendinvite",
@@ -258,7 +259,7 @@ namespace epvpapi
         /// <param name="user"> User whose invite will be cancelled </param>
         public void CancelInvite(Session session, User user)
         {
-            if (ID == 0) throw new ArgumentException("Group ID must not be empty");
+            if (ID == 0) throw new ArgumentException("Group ID must not be zero");
             session.ThrowIfInvalid();
 
             session.Post("http://www.elitepvpers.com/forum/group.php?do=pendingmembers",
@@ -279,7 +280,7 @@ namespace epvpapi
         /// <param name="session"> Session that is used for sending the request </param>
         public void Join(Session session)
         {
-            if (ID == 0) throw new ArgumentException("Group ID must not be empty");
+            if (ID == 0) throw new ArgumentException("Group ID must not be zero");
             session.ThrowIfInvalid();
 
             session.Post("http://www.elitepvpers.com/forum/group.php?do=dojoin",
@@ -302,7 +303,7 @@ namespace epvpapi
         /// <param name="session"> Session that is used for sending the request </param>
         public void Leave(Session session)
         {
-            if (ID == 0) throw new ArgumentException("Group ID must not be empty");
+            if (ID == 0) throw new ArgumentException("Group ID must not be zero");
             session.ThrowIfInvalid();
 
             session.Post("http://www.elitepvpers.com/forum/group.php?do=doleave",

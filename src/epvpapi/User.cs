@@ -65,16 +65,6 @@ namespace epvpapi
                 ForumManagement = 8
             }
 
-            public static bool operator >(Rank lhs, Rank rhs)
-            {
-                return lhs.AccessRights > rhs.AccessRights;
-            }
-
-            public static bool operator <(Rank lhs, Rank rhs)
-            {
-                return lhs.AccessRights < rhs.AccessRights;
-            }
-
             public static Rank Premium
             {
                 get { return new Rank("Premium", "premium.png", Rights.PrivateForumAccess); }
@@ -203,6 +193,36 @@ namespace epvpapi
                 }
 
                 return false;
+            }
+
+            public static bool operator >(Rank lhs, Rank rhs)
+            {
+                return lhs.AccessRights > rhs.AccessRights;
+            }
+
+            public static bool operator <(Rank lhs, Rank rhs)
+            {
+                return lhs.AccessRights < rhs.AccessRights;
+            }
+
+            public static bool operator==(Rank lhs, Rank rhs)
+            {
+                return (lhs.Name == rhs.Name) && (lhs.AccessRights == rhs.AccessRights) && (lhs.File == rhs.File) && (lhs.Path == rhs.Path);
+            }
+
+            public static bool operator !=(Rank lhs, Rank rhs)
+            {
+                return (lhs.Name != rhs.Name) || (lhs.AccessRights != rhs.AccessRights) || (lhs.File != rhs.File) || (lhs.Path != rhs.Path);
+            }
+
+            public override int GetHashCode()
+            {
+                return base.GetHashCode();
+            } 
+
+            public override bool Equals(object obj)
+            {
+                return base.Equals(obj);
             }
         }
 
@@ -367,6 +387,23 @@ namespace epvpapi
             LastVisitorMessage = new DateTime();
             JoinDate = new DateTime();
             TBMProfile = new Profile();
+        }
+
+        public bool HasRank(Rank rank)
+        {
+            return Ranks.Any(userRank => userRank == rank);
+        }
+
+        public Rank GetHighestRank()
+        {
+            Rank highestRank = new Rank();
+            foreach(Rank rank in Ranks)
+            {
+                if (rank > highestRank)
+                    highestRank = rank;
+            }
+
+            return highestRank;
         }
 
         protected void ParseAbout<T>(UserSession<T> session, HtmlDocument doc) where T : User
