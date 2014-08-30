@@ -93,11 +93,16 @@ namespace epvpapi
         /// </summary>
         /// <param name="session"> Session that is used for sending the request </param>
         /// <remarks>
-        /// The names of the recipients have to be given in order to send the message
+        /// The names of the recipients have to be given in order to send the message.
+        /// Messages with a blank title will not be send. Therefore, '-' will be used as title if nothing was specified.
+        /// Certain requirements must be fulfilled in order to send messages automatically without entering a captcha:
+        /// - More than 20 posts OR the <c>User.Rank.Premium</c> rank OR the <c>User.Rank.EliteGoldTrader</c> rank
         /// </remarks>
         public void Send<T>(UserSession<T> session) where T : User
         {
             session.ThrowIfInvalid();
+            if (session.User.Posts <= 20 && !session.User.HasRank(User.Rank.Premium) && !session.User.HasRank(User.Rank.EliteGoldTrader))
+                throw new InsufficientAccessException("More than 20 posts or the premium / elite*gold trader badge is required for sending private messages without captchas");
 
             string recipients = "";
             foreach(var recipient in Recipients)
@@ -112,7 +117,7 @@ namespace epvpapi
                          {
                              new KeyValuePair<string, string>("recipients", recipients),
                              new KeyValuePair<string, string>("bccrecipients", String.Empty),
-                             new KeyValuePair<string, string>("title", Title),
+                             new KeyValuePair<string, string>("title", (Title != null) ? Title : "-"),
                              new KeyValuePair<string, string>("message", Content),
                              new KeyValuePair<string, string>("wysiwyg", "0"),
                              new KeyValuePair<string, string>("iconid", "0"),
