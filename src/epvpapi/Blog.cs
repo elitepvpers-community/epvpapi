@@ -9,8 +9,10 @@ namespace epvpapi
     public class Blog : UniqueObject
     {
         public uint Entries { get; set; }
-    
-        public Blog()
+        public DateTime LastEntry { get; set; }
+
+        public Blog(uint id = 0):
+            base(id)
         { }
     }
 }
