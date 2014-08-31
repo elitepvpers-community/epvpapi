@@ -545,9 +545,25 @@ namespace epvpapi
                             LastUserNote = lastUserNote;
                         }
                     }
-                    else if (legendCaption == "Blog")
+                    else if (legendCaption.Contains("Blog -")) // users can specify their own blog name that is trailed behind the 'Blog -' string
                     {
-                        // in progress
+                        var blogEntriesNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
+                        // skip the first 2 characters since the value always contains a leading ':' and whitespace 
+                        Blog.Entries = new List<Blog.Entry>((blogEntriesNode != null) ? Convert.ToInt32(new string(blogEntriesNode.InnerText.Skip(2).ToArray())) : 0);
+
+                        var lastEntryDateNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[2]");
+                        string date = (lastEntryDateNode != null) ? lastEntryDateNode.InnerText.Strip() : "";
+                        
+                        if (date == "Heute" || date == "Today")
+                            date = DateTime.Now.ToString("MM-dd-yyyy");
+
+                        var lastEntryTimeNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/span[2]");
+                        string time = (lastEntryTimeNode != null) ? lastEntryTimeNode.InnerText.Strip() : "";
+
+                        DateTime parsedDate = new DateTime();
+                        DateTime.TryParseExact(date + " " + time, "MM-dd-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate);
+
+                        Blog.LastEntry = parsedDate;
                     }
                 }
             }

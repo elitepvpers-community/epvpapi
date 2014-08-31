@@ -68,5 +68,25 @@ namespace epvpapi
         {
             return Regex.Replace(target, @"(^ +)|(\r\n|\n|\r|\t)|( +)$", "");
         }
+
+        public static uint UNIXTimestamp(this DateTime dateTime)
+        {
+            return (uint) (DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+        }
+
+        /// <summary>
+        /// (Raw) compares 2 <c>DateTime objects</c> and indicates wether both objects represent the same time (Year, Month, Day, Hour and Minute are compared)
+        /// </summary>
+        /// <param name="self"> <c>DateTime</c> being compared </param>
+        /// <param name="other"> Other <c>DateTime</c> being compared </param>
+        /// <returns> True if both objects represent the same time, false if not </returns>
+        public static bool Compare(this DateTime self, DateTime other)
+        {
+            return (   (other.Year == self.Year) 
+                    && (other.Month == self.Month) 
+                    && (other.Day == self.Month) 
+                    && (other.Hour == self.Hour) 
+                    && (other.Minute == self.Minute) );
+        }
     }
 }

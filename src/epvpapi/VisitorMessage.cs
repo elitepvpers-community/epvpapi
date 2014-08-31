@@ -39,10 +39,11 @@ namespace epvpapi
         /// Sends a <c>VisitorMessage</c> using the given session
         /// </summary>
         /// <param name="session"> Session that is used for sending the request </param>
+        /// <param name="settings"> Additional options that can be set </param>
         /// <remarks>
         /// The ID of the recipient has to be given in order to send the message
         /// </remarks>
-        public void Send(Session session)
+        public void Send(Session session, Message.Settings settings = Message.Settings.ParseURL)
         {
             if (Recipient.ID == 0) throw new ArgumentException("Recipient ID must not be empty");
             session.ThrowIfInvalid();
@@ -59,7 +60,7 @@ namespace epvpapi
                             new KeyValuePair<string, string>("u", Recipient.ID.ToString()),
                             new KeyValuePair<string, string>("u2", String.Empty),
                             new KeyValuePair<string, string>("loggedinuser", String.Empty),
-                            new KeyValuePair<string, string>("parseurl", (Settings & VisitorMessage.Options.ParseURL).ToString()),
+                            new KeyValuePair<string, string>("parseurl", (settings & VisitorMessage.Settings.ParseURL).ToString()),
                             new KeyValuePair<string, string>("lastcomment", "1381528657"),
                             new KeyValuePair<string, string>("allow_ajax_qc", "1"),
                             new KeyValuePair<string, string>("fromconverse", String.Empty),
