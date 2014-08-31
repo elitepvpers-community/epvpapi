@@ -839,10 +839,28 @@ namespace epvpapi
 
                         // Messages that were send are labeled with the user that received the message. If messages were received, they were labeled with the sender
                         // so we need to know wether the folder stores received or sent messages
-                        if(folder.StorageType == PrivateMessage.Folder.Storage.Received)
-                            fetchedMessages.Add(new PrivateMessage(pmID, String.Empty, new List<User>() { this }, sender, title, dateTime, messageUnread));
+                        if (folder.StorageType == PrivateMessage.Folder.Storage.Received)
+                        {
+                            fetchedMessages.Add(new PrivateMessage(pmID)
+                            {
+                                Recipients = new List<User>() { this },
+                                Sender = sender,
+                                Title = title,
+                                Date = dateTime,
+                                Unread = messageUnread
+                            });
+                        }
                         else
-                            fetchedMessages.Add(new PrivateMessage(pmID, String.Empty, new List<User>() { sender }, this, title, dateTime, messageUnread));
+                        {
+                            fetchedMessages.Add(new PrivateMessage(pmID)
+                            {
+                                Recipients = new List<User>() { sender },
+                                Sender = this,
+                                Title = title,
+                                Date = dateTime,
+                                Unread = messageUnread
+                            });
+                        }
                     }
                 }
             }

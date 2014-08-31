@@ -49,20 +49,20 @@ namespace epvpapi
         /// </summary>
         public DateTime Date { get; set; }
 
-        public Message(uint id, string content, DateTime date)
-            : base(id)
+        public Message(uint id)
+            : this(id, null)
+        { }
+
+        public Message(string content)
+            : this(0, content)
+        { }
+
+        public Message(uint id, string content)
+            : base(0)
         {
             Content = content;
             Settings |= Options.ParseURL | Options.ShowSignature;
-            Date = date;
+            Date = new DateTime();
         }
-
-        public Message(uint id, string content = null)
-            : this(id, content, DateTime.Now)
-        { }
-
-        public Message(string content = null)
-            : this(0, content)
-        { }
     }
 }

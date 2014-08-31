@@ -56,36 +56,23 @@ namespace epvpapi
         public bool Unread { get; set; }
 
 
-        public PrivateMessage(uint id, string content = null)
-            : this(id, content, new List<User>())
+        public PrivateMessage(uint id)
+            : this(0, null, null)
         { }
 
         public PrivateMessage(User recipient, string content, string title = null)
-            : this(new List<User> { recipient }, content, title)
-        { }
+            : this(0, content, new List<User>() { recipient }, title)
+        {  }
 
         public PrivateMessage(List<User> recipients, string content, string title = null)
             : this(0, content, recipients, title)
-        {  }
+        { }
 
         public PrivateMessage(uint id, string content, List<User> recipients, string title = null)
-            : this(id, content, recipients, new User(), title)
-        { }
-
-        public PrivateMessage(uint id, string content, List<User> recipients, User sender, string title)
-            : this(id, content, recipients, sender, title, DateTime.Now)
-        { }
-
-        public PrivateMessage(uint id, string content, List<User> recipients, User sender, string title, DateTime date)
-            : this(id, content, recipients, sender, title, date, false)
-        { }
-
-        public PrivateMessage(uint id, string content, List<User> recipients, User sender, string title, DateTime date, bool unread)
-            : base(id, content, title, date)
+            : base(id, content, title)
         {
+            Sender = new User();
             Recipients = recipients;
-            Sender = sender;
-            Unread = unread;
         }
 
         /// <summary>
