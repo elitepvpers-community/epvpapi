@@ -55,7 +55,27 @@ namespace epvpapi
                 : this(id, null)
             { }
 
-            public void Publish<T>(UserSession<T> session, 
+
+            /// <summary>
+            /// Publishes the <c>Entry</c> in the logged-in user's blog
+            /// </summary>
+            /// <typeparam name="T"> Type of User </typeparam>
+            /// <param name="session"> Session that is used for sending the request </param>
+            /// <param name="settings"> Additional options that can be set </param>
+            public void Publish<T>(UserSession<T> session,
+                                   Settings settings = Settings.ParseURL | Settings.AllowComments) where T : User
+            {
+                Publish(session, DateTime.Now, settings);
+            }
+
+            /// <summary>
+            /// Publishes the <c>Entry</c> in the logged-in user's blog at the given time (automatically)
+            /// </summary>
+            /// <typeparam name="T"> Type of User </typeparam>
+            /// <param name="session"> Session that is used for sending the request </param>
+            /// <param name="publishDate"> Date and time when the entry will go live </param>
+            /// <param name="settings"> Additional options that can be set </param>
+            public void Publish<T>(UserSession<T> session, DateTime publishDate,
                                    Settings settings = Settings.ParseURL | Settings.AllowComments) where T : User
             {
                 session.ThrowIfInvalid();
@@ -68,7 +88,7 @@ namespace epvpapi
                         tags += ",";
                 }
 
-                Date = DateTime.Now;
+                Date = publishDate;
 
                 session.Post("http://www.elitepvpers.com/forum/blog_post.php?do=updateblog&blogid=",
                             new List<KeyValuePair<string, string>>()
@@ -85,16 +105,16 @@ namespace epvpapi
                                 new KeyValuePair<string, string>("loggedinuser", session.User.ID.ToString()),
                                 new KeyValuePair<string, string>("u", String.Empty),
                                 new KeyValuePair<string, string>("taglist", tags),
-                                new KeyValuePair<string, string>("allowcomments", (settings & Settings.AllowComments).ToString()),
-                                new KeyValuePair<string, string>("moderatecomments", (settings & Settings.ModerateComments).ToString()),
-                                new KeyValuePair<string, string>("private", (settings & Settings.Private).ToString()),
-                                new KeyValuePair<string, string>("status", "publish_now"),
+                                new KeyValuePair<string, string>("allowcomments", Convert.ToUInt32(settings.HasFlag(Settings.AllowComments)).ToString()),
+                                new KeyValuePair<string, string>("moderatecomments", Convert.ToUInt32(settings.HasFlag(Settings.ModerateComments)).ToString()),
+                                new KeyValuePair<string, string>("private", Convert.ToUInt32(settings.HasFlag(Settings.Private)).ToString()),
+                                new KeyValuePair<string, string>("status", (publishDate.Compare(DateTime.Now)) ? "publish_now" : "publish_on"),
                                 new KeyValuePair<string, string>("publish[month]", Date.Month.ToString()),
                                 new KeyValuePair<string, string>("publish[day]", Date.Day.ToString()),
                                 new KeyValuePair<string, string>("publish[year]", Date.Year.ToString()),
                                 new KeyValuePair<string, string>("publish[hour]", Date.Hour.ToString()),
                                 new KeyValuePair<string, string>("publish[minute]", Date.Minute.ToString()),
-                                new KeyValuePair<string, string>("parseurl", (settings & Settings.ParseURL).ToString()),
+                                new KeyValuePair<string, string>("parseurl", Convert.ToUInt32(settings.HasFlag(Settings.ParseURL)).ToString()),
                                 new KeyValuePair<string, string>("parseame", "1"),
                                 new KeyValuePair<string, string>("emailupdate", "none"),
                                 new KeyValuePair<string, string>("sbutton", "Submit")
