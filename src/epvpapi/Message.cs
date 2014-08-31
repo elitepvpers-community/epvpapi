@@ -13,36 +13,21 @@ namespace epvpapi
     public abstract class Message : UniqueObject
     {
         /// <summary>
-        /// Indicating additional options that can be set when posting a message 
+        /// Additional options that can be set when posting messages
         /// </summary>
         [Flags]
-        public enum Options
+        public enum Settings
         {
             /// <summary>
             /// If set, all URLs in the message are going to be parsed
             /// </summary>
             ParseURL = 1,
-
-            /// <summary>
-            /// If set, the signature of the logged in user will be displayed beneath the message
-            /// </summary>
-            ShowSignature = 2,
-
-            /// <summary>
-            /// If set, every time a message will be send, a copy will be saved and stored somewhere
-            /// </summary>
-            SaveCopy = 3
         }
 
         /// <summary>
         /// Content of the post
         /// </summary>
         public string Content { get; set; }
-
-        /// <summary>
-        /// Additional options that can be set when posting a message 
-        /// </summary>
-        public Options Settings { get; set; }
 
         /// <summary>
         /// Date and time when the message was created
@@ -60,8 +45,7 @@ namespace epvpapi
         public Message(uint id, string content)
             : base(0)
         {
-            Content = content;
-            Settings |= Options.ParseURL | Options.ShowSignature;
+            Content = content;       
             Date = new DateTime();
         }
     }

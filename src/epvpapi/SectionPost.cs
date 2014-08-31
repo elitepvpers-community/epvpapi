@@ -10,6 +10,23 @@ namespace epvpapi
     public class SectionPost : Post, IReportable
     {
         /// <summary>
+        /// Additional options that can be set when posting messages
+        /// </summary>
+        [Flags]
+        public new enum Settings
+        {
+            /// <summary>
+            /// If set, all URLs in the message are going to be parsed
+            /// </summary>
+            ParseURL = 1,
+
+            /// <summary>
+            /// If set, the signature of the logged in user will be displayed beneath the message
+            /// </summary>
+            ShowSignature = 2
+        }
+
+        /// <summary>
         /// Icon associated with the post
         /// </summary>
         public short Icon { get; set; }

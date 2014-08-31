@@ -32,8 +32,10 @@ namespace epvpapi
         /// <param name="session"> Session that is used for sending the request </param>
         /// <param name="socialGroup"> SocialGroup where to create the <c>SocialGroupThread</c></param>
         /// <param name="startPost"> Represents the content and title of the <c>SocialGroupThread</c> </param>
+        /// <param name="settings"> Additional options that can be set </param>
         /// <returns> Freshly created <c>SocialGroupThread</c></returns>
-        public static SocialGroupThread Create(UserSession<User> session, SocialGroup socialGroup, SocialGroupPost startPost)
+        public static SocialGroupThread Create(UserSession<User> session, SocialGroup socialGroup, SocialGroupPost startPost,
+                                               Message.Settings settings = Message.Settings.ParseURL)
         {
             session.ThrowIfInvalid();
 
@@ -52,7 +54,7 @@ namespace epvpapi
                             new KeyValuePair<string, string>("groupid", socialGroup.ID.ToString()),
                             new KeyValuePair<string, string>("discussionid", String.Empty),
                             new KeyValuePair<string, string>("sbutton", "Nachricht+speichern"),
-                            new KeyValuePair<string, string>("parseurl", Convert.ToInt32(startPost.Settings.HasFlag(Message.Options.ParseURL)).ToString()),
+                            new KeyValuePair<string, string>("parseurl", Convert.ToInt32(settings.HasFlag(Message.Settings.ParseURL)).ToString()),
                             new KeyValuePair<string, string>("parseame", "1"),
                         });
 
@@ -92,8 +94,9 @@ namespace epvpapi
         /// Replies to the <c>SocialGroupThread</c>
         /// </summary>
         /// <param name="session"> Session that is used for sending the request </param>
+        /// <param name="settings"> Additional options that can be set </param>
         /// <param name="post"> Reply to post </param>
-        public void Reply(UserSession<User> session, SocialGroupPost post)
+        public void Reply(UserSession<User> session, SocialGroupPost post, Message.Settings settings = Message.Settings.ParseURL)
         {
             session.ThrowIfInvalid();
 
@@ -111,7 +114,7 @@ namespace epvpapi
                             new KeyValuePair<string, string>("groupid", SocialGroup.ID.ToString()),
                             new KeyValuePair<string, string>("discussionid", ID.ToString()),
                             new KeyValuePair<string, string>("sbutton", "Post+Message"),
-                            new KeyValuePair<string, string>("parseurl", (post.Settings & SocialGroupPost.Options.ParseURL).ToString()),
+                            new KeyValuePair<string, string>("parseurl", (settings & SocialGroupPost.Settings.ParseURL).ToString()),
                             new KeyValuePair<string, string>("parseame", "1"),
                         });
         }

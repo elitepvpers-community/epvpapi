@@ -47,9 +47,12 @@ namespace epvpapi
         /// <param name="session"> Session that is used for sending the request </param>
         /// <param name="section"> Section under which the <c>SectionThread</c> is listed </param>
         /// <param name="startPost"> Represents the content and title of the <c>SectionThread</c> </param>
+        /// <param name="settings"> Additional options that can be set </param>
         /// <param name="closed"> If true, the thread state is closed meaning that no one (except the staff) can answer to this thread </param>
         /// <returns> Freshly created <c>SectionThread</c> </returns>
-        public static SectionThread Create(UserSession<User> session, Section section, SectionPost startPost, bool closed)
+        public static SectionThread Create(UserSession<User> session, Section section, SectionPost startPost,
+                                           SectionPost.Settings settings = SectionPost.Settings.ParseURL | SectionPost.Settings.ShowSignature,
+                                           bool closed = false)
         {
             session.ThrowIfInvalid();
 
@@ -69,8 +72,8 @@ namespace epvpapi
                             new KeyValuePair<string, string>("poststarttime", "1389309192"),
                             new KeyValuePair<string, string>("loggedinuser", session.User.ID.ToString()),
                             new KeyValuePair<string, string>("sbutton", "Submit New Thread"),
-                            new KeyValuePair<string, string>("signature", Convert.ToInt32(startPost.Settings.HasFlag(Message.Options.ShowSignature)).ToString()),
-                            new KeyValuePair<string, string>("parseurl", Convert.ToInt32(startPost.Settings.HasFlag(Message.Options.ParseURL)).ToString()),
+                            new KeyValuePair<string, string>("signature", Convert.ToInt32(settings.HasFlag(SectionPost.Settings.ShowSignature)).ToString()),
+                            new KeyValuePair<string, string>("parseurl", Convert.ToInt32(settings.HasFlag(SectionPost.Settings.ParseURL)).ToString()),
                             new KeyValuePair<string, string>("parseame", "1"),
                             new KeyValuePair<string, string>("vbseo_retrtitle", "1"),
                             new KeyValuePair<string, string>("vbseo_is_retrtitle", "1"),
@@ -171,10 +174,12 @@ namespace epvpapi
         /// </summary>
         /// <param name="session"> Session that is used for sending the request </param>
         /// <param name="post"> Reply to post </param>
+        /// <param name="settings"> Additional options that can be set </param>
         /// <remarks>
         /// The ID of the thread has to be given in order to reply
         /// </remarks>
-        public void Reply(UserSession<User> session, SectionPost post)
+        public void Reply(UserSession<User> session, SectionPost post,
+                          SectionPost.Settings settings = SectionPost.Settings.ParseURL | SectionPost.Settings.ShowSignature)
         {
             if (ID == 0) throw new ArgumentException("ID must not be empty");
 
@@ -196,8 +201,8 @@ namespace epvpapi
                              new KeyValuePair<string, string>("loggedinuser", session.User.ID.ToString()),
                              new KeyValuePair<string, string>("multiquoteempty", String.Empty),
                              new KeyValuePair<string, string>("sbutton", "Submit Reply"),
-                             new KeyValuePair<string, string>("signature", (post.Settings & SectionPost.Options.ShowSignature).ToString()),
-                             new KeyValuePair<string, string>("parseurl", (post.Settings & SectionPost.Options.ParseURL).ToString()),
+                             new KeyValuePair<string, string>("signature", (settings & SectionPost.Settings.ShowSignature).ToString()),
+                             new KeyValuePair<string, string>("parseurl", (settings & SectionPost.Settings.ParseURL).ToString()),
                              new KeyValuePair<string, string>("parseame", "1"),
                              new KeyValuePair<string, string>("vbseo_retrtitle", "1"),
                              new KeyValuePair<string, string>("vbseo_is_retrtitle", "1"),

@@ -41,6 +41,28 @@ namespace epvpapi
         }
 
         /// <summary>
+        /// Additional options that can be set when posting messages
+        /// </summary>
+        [Flags]
+        public new enum Settings
+        {
+            /// <summary>
+            /// If set, all URLs in the message are going to be parsed
+            /// </summary>
+            ParseURL = 1,
+
+            /// <summary>
+            /// If set, the signature of the logged in user will be displayed beneath the message
+            /// </summary>
+            ShowSignature = 2,
+
+            /// <summary>
+            /// If set, every time a message will be send, a copy will be saved and stored somewhere
+            /// </summary>
+            SaveCopy = 3
+        }
+
+        /// <summary>
         /// User that sent the message
         /// </summary>
         public User Sender { get; set; }
@@ -79,13 +101,14 @@ namespace epvpapi
         /// Sends a <c>PrivateMessage</c> using the given session
         /// </summary>
         /// <param name="session"> Session that is used for sending the request </param>
+        /// <param name="settings"> Additional options that can be set </param>
         /// <remarks>
         /// The names of the recipients have to be given in order to send the message.
         /// Messages with a blank title will not be send. Therefore, '-' will be used as title if nothing was specified.
         /// Certain requirements must be fulfilled in order to send messages automatically without entering a captcha:
         /// - More than 20 posts OR the <c>User.Rank.Premium</c> rank OR the <c>User.Rank.EliteGoldTrader</c> rank
         /// </remarks>
-        public void Send<T>(UserSession<T> session) where T : User
+        public void Send<T>(UserSession<T> session, Settings settings = Settings.ParseURL | Settings.ShowSignature) where T : User
         {
             session.ThrowIfInvalid();
             if (session.User.Posts <= 20 && !session.User.HasRank(User.Rank.Premium) && !session.User.HasRank(User.Rank.EliteGoldTrader))
@@ -114,9 +137,9 @@ namespace epvpapi
                              new KeyValuePair<string, string>("pmid", String.Empty),
                              new KeyValuePair<string, string>("forward", String.Empty),
                              new KeyValuePair<string, string>("sbutton", "submit"),
-                             new KeyValuePair<string, string>("savecopy", (Settings & Options.SaveCopy).ToString()),
-                             new KeyValuePair<string, string>("signature", (Settings & Options.ShowSignature).ToString()),
-                             new KeyValuePair<string, string>("parseurl", (Settings & Options.ParseURL).ToString())
+                             new KeyValuePair<string, string>("savecopy", (settings & Settings.SaveCopy).ToString()),
+                             new KeyValuePair<string, string>("signature", (settings & Settings.ShowSignature).ToString()),
+                             new KeyValuePair<string, string>("parseurl", (settings & Settings.ParseURL).ToString())
                          });
     
         }
