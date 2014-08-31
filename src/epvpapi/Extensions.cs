@@ -68,5 +68,10 @@ namespace epvpapi
         {
             return Regex.Replace(target, @"(^ +)|(\r\n|\n|\r|\t)|( +)$", "");
         }
+
+        public static uint UNIXTimestamp(this DateTime dateTime)
+        {
+            return (uint) (DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+        }
     }
 }

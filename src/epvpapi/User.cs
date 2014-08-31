@@ -549,7 +549,7 @@ namespace epvpapi
                     {
                         var blogEntriesNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
                         // skip the first 2 characters since the value always contains a leading ':' and whitespace 
-                        Blog.Entries = (blogEntriesNode != null) ? Convert.ToUInt32(new string(blogEntriesNode.InnerText.Skip(2).ToArray())) : 0;
+                        Blog.Entries = new List<Blog.Entry>((blogEntriesNode != null) ? Convert.ToInt32(new string(blogEntriesNode.InnerText.Skip(2).ToArray())) : 0);
 
                         var lastEntryDateNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[2]");
                         string date = (lastEntryDateNode != null) ? lastEntryDateNode.InnerText.Strip() : "";
