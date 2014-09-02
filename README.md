@@ -1,9 +1,15 @@
+Introduction
+===
+This library is currently a work-in-progress. We are working on the documentation and try to provide as much as we can to enable you to use this library for your custom projects regarding elitepvpers.
+
 References
 ===
+These pages provide explanations and samples on how to properly use the library.
 
 * [Sessions and Library extensions](https://github.com/Mostey/epvpapi/wiki/Sessions) 
 * [Shoutbox](https://github.com/Mostey/epvpapi/wiki/Shoutbox)
 * [Private Messages](https://github.com/Mostey/epvpapi/wiki/Private-Messages)
+* [Blogs](https://github.com/Mostey/epvpapi/wiki/Blogs)
 
 License
 ===
