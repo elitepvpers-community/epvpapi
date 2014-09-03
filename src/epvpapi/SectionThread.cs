@@ -28,6 +28,11 @@ namespace epvpapi
         public bool Sticked { get; set; }
 
         /// <summary>
+        /// Preview of the thread content being displayed when hovering over the link
+        /// </summary>
+        public string PreviewContent { get; set; }
+
+        /// <summary>
         /// List of all posts in the thread
         /// </summary>
         public List<SectionPost> Posts { get; set; }
@@ -101,6 +106,7 @@ namespace epvpapi
         {
             if (session.User.GetHighestRank() < User.Rank.GlobalModerator) throw new InsufficientAccessException("You don't have enough access rights to delete this thread");
             if (ID == 0) throw new System.ArgumentException("ID must not be empty");
+            session.ThrowIfInvalid();
 
             session.Post("http://www.elitepvpers.com/forum/postings.php",
                         new List<KeyValuePair<string, string>>()
@@ -113,6 +119,8 @@ namespace epvpapi
                             new KeyValuePair<string, string>("deletereason", reason),
 
                         });
+
+            Deleted = true;
         }
 
         /// <summary>
@@ -126,6 +134,7 @@ namespace epvpapi
         public void Close(Session session)
         {
             if (ID == 0) throw new System.ArgumentException("ID must not be empty");
+            session.ThrowIfInvalid();
 
             session.Post("http://www.elitepvpers.com/forum/postings.php",
                         new List<KeyValuePair<string, string>>()
@@ -136,6 +145,8 @@ namespace epvpapi
                             new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
                             new KeyValuePair<string, string>("pollid", String.Empty),
                         });
+
+            Closed = true;
         }
 
         /// <summary>
@@ -148,6 +159,7 @@ namespace epvpapi
         public void Open(Session session)
         {
             Close(session);
+            Closed = false;
         }
 
 
@@ -159,6 +171,7 @@ namespace epvpapi
         public void Rate(Session session, uint rating)
         {
             if (ID == 0) throw new System.ArgumentException("ID must not be empty");
+            session.ThrowIfInvalid();
 
             session.Post("http://www.elitepvpers.com/forum/threadrate.php",
                         new List<KeyValuePair<string, string>>()
@@ -187,6 +200,7 @@ namespace epvpapi
                           SectionPost.Settings settings = SectionPost.Settings.ParseURL | SectionPost.Settings.ShowSignature)
         {
             if (ID == 0) throw new ArgumentException("ID must not be empty");
+            session.ThrowIfInvalid();
 
             session.Post("http://www.elitepvpers.com/forum/newreply.php?do=postreply&t=" + ID,
                          new List<KeyValuePair<string, string>>() 
@@ -215,6 +229,8 @@ namespace epvpapi
                              new KeyValuePair<string, string>("rating", "0"),
                              new KeyValuePair<string, string>("openclose", "0")
                          });
+
+            Posts.Add(post);
         }
     }
 }

@@ -74,10 +74,10 @@ namespace epvpapi
             HtmlDocument doc = new HtmlDocument();
             doc.LoadHtml(res.ToString());
 
-            UpdateAnnouncements(doc);
+            ParseAnnouncements(doc);
         }
 
-        protected void UpdateAnnouncements(HtmlDocument doc)
+        protected void ParseAnnouncements(HtmlDocument doc)
         {
             Announcements = new List<Announcement>();
 
