@@ -15,7 +15,7 @@ namespace epvpapi
     /// <summary>
     /// Represents an user in elitepvpers
     /// </summary>
-    public class User : UniqueObject
+    public class User : UniqueObject, ISpecializedUpdatable
     {
         /// <summary>
         /// Available usergroups an user can have 

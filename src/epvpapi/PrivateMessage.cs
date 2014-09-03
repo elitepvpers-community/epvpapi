@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace epvpapi
 {
-    public class PrivateMessage : Post, IReportable
+    public class PrivateMessage : Post, IReportable, IDefaultUpdatable
     {
         public class Folder
         {

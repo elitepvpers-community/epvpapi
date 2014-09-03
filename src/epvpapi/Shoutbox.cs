@@ -17,7 +17,7 @@ namespace epvpapi
         /// <summary>
         /// Themed chat-channel of the shoutbox where messages can be stored, send and received. 
         /// </summary>
-        public class Channel
+        public class Channel : IDefaultUpdatable
         {
             /// <summary>
             /// A single shout send by an user
