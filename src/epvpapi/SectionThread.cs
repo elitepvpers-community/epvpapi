@@ -23,6 +23,11 @@ namespace epvpapi
         public bool Closed { get; set; }
 
         /// <summary>
+        /// If true, the thread was sticked from a moderator and will always stay at the top section of the threads
+        /// </summary>
+        public bool Sticked { get; set; }
+
+        /// <summary>
         /// List of all posts in the thread
         /// </summary>
         public List<SectionPost> Posts { get; set; }

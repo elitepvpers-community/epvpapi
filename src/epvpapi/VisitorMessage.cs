@@ -17,7 +17,6 @@ namespace epvpapi
         /// </summary>
         public User Recipient { get; set; }
 
-
         public VisitorMessage(uint id)
             : base(id)
         {

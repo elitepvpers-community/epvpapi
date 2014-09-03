@@ -13,11 +13,21 @@ namespace epvpapi
         /// </summary>
         public string Title { get; set; }
 
-        public Post(uint id, string content, string title = null)
+        /// <summary>
+        /// Creator of the <c>Post</c>
+        /// </summary>
+        public User Sender { get; set; }
+
+        public Post(uint id, User sender, string content, string title = null)
             : base(content)
         {
             Title = title;
+            Sender = sender;
         }
+
+        public Post(uint id, string content, string title = null)
+            : this(id, new User(), content, title)
+        { }
 
         public Post(string content, string title = null)
             : this(0, content, title)

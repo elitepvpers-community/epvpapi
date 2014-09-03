@@ -63,11 +63,6 @@ namespace epvpapi
         }
 
         /// <summary>
-        /// User that sent the message
-        /// </summary>
-        public User Sender { get; set; }
-
-        /// <summary>
         /// Recipients of the message
         /// </summary>
         public List<User> Recipients { get; set; }
@@ -93,7 +88,6 @@ namespace epvpapi
         public PrivateMessage(uint id, string content, List<User> recipients, string title = null)
             : base(id, content, title)
         {
-            Sender = new User();
             Recipients = recipients;
         }
 

@@ -19,14 +19,12 @@ namespace epvpapi
             public DateTime Begins { get; set; }
             public DateTime Ends { get; set; }
             public uint Hits { get; set; }
-            public User Creator { get; set; }
 
             public Announcement(uint id = 0)
                 : base(id)
             {
                 Begins = new DateTime();
                 Ends = new DateTime();
-                Creator = new User();
             }
         }
 
@@ -115,11 +113,11 @@ namespace epvpapi
                         }
 
                         var creatorNode = secondLine.SelectSingleNode("span[2]/a[1]");
-                        announcement.Creator.Name = (creatorNode != null) ? creatorNode.InnerText : "";
-                        announcement.Creator.Title = secondLine.SelectSingleNode("span[2]/text()[2]").InnerText.Strip();
-                        announcement.Creator.Title = announcement.Creator.Title.Remove(0, 1); // remove the brackets
-                        announcement.Creator.Title = announcement.Creator.Title.Remove(announcement.Creator.Title.Length - 1, 1); // remove the brackets
-                        announcement.Creator.ID = creatorNode.Attributes.Contains("href") ? User.FromURL(creatorNode.Attributes["href"].Value) : 0;   
+                        announcement.Sender.Name = (creatorNode != null) ? creatorNode.InnerText : "";
+                        announcement.Sender.Title = secondLine.SelectSingleNode("span[2]/text()[2]").InnerText.Strip();
+                        announcement.Sender.Title = announcement.Sender.Title.Remove(0, 1); // remove the brackets
+                        announcement.Sender.Title = announcement.Sender.Title.Remove(announcement.Sender.Title.Length - 1, 1); // remove the brackets
+                        announcement.Sender.ID = creatorNode.Attributes.Contains("href") ? User.FromURL(creatorNode.Attributes["href"].Value) : 0;   
                     }
 
                     Announcements.Add(announcement);
