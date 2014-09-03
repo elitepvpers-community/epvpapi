@@ -9,6 +9,6 @@ namespace epvpapi
 {
     public interface ISpecializedUpdatable
     {
-        void Update<T>(UserSession<T> session) where T : User;
+        void Update<T>(ProfileSession<T> session) where T : User;
     }
 }

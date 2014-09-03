@@ -53,7 +53,7 @@ namespace epvpapi.TBM
         /// <param name="session"> Session used for sending the request </param>
         /// <param name="secretword"> Secret word used as authentication </param>
         /// <returns> List of <c>Transaction</c> objects representing the Transactions </returns>
-        public static List<Transaction> All(UserSession<User> session, string secretword)
+        public static List<Transaction> All(ProfileSession<User> session, string secretword)
         {
             Response res = session.Get("http://www.elitepvpers.com/theblackmarket/api/transactions.php?u=" + session.User.ID + "&type=all&secretword=" + secretword);
 
@@ -88,7 +88,7 @@ namespace epvpapi.TBM
         /// <param name="session"> Session used for sending the request </param>
         /// <param name="secretword"> Secret word used as authentication </param>
         /// <returns> List of <c>Transaction</c> objects representing the received Transactions </returns>
-        public static List<Transaction> Received(UserSession<User> session, string secretword)
+        public static List<Transaction> Received(ProfileSession<User> session, string secretword)
         {
             Response res = session.Get("http://www.elitepvpers.com/theblackmarket/api/transactions.php?u=" + session.User.ID + "&type=received&secretword=" + secretword);
 
@@ -123,7 +123,7 @@ namespace epvpapi.TBM
         /// <param name="session"> Session used for sending the request </param>
         /// <param name="secretword"> Secret word used as authentication </param>
         /// <returns> List of <c>Transaction</c> objects representing the Transactions sent </returns>
-        public static List<Transaction> Sent(UserSession<User> session, string secretword)
+        public static List<Transaction> Sent(ProfileSession<User> session, string secretword)
         {
             Response res = session.Get("http://www.elitepvpers.com/theblackmarket/api/transactions.php?u=" + session.User.ID + "&type=sent&secretword=" + secretword);
 

@@ -50,7 +50,7 @@ namespace epvpapi
         /// <param name="settings"> Additional options that can be set </param>
         /// <param name="closed"> If true, the thread state is closed meaning that no one (except the staff) can answer to this thread </param>
         /// <returns> Freshly created <c>SectionThread</c> </returns>
-        public static SectionThread Create(UserSession<User> session, Section section, SectionPost startPost,
+        public static SectionThread Create(ProfileSession<User> session, Section section, SectionPost startPost,
                                            SectionPost.Settings settings = SectionPost.Settings.ParseURL | SectionPost.Settings.ShowSignature,
                                            bool closed = false)
         {
@@ -92,7 +92,7 @@ namespace epvpapi
         /// <remarks>
         /// Not tested yet!
         /// </remarks>
-        public void Delete<T>(UserSession<T> session, string reason) where T : User
+        public void Delete<T>(ProfileSession<T> session, string reason) where T : User
         {
             if (session.User.GetHighestRank() < User.Rank.GlobalModerator) throw new InsufficientAccessException("You don't have enough access rights to delete this thread");
             if (ID == 0) throw new System.ArgumentException("ID must not be empty");
@@ -178,7 +178,7 @@ namespace epvpapi
         /// <remarks>
         /// The ID of the thread has to be given in order to reply
         /// </remarks>
-        public void Reply(UserSession<User> session, SectionPost post,
+        public void Reply(ProfileSession<User> session, SectionPost post,
                           SectionPost.Settings settings = SectionPost.Settings.ParseURL | SectionPost.Settings.ShowSignature)
         {
             if (ID == 0) throw new ArgumentException("ID must not be empty");

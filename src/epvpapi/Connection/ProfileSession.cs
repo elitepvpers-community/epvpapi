@@ -8,26 +8,26 @@ using System.Threading.Tasks;
 
 namespace epvpapi.Connection
 {
-    public class UserSession<TUser> : Session where TUser : User
+    public class ProfileSession<TUser> : Session where TUser : User
     {
         /// <summary>
         /// Logged-in <c>User</c>, associated with the <c>Session</c>
         /// </summary>
         public TUser User { get; private set; }
 
-        public UserSession(TUser user, string md5Password):
+        public ProfileSession(TUser user, string md5Password):
             this(user)
         {
             Login(md5Password);
         }
 
-        public UserSession(TUser user)
+        public ProfileSession(TUser user)
         {
             Cookies = new CookieContainer();
             User = user;
         }
 
-        public UserSession(TUser user, WebProxy proxy)
+        public ProfileSession(TUser user, WebProxy proxy)
         {
             Cookies = new CookieContainer();
             User = user;

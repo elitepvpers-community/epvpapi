@@ -62,7 +62,7 @@ namespace epvpapi
             /// <typeparam name="T"> Type of User </typeparam>
             /// <param name="session"> Session that is used for sending the request </param>
             /// <param name="settings"> Additional options that can be set </param>
-            public void Publish<T>(UserSession<T> session,
+            public void Publish<T>(ProfileSession<T> session,
                                    Settings settings = Settings.ParseURL | Settings.AllowComments) where T : User
             {
                 Publish(session, DateTime.Now, settings);
@@ -75,7 +75,7 @@ namespace epvpapi
             /// <param name="session"> Session that is used for sending the request </param>
             /// <param name="publishDate"> Date and time when the entry will go live </param>
             /// <param name="settings"> Additional options that can be set </param>
-            public void Publish<T>(UserSession<T> session, DateTime publishDate,
+            public void Publish<T>(ProfileSession<T> session, DateTime publishDate,
                                    Settings settings = Settings.ParseURL | Settings.AllowComments) where T : User
             {
                 session.ThrowIfInvalid();

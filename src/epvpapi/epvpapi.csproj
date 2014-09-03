@@ -56,7 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Blog.cs" />
-    <Compile Include="Connection\UserSession.cs" />
+    <Compile Include="Connection\ProfileSession.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="IDefaultUpdatable.cs" />
     <Compile Include="IDeletable.cs" />

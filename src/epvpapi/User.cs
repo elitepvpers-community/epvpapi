@@ -406,7 +406,7 @@ namespace epvpapi
             return highestRank;
         }
 
-        protected void ParseAbout<T>(UserSession<T> session, HtmlDocument doc) where T : User
+        protected void ParseAbout<T>(ProfileSession<T> session, HtmlDocument doc) where T : User
         {
             // Parsing additional information
             // In case the user is the logged in user, all fields are editable and therefore got his own ids. 
@@ -461,7 +461,7 @@ namespace epvpapi
             }
         }
 
-        protected void ParseStatistics<T>(UserSession<T> session, HtmlDocument doc) where T : User
+        protected void ParseStatistics<T>(ProfileSession<T> session, HtmlDocument doc) where T : User
         {
             // Statistics
             HtmlNode statisticsRootNode = doc.GetElementbyId("collapseobj_stats");
@@ -724,7 +724,7 @@ namespace epvpapi
         /// Updates the user by requesting the profile
         /// </summary>
         /// <param name="session"> Session used for sending the request </param>
-        public void Update<T>(UserSession<T> session) where T : User
+        public void Update<T>(ProfileSession<T> session) where T : User
         {
             session.ThrowIfInvalid();
             Response res = session.Get("http://www.elitepvpers.com/forum/members/" + ID.ToString() + "--.html");
