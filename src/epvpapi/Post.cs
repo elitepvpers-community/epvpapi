@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace epvpapi
 {
-    public class Post : Message
+    public abstract class Post : Message
     {
         /// <summary>
         /// Title of the <c>Post</c>

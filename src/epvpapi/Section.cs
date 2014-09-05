@@ -12,22 +12,8 @@ namespace epvpapi
     /// <summary>
     /// Represents a subforum
     /// </summary>
-    public class Section : UniqueObject
+    public class Section : UniqueWebObject
     {
-        public class Announcement : Post
-        {
-            public DateTime Begins { get; set; }
-            public DateTime Ends { get; set; }
-            public uint Hits { get; set; }
-
-            public Announcement(uint id = 0)
-                : base(id)
-            {
-                Begins = new DateTime();
-                Ends = new DateTime();
-            }
-        }
-
         /// <summary>
         /// Name of the section
         /// </summary>
@@ -48,11 +34,36 @@ namespace epvpapi
         /// </summary>
         public List<SectionThread> Threads { get; set; }
 
+        public class Announcement : Post
+        {
+            public DateTime Begins { get; set; }
+            public DateTime Ends { get; set; }
+            public uint Hits { get; set; }
+            public Section Section { get; set; }
+
+            public override string URL
+            {
+                get { return "http://www.elitepvpers.com/forum/" + Section.URLName + "/announcement-" + Title.URLEscape() + ".html"; }
+            }
+
+            public Announcement(Section section, uint id = 0)
+                : base(id)
+            {
+                Section = section;
+                Begins = new DateTime();
+                Ends = new DateTime();
+            }
+        }
+
         /// <summary>
         /// List of all announcements available for this section
         /// </summary>
         public List<Announcement> Announcements { get; set; }
 
+        public override string URL
+        {
+            get { return "http://www.elitepvpers.com/forum/" + URLName + "/"; }
+        }
 
         public Section(uint id, string urlName)
             : base(id)
@@ -86,7 +97,7 @@ namespace epvpapi
 
                 foreach (var announcementNode in sectionNodes.Take(sectionNodes.Count - 1)) // ignore the last node since that is no actual announcement
                 {
-                    Announcement announcement = new Announcement();
+                    Announcement announcement = new Announcement(this);
 
                     var firstLine = announcementNode.SelectSingleNode("td[2]/div[1]");
                     if (firstLine != null)
@@ -150,6 +161,7 @@ namespace epvpapi
                 foreach(var threadNode in totalThreadNodes)
                 {
                     SectionThread parsedThread = new SectionThread(0, this);
+                    parsedThread.Posts.Add(new SectionPost(0, parsedThread));
 
                     var previewContentNode = threadNode.SelectSingleNode("td[3]");
                     parsedThread.PreviewContent = (previewContentNode != null) ? (previewContentNode.Attributes.Contains("title")) ? previewContentNode.Attributes["title"].Value : "" : "";

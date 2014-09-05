@@ -31,13 +31,22 @@ namespace epvpapi
         /// </summary>
         public short Icon { get; set; }
 
+        public SectionThread Thread { get; set; }
+
+        public override string URL
+        {
+            get { return "http://www.elitepvpers.com/forum/joining-e-pvp/" + Thread.ID + "-" + Thread.Posts.First().Title.URLEscape() + ".html"; }
+        }
+
         public SectionPost(string content = null, string title = null)
-            : this(0, content, title)
+            : this(0, new SectionThread(new Section(0, "")), content, title)
         {  }
 
-        public SectionPost(uint id, string content = null, string title = null)
-            : base(0, content, title)
-        { }
+        public SectionPost(uint id, SectionThread thread, string content = null, string title = null)
+            : base(id, content, title)
+        {
+            Thread = thread;
+        }
 
         /// <summary>
         /// Reports the <c>SectionPost</c> using the built-in report function

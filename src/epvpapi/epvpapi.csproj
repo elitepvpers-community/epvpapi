@@ -85,7 +85,7 @@
     <Compile Include="TBM\SecretWord.cs" />
     <Compile Include="TBM\Transaction.cs" />
     <Compile Include="Thread.cs" />
-    <Compile Include="UniqueObject.cs" />
+    <Compile Include="UniqueWebObject.cs" />
     <Compile Include="User.cs" />
     <Compile Include="VisitorMessage.cs" />
   </ItemGroup>

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace epvpapi
 {
-    public class Blog : UniqueObject
+    public class Blog : UniqueWebObject
     {
         public class Entry : Post
         {
@@ -40,6 +40,12 @@ namespace epvpapi
             }
 
             public List<string> Tags { get; set; }
+            public Blog Blog { get; set; }
+
+            public override string URL
+            {
+                get { return "http://www.elitepvpers.com/forum/blogs/" + Blog.Owner.ID + "-" + Blog.Owner.Name.URLEscape() + "/" + ID + "-" + Title.URLEscape() + ".html"; }
+            }
 
             public Entry(uint id, string content, string title = null)
                 : base(id, content, title)
@@ -124,11 +130,18 @@ namespace epvpapi
 
         public List<Entry> Entries { get; set; }
         public DateTime LastEntry { get; set; }
+        public User Owner { get; set; }
 
-        public Blog(uint id = 0):
-            base(id)
+        public override string URL
+        {
+            get { return "http://www.elitepvpers.com/forum/blogs/" + Owner.ID + "-" + Owner.Name.URLEscape() + ".html"; }
+        }
+
+        public Blog(User owner) :
+            base(owner.ID)
         {
             Entries = new List<Entry>();
+            Owner = owner;
         }
     }
 }

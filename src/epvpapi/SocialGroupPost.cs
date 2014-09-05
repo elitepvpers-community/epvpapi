@@ -14,6 +14,11 @@ namespace epvpapi
         /// </summary>
         public SocialGroupThread Thread { get; set; }
 
+        public override string URL
+        {
+            get { return Thread.URL + "#gmessage" + ID; }
+        }
+
         public SocialGroupPost(uint id, string content = null)
             : base(id, content)
         { }

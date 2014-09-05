@@ -10,7 +10,7 @@ namespace epvpapi
     /// <summary>
     /// Base class for messages within the forum
     /// </summary>
-    public abstract class Message : UniqueObject
+    public abstract class Message : UniqueWebObject
     {
         /// <summary>
         /// Additional options that can be set when posting messages
@@ -33,6 +33,7 @@ namespace epvpapi
         /// Date and time when the message was created
         /// </summary>
         public DateTime Date { get; set; }
+
 
         public Message(uint id)
             : this(id, null)

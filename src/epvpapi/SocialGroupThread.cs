@@ -19,6 +19,14 @@ namespace epvpapi
         /// </summary>
         public List<SocialGroupPost> Posts { get; set; }
 
+        public override string URL
+        {
+            get { return "http://www.elitepvpers.com/forum/groups/" + SocialGroup.ID 
+                                                                    + "-" + SocialGroup.Name.URLEscape() 
+                                                                    + "-d" + ID + "-" 
+                                                                    + Posts.First().Title.URLEscape() + ".html"; }
+        }
+
         public SocialGroupThread(uint id, SocialGroup socialGroup)
             : base(id)
         {

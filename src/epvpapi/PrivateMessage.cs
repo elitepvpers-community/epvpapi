@@ -72,6 +72,10 @@ namespace epvpapi
         /// </summary>
         public bool Unread { get; set; }
 
+        public override string URL
+        {
+            get { return "http://www.elitepvpers.com/forum/private.php?do=showpm&pmid=" + ID; }
+        }
 
         public PrivateMessage(uint id)
             : this(0, null, null)

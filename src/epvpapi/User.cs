@@ -15,7 +15,7 @@ namespace epvpapi
     /// <summary>
     /// Represents an user in elitepvpers
     /// </summary>
-    public class User : UniqueObject
+    public class User : UniqueWebObject
     {
         /// <summary>
         /// Available usergroups an user can have 
@@ -361,13 +361,9 @@ namespace epvpapi
         /// <summary>
         /// Web URL to the profile page
         /// </summary>
-        public string URL 
+        public override string URL 
         {
-            get 
-            {
-                string escapedUserName = Regex.Replace(Name, "([^a-zA-Z0-9]+)", "-").ToLower(); // by default, all usernames are escaped in links by vBulletin itself
-                return "http://www.elitepvpers.com/forum/members/" + ID + "-" + escapedUserName + ".html";
-            }
+            get { return "http://www.elitepvpers.com/forum/members/" + ID + "-" + Name.URLEscape() + ".html"; }
         }
 
         public User(uint id = 0)
@@ -380,7 +376,7 @@ namespace epvpapi
             : base(id)
         {
             Name = name;
-            Blog = new Blog();
+            Blog = new Blog(this);
             LastActivity = new DateTime();
             Ranks = new List<Rank>();
             Namecolor = "black";

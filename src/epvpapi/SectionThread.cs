@@ -43,6 +43,19 @@ namespace epvpapi
         public uint Rating { get; set; }
 
 
+        public string Title
+        {
+            get { return (Posts.Count > 0) ? Posts.First().Title : ""; }
+            set { Posts.First().Title = (Posts.Count > 0) ? value : ""; }
+        }
+
+        public override string URL
+        {
+            get { return "http://www.elitepvpers.com/forum/" + Section.URLName + "/" 
+                                                             + ID + "-" + Title.URLEscape() 
+                                                             + ".html"; }
+        }
+
         public SectionThread(Section section)
             : this(0, section)
         { }
@@ -51,7 +64,7 @@ namespace epvpapi
             : base(id)
         {
             Section = section;
-            Posts = new List<SectionPost>() { new SectionPost() };
+            Posts = new List<SectionPost>();
         }
 
         /// <summary>

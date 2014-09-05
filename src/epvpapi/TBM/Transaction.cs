@@ -11,7 +11,7 @@ namespace epvpapi.TBM
     /// <summary>
     /// Represents a <c>Transaction</c> made using The Black Market
     /// </summary>
-    public class Transaction : UniqueObject
+    public class Transaction : UniqueWebObject
     {
         /// <summary>
         /// User that sent the <c>EliteGold</c>
@@ -37,6 +37,11 @@ namespace epvpapi.TBM
         /// Date and Time indicating when the <c>Transaction</c> was made
         /// </summary>
         public DateTime Time { get; set; }
+
+        public override string URL
+        {
+            get { return "http://www.elitepvpers.com/theblackmarket/transaction/" + ID; }
+        }
 
         public Transaction(uint id)
             : base(id)
