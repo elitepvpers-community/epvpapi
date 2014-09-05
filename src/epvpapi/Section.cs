@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace epvpapi
 {
     /// <summary>
-    /// Represents a category in elitepvpers
+    /// Represents a subforum
     /// </summary>
     public class Section : UniqueObject
     {
@@ -53,16 +53,12 @@ namespace epvpapi
         /// </summary>
         public List<Announcement> Announcements { get; set; }
 
-        /// <summary>
-        /// Some sections may have subsections that are located within the owning section
-        /// </summary>
-        public List<Section> Subsections { get; set; }
 
-        public Section(uint id)
+        public Section(uint id, string urlName)
             : base(id)
         {
             Threads = new List<SectionThread>();
-            Subsections = new List<Section>();
+            URLName = urlName;
         }
 
         public void Update(Session session)
@@ -123,6 +119,41 @@ namespace epvpapi
                     Announcements.Add(announcement);
                 }
             }
+        }
+
+        public static Section Main
+        {
+            get { return new Section(206, "main"); }
+        }
+
+        public static Section Suggestions
+        {
+            get { return new Section(749, "suggestions"); }
+        }
+
+        public static Section JoiningElitepvpers
+        {
+            get { return new Section(210, "joining-e-pvp"); }
+        }
+
+        public static Section ContentTeamApplications
+        {
+            get { return new Section(564, "content-team-applications"); }
+        }
+
+        public static Section ComplaintArea
+        {
+            get { return new Section(466, "complaint-area"); }
+        }
+
+        public static Section TBMRatingSupport
+        {
+            get { return new Section(770, "tbm-rating-support"); }
+        }
+
+        public static Section EliteGoldSupport
+        {
+            get { return new Section(614, "elite-gold-support"); }
         }
     }
 }
