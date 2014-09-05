@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace epvpapi
@@ -247,6 +248,19 @@ namespace epvpapi
                          });
 
             Posts.Add(post);
+        }
+
+        /// <summary>
+        /// Retrieves the thread ID of the given URL
+        /// </summary>
+        /// <param name="url"> URL being parsed </param>
+        /// <returns> Retrieved thread ID </returns>
+        public static uint FromURL(string url)
+        {
+            var match = Regex.Match(url, @"http://www.elitepvpers.com/forum/\S+/(\d+)-\S+.html");
+            if (match.Groups.Count < 2) throw new ParsingFailedException("User could not be exported from the given URL");
+
+            return Convert.ToUInt32(match.Groups[1].Value);
         }
     }
 }

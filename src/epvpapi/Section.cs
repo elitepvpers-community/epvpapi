@@ -170,6 +170,7 @@ namespace epvpapi
                     if(titleNode.Id.Contains("thread_gotonew")) // new threads got an additional image displayed (left from the title) wrapped in an 'a' element for quick access to the new reply function
                         titleNode = threadNode.SelectSingleNode("td[3]/div[1]/a[2]");
                     parsedThread.Posts.First().Title = (titleNode != null) ? titleNode.InnerText : "";
+                    parsedThread.ID = (titleNode != null) ? (titleNode.Attributes.Contains("href")) ? SectionThread.FromURL(titleNode.Attributes["href"].Value) : 0 : 0;
 
                     if (stickyThreadNodes.Any(stickyThreadNode => stickyThreadNode == threadNode))
                         parsedThread.Sticked = true;
