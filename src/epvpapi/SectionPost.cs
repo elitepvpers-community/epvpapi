@@ -31,18 +31,13 @@ namespace epvpapi
         /// </summary>
         public short Icon { get; set; }
 
-        /// <summary>
-        /// Thread that contains the post
-        /// </summary>
-        public SectionThread Thread { get; set; }
+        public SectionPost(string content = null, string title = null)
+            : this(0, content, title)
+        {  }
 
-
-        public SectionPost(uint id, SectionThread thread)
-            : base(id)
-        {
-            Thread = thread;
-        }
-
+        public SectionPost(uint id, string content = null, string title = null)
+            : base(0, content, title)
+        { }
 
         /// <summary>
         /// Reports the <c>SectionPost</c> using the built-in report function

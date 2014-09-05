@@ -71,6 +71,7 @@ namespace epvpapi
             doc.LoadHtml(res.ToString());
 
             ParseAnnouncements(doc);
+            ParseThreads(doc);
         }
 
         protected void ParseAnnouncements(HtmlDocument doc)
@@ -117,6 +118,51 @@ namespace epvpapi
                     }
 
                     Announcements.Add(announcement);
+                }
+            }
+        }
+
+        protected void ParseThreads(HtmlDocument doc)
+        {
+            var threadFrameNode = doc.GetElementbyId("threadbits_forum_" + ID);
+            if(threadFrameNode != null)
+            {
+                var threadNodes = new List<HtmlNode>(threadFrameNode.GetElementsByTagName("tr"));
+                var stickyThreadsBeginNode = threadNodes.Find(node => ((node.SelectSingleNode("td[1]/strong[1]") != null) ? node.SelectSingleNode("td[1]/strong[1]").InnerText : "") == "Sticky Threads");
+                List<HtmlNode> normalThreadNodes = new List<HtmlNode>();
+                List<HtmlNode> stickyThreadNodes = new List<HtmlNode>();
+
+                if(stickyThreadsBeginNode != null) // if there are any sticky threads present
+                {
+                    var normalThreadsBeginNode = threadNodes.Find(node => ((node.SelectSingleNode("td[1]") != null) ? node.SelectSingleNode("td[1]").InnerText : "") == "Normal Threads");
+                    if(normalThreadsBeginNode != null)
+                    {
+                        // extract the productive threads into their own sublists, ignore the leading identifiers (= +1) that are displayed as section divider ('Sticky Threads', 'Normal Threads' ...)
+                        stickyThreadNodes = threadNodes.GetRange(threadNodes.IndexOf(stickyThreadsBeginNode) + 1, threadNodes.IndexOf(normalThreadsBeginNode) - threadNodes.IndexOf(stickyThreadsBeginNode) - 1);
+                        normalThreadNodes = threadNodes.GetRange(threadNodes.IndexOf(normalThreadsBeginNode) + 1, threadNodes.Count - stickyThreadNodes.Count - 2); // -2 since we have 2 dividers
+                    }
+                }
+
+                List<HtmlNode> totalThreadNodes = new List<HtmlNode>();
+                totalThreadNodes.InsertRange(totalThreadNodes.Count, normalThreadNodes);
+                totalThreadNodes.InsertRange(totalThreadNodes.Count - 1, stickyThreadNodes);
+
+                foreach(var threadNode in totalThreadNodes)
+                {
+                    SectionThread parsedThread = new SectionThread(0, this);
+
+                    var previewContentNode = threadNode.SelectSingleNode("td[3]");
+                    parsedThread.PreviewContent = (previewContentNode != null) ? (previewContentNode.Attributes.Contains("title")) ? previewContentNode.Attributes["title"].Value : "" : "";
+
+                    var titleNode = threadNode.SelectSingleNode("td[3]/div[1]/a[1]");
+                    if(titleNode.Id.Contains("thread_gotonew")) // new threads got an additional image displayed (left from the title) wrapped in an 'a' element for quick access to the new reply function
+                        titleNode = threadNode.SelectSingleNode("td[3]/div[1]/a[2]");
+                    parsedThread.Posts.First().Title = (titleNode != null) ? titleNode.InnerText : "";
+
+                    if (stickyThreadNodes.Any(stickyThreadNode => stickyThreadNode == threadNode))
+                        parsedThread.Sticked = true;
+
+                    Threads.Add(parsedThread);
                 }
             }
         }

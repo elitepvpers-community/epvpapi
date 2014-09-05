@@ -43,13 +43,16 @@ namespace epvpapi
         public uint Rating { get; set; }
 
 
+        public SectionThread(Section section)
+            : this(0, section)
+        { }
+
         public SectionThread(uint id, Section section)
             : base(id)
         {
             Section = section;
-            Posts = new List<SectionPost>();
+            Posts = new List<SectionPost>() { new SectionPost() };
         }
-
 
         /// <summary>
         /// Creates a <c>SectionThread</c>
