@@ -172,6 +172,9 @@ namespace epvpapi
                     parsedThread.Posts.First().Title = (titleNode != null) ? titleNode.InnerText : "";
                     parsedThread.ID = (titleNode != null) ? (titleNode.Attributes.Contains("href")) ? SectionThread.FromURL(titleNode.Attributes["href"].Value) : 0 : 0;
 
+                    var threadStatusIconNode = threadNode.SelectSingleNode("td[1]/img[1]");
+                    parsedThread.Closed = (threadStatusIconNode != null) ? (threadStatusIconNode.Attributes.Contains("src")) ? threadStatusIconNode.Attributes["src"].Value.Contains("lock") : false : false; 
+
                     if (stickyThreadNodes.Any(stickyThreadNode => stickyThreadNode == threadNode))
                         parsedThread.Sticked = true;
 
