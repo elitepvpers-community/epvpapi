@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace epvpapi
@@ -173,8 +174,19 @@ namespace epvpapi
                     parsedThread.ID = (titleNode != null) ? (titleNode.Attributes.Contains("href")) ? SectionThread.FromURL(titleNode.Attributes["href"].Value) : 0 : 0;
 
                     var threadStatusIconNode = threadNode.SelectSingleNode("td[1]/img[1]");
-                    parsedThread.Closed = (threadStatusIconNode != null) ? (threadStatusIconNode.Attributes.Contains("src")) ? threadStatusIconNode.Attributes["src"].Value.Contains("lock") : false : false; 
+                    parsedThread.Closed = (threadStatusIconNode != null) ? (threadStatusIconNode.Attributes.Contains("src")) ? threadStatusIconNode.Attributes["src"].Value.Contains("lock") : false : false;
 
+                    var creatorNode = threadNode.SelectSingleNode("td[3]/div[2]/span[1]");
+                    if(creatorNode != null)
+                    {
+                        // if the thread has been rated, the element with the yellow stars shows up and is targeted as the first span element
+                        // then, the actual node where the information about the creator is stored is located one element below the rating element
+                        if (!creatorNode.Attributes.Contains("onclick")) 
+                            creatorNode = threadNode.SelectSingleNode("td[3]/div[2]/span[2]");
+
+                        parsedThread.Creator = new User(creatorNode.InnerText, creatorNode.Attributes.Contains("onclick") ? User.FromURL(creatorNode.Attributes["onclick"].Value) : 0);
+                    }
+                        
                     if (stickyThreadNodes.Any(stickyThreadNode => stickyThreadNode == threadNode))
                         parsedThread.Sticked = true;
 
