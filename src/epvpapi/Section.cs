@@ -30,11 +30,6 @@ namespace epvpapi
         /// </summary>
         public string Description { get; set; }
 
-        /// <summary>
-        /// List of all <c>SectionThread</c> objects representing the threads in the section
-        /// </summary>
-        public List<SectionThread> Threads { get; set; }
-
         public class Announcement : Post
         {
             public DateTime Begins { get; set; }
@@ -69,7 +64,6 @@ namespace epvpapi
         public Section(uint id, string urlName)
             : base(id)
         {
-            Threads = new List<SectionThread>();
             URLName = urlName;
         }
 
@@ -83,7 +77,6 @@ namespace epvpapi
             doc.LoadHtml(res.ToString());
 
             ParseAnnouncements(doc);
-            ParseThreads(doc);
         }
 
         protected void ParseAnnouncements(HtmlDocument doc)
@@ -134,32 +127,50 @@ namespace epvpapi
             }
         }
 
-        protected void ParseThreads(HtmlDocument doc)
+        /// <summary>
+        /// Loops through the section pages and retrieves the <c>SectionThread</c>s within this section
+        /// </summary>
+        /// <param name="session"> Session that is used for sending the request </param>
+        /// <param name="pages"> Amount of pages to request </param>
+        /// <param name="startIndex"> Index of the first page that will be requested </param>
+        /// <returns> List of all <c>SectionThread</c>s that could be obtained through the requests </returns>
+        public List<SectionThread> Threads(Session session, uint pages = 1, uint startIndex = 1)
         {
-            var threadFrameNode = doc.GetElementbyId("threadbits_forum_" + ID);
-            if(threadFrameNode != null)
+            session.ThrowIfInvalid();
+            if (URLName == String.Empty) throw new ArgumentException("This section is not addressable, please specify the URLName property before using this function");
+
+            List<SectionThread> parsedThreads = new List<SectionThread>();
+            for (uint i = startIndex; i <= pages; ++i)
             {
+                Response res = session.Get("http://www.elitepvpers.com/forum/" + URLName + "/index" + i + ".html");
+                HtmlDocument doc = new HtmlDocument();
+                doc.LoadHtml(res.ToString());
+
+                var threadFrameNode = doc.GetElementbyId("threadbits_forum_" + ID);
+                if (threadFrameNode == null) continue;
+                
                 var threadNodes = new List<HtmlNode>(threadFrameNode.GetElementsByTagName("tr"));
+                var normalThreadsBeginNode = threadNodes.Find(node => ((node.SelectSingleNode("td[1]") != null) ? node.SelectSingleNode("td[1]").InnerText : "") == "Normal Threads");
                 var stickyThreadsBeginNode = threadNodes.Find(node => ((node.SelectSingleNode("td[1]/strong[1]") != null) ? node.SelectSingleNode("td[1]/strong[1]").InnerText : "") == "Sticky Threads");
                 List<HtmlNode> normalThreadNodes = new List<HtmlNode>();
                 List<HtmlNode> stickyThreadNodes = new List<HtmlNode>();
-
-                if(stickyThreadsBeginNode != null) // if there are any sticky threads present
-                {
-                    var normalThreadsBeginNode = threadNodes.Find(node => ((node.SelectSingleNode("td[1]") != null) ? node.SelectSingleNode("td[1]").InnerText : "") == "Normal Threads");
-                    if(normalThreadsBeginNode != null)
-                    {
-                        // extract the productive threads into their own sublists, ignore the leading identifiers (= +1) that are displayed as section divider ('Sticky Threads', 'Normal Threads' ...)
-                        stickyThreadNodes = threadNodes.GetRange(threadNodes.IndexOf(stickyThreadsBeginNode) + 1, threadNodes.IndexOf(normalThreadsBeginNode) - threadNodes.IndexOf(stickyThreadsBeginNode) - 1);
-                        normalThreadNodes = threadNodes.GetRange(threadNodes.IndexOf(normalThreadsBeginNode) + 1, threadNodes.Count - stickyThreadNodes.Count - 2); // -2 since we have 2 dividers
-                    }
-                }
-
                 List<HtmlNode> totalThreadNodes = new List<HtmlNode>();
-                totalThreadNodes.InsertRange(totalThreadNodes.Count, normalThreadNodes);
-                totalThreadNodes.InsertRange(totalThreadNodes.Count - 1, stickyThreadNodes);
 
-                foreach(var threadNode in totalThreadNodes)
+                if (stickyThreadsBeginNode != null && normalThreadsBeginNode != null) // if there are any sticky threads present
+                {
+                    // extract the productive threads into their own sublists, ignore the leading identifiers (= +1) that are displayed as section divider ('Sticky Threads', 'Normal Threads' ...)
+                    stickyThreadNodes = threadNodes.GetRange(threadNodes.IndexOf(stickyThreadsBeginNode) + 1, threadNodes.IndexOf(normalThreadsBeginNode) - threadNodes.IndexOf(stickyThreadsBeginNode) - 1);
+                    normalThreadNodes = threadNodes.GetRange(threadNodes.IndexOf(normalThreadsBeginNode) + 1, threadNodes.Count - stickyThreadNodes.Count - 2); // -2 since we have 2 dividers
+
+                    totalThreadNodes.InsertRange(totalThreadNodes.Count, normalThreadNodes);
+                    totalThreadNodes.InsertRange((totalThreadNodes.Count != 0) ? totalThreadNodes.Count - 1 : 0, stickyThreadNodes);
+                }
+                else
+                {
+                    totalThreadNodes = threadNodes;
+                }               
+
+                foreach (var threadNode in totalThreadNodes)
                 {
                     SectionThread parsedThread = new SectionThread(0, this);
                     parsedThread.Posts.Add(new SectionPost(0, parsedThread));
@@ -168,7 +179,7 @@ namespace epvpapi
                     parsedThread.PreviewContent = (previewContentNode != null) ? (previewContentNode.Attributes.Contains("title")) ? previewContentNode.Attributes["title"].Value : "" : "";
 
                     var titleNode = threadNode.SelectSingleNode("td[3]/div[1]/a[1]");
-                    if(titleNode.Id.Contains("thread_gotonew")) // new threads got an additional image displayed (left from the title) wrapped in an 'a' element for quick access to the new reply function
+                    if (titleNode.Id.Contains("thread_gotonew")) // new threads got an additional image displayed (left from the title) wrapped in an 'a' element for quick access to the new reply function
                         titleNode = threadNode.SelectSingleNode("td[3]/div[1]/a[2]");
                     parsedThread.Posts.First().Title = (titleNode != null) ? titleNode.InnerText : "";
                     parsedThread.ID = (titleNode != null) ? (titleNode.Attributes.Contains("href")) ? SectionThread.FromURL(titleNode.Attributes["href"].Value) : 0 : 0;
@@ -177,28 +188,30 @@ namespace epvpapi
                     parsedThread.Closed = (threadStatusIconNode != null) ? (threadStatusIconNode.Attributes.Contains("src")) ? threadStatusIconNode.Attributes["src"].Value.Contains("lock") : false : false;
 
                     var creatorNode = threadNode.SelectSingleNode("td[3]/div[2]/span[1]");
-                    if(creatorNode != null)
+                    if (creatorNode != null)
                     {
                         // if the thread has been rated, the element with the yellow stars shows up and is targeted as the first span element
                         // then, the actual node where the information about the creator is stored is located one element below the rating element
-                        if (!creatorNode.Attributes.Contains("onclick")) 
+                        if (!creatorNode.Attributes.Contains("onclick"))
                             creatorNode = threadNode.SelectSingleNode("td[3]/div[2]/span[2]");
 
                         parsedThread.Creator = new User(creatorNode.InnerText, creatorNode.Attributes.Contains("onclick") ? User.FromURL(creatorNode.Attributes["onclick"].Value) : 0);
                     }
 
                     var repliesNode = threadNode.SelectSingleNode("td[5]/a[1]");
-                    parsedThread.Replies = (repliesNode != null) ? (uint) Convert.ToDouble(repliesNode.InnerText) : 0;
+                    parsedThread.Replies = (repliesNode != null) ? (uint)Convert.ToDouble(repliesNode.InnerText) : 0;
 
                     var viewsNode = threadNode.SelectSingleNode("td[6]");
-                    parsedThread.Views = (viewsNode != null) ? (uint) Convert.ToDouble(viewsNode.InnerText) : 0;
-    
+                    parsedThread.Views = (viewsNode != null) ? (uint)Convert.ToDouble(viewsNode.InnerText) : 0;
+
                     if (stickyThreadNodes.Any(stickyThreadNode => stickyThreadNode == threadNode))
                         parsedThread.Sticked = true;
 
-                    Threads.Add(parsedThread);
+                    parsedThreads.Add(parsedThread);
                 }
             }
+
+            return parsedThreads;
         }
 
         public static Section Main
