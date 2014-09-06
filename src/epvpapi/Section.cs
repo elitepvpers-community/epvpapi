@@ -186,7 +186,13 @@ namespace epvpapi
 
                         parsedThread.Creator = new User(creatorNode.InnerText, creatorNode.Attributes.Contains("onclick") ? User.FromURL(creatorNode.Attributes["onclick"].Value) : 0);
                     }
-                        
+
+                    var repliesNode = threadNode.SelectSingleNode("td[5]/a[1]");
+                    parsedThread.Replies = (repliesNode != null) ? (uint) Convert.ToDouble(repliesNode.InnerText) : 0;
+
+                    var viewsNode = threadNode.SelectSingleNode("td[6]");
+                    parsedThread.Views = (viewsNode != null) ? (uint) Convert.ToDouble(viewsNode.InnerText) : 0;
+    
                     if (stickyThreadNodes.Any(stickyThreadNode => stickyThreadNode == threadNode))
                         parsedThread.Sticked = true;
 

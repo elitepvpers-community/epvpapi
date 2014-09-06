@@ -43,6 +43,10 @@ namespace epvpapi
         /// </summary>
         public uint Rating { get; set; }
 
+        /// <summary>
+        /// Amount of views that have been recorded
+        /// </summary>
+        public uint Views { get; set; }
 
         public string Title
         {
