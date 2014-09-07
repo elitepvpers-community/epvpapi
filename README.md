@@ -10,6 +10,7 @@ These pages provide explanations and samples on how to properly use the library.
 * [Shoutbox](https://github.com/Mostey/epvpapi/wiki/Shoutbox)
 * [Private Messages](https://github.com/Mostey/epvpapi/wiki/Private-Messages)
 * [Blogs](https://github.com/Mostey/epvpapi/wiki/Blogs)
+* [Sections](https://github.com/Mostey/epvpapi/wiki/Sections)
 
 License
 ===
