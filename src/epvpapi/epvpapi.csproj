@@ -56,14 +56,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Blog.cs" />
-    <Compile Include="Connection\UserSession.cs" />
+    <Compile Include="Connection\ProfileSession.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="IDefaultUpdatable.cs" />
     <Compile Include="IDeletable.cs" />
     <Compile Include="InsufficientAccessException.cs" />
     <Compile Include="Connection\InvalidSessionException.cs" />
     <Compile Include="IReasonableDeletable.cs" />
     <Compile Include="InvalidCredentialsException.cs" />
     <Compile Include="IReportable.cs" />
+    <Compile Include="ISpecializedUpdateable.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="ParsingFailedException.cs" />
     <Compile Include="Post.cs" />

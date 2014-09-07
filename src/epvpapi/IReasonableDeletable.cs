@@ -17,6 +17,6 @@ namespace epvpapi
         /// </summary>
         /// <param name="session"> Session that is used for sending the request </param>
         /// <param name="reason"> Reason for the deletion </param>
-        void Delete<T>(UserSession<T> session, string reason) where T : User;
+        void Delete<T>(ProfileSession<T> session, string reason) where T : User;
     }
 }

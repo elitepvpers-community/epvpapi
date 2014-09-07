@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace epvpapi
 {
-    public class PrivateMessage : Post, IReportable
+    public class PrivateMessage : Post, IReportable, IDefaultUpdatable
     {
         public class Folder
         {
@@ -106,7 +106,7 @@ namespace epvpapi
         /// Certain requirements must be fulfilled in order to send messages automatically without entering a captcha:
         /// - More than 20 posts OR the <c>User.Rank.Premium</c> rank OR the <c>User.Rank.EliteGoldTrader</c> rank
         /// </remarks>
-        public void Send<T>(UserSession<T> session, Settings settings = Settings.ParseURL | Settings.ShowSignature) where T : User
+        public void Send<T>(ProfileSession<T> session, Settings settings = Settings.ParseURL | Settings.ShowSignature) where T : User
         {
             session.ThrowIfInvalid();
             if (session.User.Posts <= 20 && !session.User.HasRank(User.Rank.Premium) && !session.User.HasRank(User.Rank.EliteGoldTrader))

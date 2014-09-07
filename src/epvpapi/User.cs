@@ -15,7 +15,7 @@ namespace epvpapi
     /// <summary>
     /// Represents an user in elitepvpers
     /// </summary>
-    public class User : UniqueWebObject
+    public class User : UniqueWebObject, ISpecializedUpdatable
     {
         /// <summary>
         /// Available usergroups an user can have 
@@ -361,7 +361,7 @@ namespace epvpapi
         /// <summary>
         /// Web URL to the profile page
         /// </summary>
-        public override string URL 
+        public override string URL
         {
             get { return "http://www.elitepvpers.com/forum/members/" + ID + "-" + Name.URLEscape() + ".html"; }
         }
@@ -376,7 +376,7 @@ namespace epvpapi
             : base(id)
         {
             Name = name;
-            Blog = new Blog(this);
+            Blog = new Blog(this); // the blog id is equal to the user id since every user can have just one blog which is bound to the user's profile
             LastActivity = new DateTime();
             Ranks = new List<Rank>();
             Namecolor = "black";
@@ -402,7 +402,7 @@ namespace epvpapi
             return highestRank;
         }
 
-        protected void ParseAbout<T>(UserSession<T> session, HtmlDocument doc) where T : User
+        protected void ParseAbout<T>(ProfileSession<T> session, HtmlDocument doc) where T : User
         {
             // Parsing additional information
             // In case the user is the logged in user, all fields are editable and therefore got his own ids. 
@@ -457,7 +457,7 @@ namespace epvpapi
             }
         }
 
-        protected void ParseStatistics<T>(UserSession<T> session, HtmlDocument doc) where T : User
+        protected void ParseStatistics<T>(ProfileSession<T> session, HtmlDocument doc) where T : User
         {
             // Statistics
             HtmlNode statisticsRootNode = doc.GetElementbyId("collapseobj_stats");
@@ -720,7 +720,7 @@ namespace epvpapi
         /// Updates the user by requesting the profile
         /// </summary>
         /// <param name="session"> Session used for sending the request </param>
-        public void Update<T>(UserSession<T> session) where T : User
+        public void Update<T>(ProfileSession<T> session) where T : User
         {
             session.ThrowIfInvalid();
             Response res = session.Get("http://www.elitepvpers.com/forum/members/" + ID.ToString() + "--.html");

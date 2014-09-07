@@ -112,7 +112,7 @@ namespace epvpapi
         /// Deletes the <c>SocialGroup</c>
         /// </summary>
         /// <param name="session"> Session that is used for sending the request </param>
-        public void Delete<T>(UserSession<T> session) where T : User
+        public void Delete<T>(ProfileSession<T> session) where T : User
         {
             if (session.User.GetHighestRank() < User.Rank.GlobalModerator && session.User != Maintainer) throw new InsufficientAccessException("You don't have enough access rights to delete this group");
             if (ID == 0) throw new ArgumentException("Group ID must not be zero");

@@ -17,7 +17,7 @@ namespace epvpapi
         /// <summary>
         /// Themed chat-channel of the shoutbox where messages can be stored, send and received. 
         /// </summary>
-        public class Channel
+        public class Channel : IDefaultUpdatable
         {
             /// <summary>
             /// A single shout send by an user
@@ -142,7 +142,7 @@ namespace epvpapi
             /// <param name="updateShoutbox"> When set to true, additional shoutbox information will be updated on the fly. This does not cause any major
             /// resources to be used since the information can be parsed from the same <c>HtmlDocument</c> as the channel history </param>
             /// <returns> Shouts listed in the channel history that could be obtained and parsed </returns>
-            public List<Shout> History(UserSession<PremiumUser> session, uint pageCount = 10, uint firstPage = 1, bool updateShoutbox = true)
+            public List<Shout> History(ProfileSession<PremiumUser> session, uint pageCount = 10, uint firstPage = 1, bool updateShoutbox = true)
             {
                 session.ThrowIfInvalid();
 
@@ -228,7 +228,7 @@ namespace epvpapi
         /// Updates statistics and information about the shoutbox
         /// </summary>
         /// <param name="session"> Session used for storing personal shoutbox data into the session user field </param>
-        public static void Update(UserSession<PremiumUser> session)
+        public static void Update(ProfileSession<PremiumUser> session)
         {
             session.ThrowIfInvalid();
 
@@ -248,7 +248,7 @@ namespace epvpapi
         /// <remarks>
         /// No requests will be send, the specified <c>HtmlDocument</c> will be used to parse the data
         /// </remarks>
-        public static void Update(UserSession<PremiumUser> session, HtmlDocument document)
+        public static void Update(ProfileSession<PremiumUser> session, HtmlDocument document)
         {
             HtmlNode statsBodyNode = document.DocumentNode.SelectSingleNode("/html[1]/body[1]/table[2]/tr[2]/td[1]/table[1]/tr[5]/td[1]/table[1]/tr[2]/td[1]/div[1]/div[1]/div[1]/table[1]/tr[1]/td[1]/table[1]");
             if (statsBodyNode == null) throw new ParsingFailedException("Updating the shoutbox information failed, root node is invalid or was not found");
