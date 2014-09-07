@@ -17,6 +17,10 @@ namespace epvpapi
         /// </summary>
         public User Recipient { get; set; }
 
+        public override string URL
+        {
+            get { return "http://www.elitepvpers.com/forum/members/467410-mostey.html#vmessage" + ID; }
+        }
 
         public VisitorMessage(uint id)
             : base(id)

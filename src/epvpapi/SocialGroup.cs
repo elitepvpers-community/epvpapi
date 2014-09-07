@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace epvpapi
 {
-    public class SocialGroup : UniqueObject, IDeletable
+    public class SocialGroup : UniqueWebObject, IDeletable
     {
         [Flags]
         public enum Options
@@ -60,6 +60,11 @@ namespace epvpapi
         /// Access restrictions of the group determining who can see- or who can enter the group
         /// </summary>
         public Access AccessMode { get; set; }
+
+        public override string URL
+        {
+            get { return "http://www.elitepvpers.com/forum/groups/" + ID + "-" + Name.URLEscape() + ".html"; }
+        }
 
         public SocialGroup(uint id)
             : base(id)

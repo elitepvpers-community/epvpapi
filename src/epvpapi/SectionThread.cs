@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace epvpapi
@@ -23,6 +24,16 @@ namespace epvpapi
         public bool Closed { get; set; }
 
         /// <summary>
+        /// If true, the thread was sticked from a moderator and will always stay at the top section of the threads
+        /// </summary>
+        public bool Sticked { get; set; }
+
+        /// <summary>
+        /// Preview of the thread content being displayed when hovering over the link
+        /// </summary>
+        public string PreviewContent { get; set; }
+
+        /// <summary>
         /// List of all posts in the thread
         /// </summary>
         public List<SectionPost> Posts { get; set; }
@@ -32,6 +43,27 @@ namespace epvpapi
         /// </summary>
         public uint Rating { get; set; }
 
+        /// <summary>
+        /// Amount of views that have been recorded
+        /// </summary>
+        public uint Views { get; set; }
+
+        public string Title
+        {
+            get { return (Posts.Count > 0) ? Posts.First().Title : ""; }
+            set { Posts.First().Title = (Posts.Count > 0) ? value : ""; }
+        }
+
+        public override string URL
+        {
+            get { return "http://www.elitepvpers.com/forum/" + Section.URLName + "/" 
+                                                             + ID + "-" + Title.URLEscape() 
+                                                             + ".html"; }
+        }
+
+        public SectionThread(Section section)
+            : this(0, section)
+        { }
 
         public SectionThread(uint id, Section section)
             : base(id)
@@ -39,7 +71,6 @@ namespace epvpapi
             Section = section;
             Posts = new List<SectionPost>();
         }
-
 
         /// <summary>
         /// Creates a <c>SectionThread</c>
@@ -96,6 +127,7 @@ namespace epvpapi
         {
             if (session.User.GetHighestRank() < User.Rank.GlobalModerator) throw new InsufficientAccessException("You don't have enough access rights to delete this thread");
             if (ID == 0) throw new System.ArgumentException("ID must not be empty");
+            session.ThrowIfInvalid();
 
             session.Post("http://www.elitepvpers.com/forum/postings.php",
                         new List<KeyValuePair<string, string>>()
@@ -108,6 +140,8 @@ namespace epvpapi
                             new KeyValuePair<string, string>("deletereason", reason),
 
                         });
+
+            Deleted = true;
         }
 
         /// <summary>
@@ -121,6 +155,7 @@ namespace epvpapi
         public void Close(Session session)
         {
             if (ID == 0) throw new System.ArgumentException("ID must not be empty");
+            session.ThrowIfInvalid();
 
             session.Post("http://www.elitepvpers.com/forum/postings.php",
                         new List<KeyValuePair<string, string>>()
@@ -131,6 +166,8 @@ namespace epvpapi
                             new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
                             new KeyValuePair<string, string>("pollid", String.Empty),
                         });
+
+            Closed = true;
         }
 
         /// <summary>
@@ -143,6 +180,7 @@ namespace epvpapi
         public void Open(Session session)
         {
             Close(session);
+            Closed = false;
         }
 
 
@@ -154,6 +192,7 @@ namespace epvpapi
         public void Rate(Session session, uint rating)
         {
             if (ID == 0) throw new System.ArgumentException("ID must not be empty");
+            session.ThrowIfInvalid();
 
             session.Post("http://www.elitepvpers.com/forum/threadrate.php",
                         new List<KeyValuePair<string, string>>()
@@ -182,6 +221,7 @@ namespace epvpapi
                           SectionPost.Settings settings = SectionPost.Settings.ParseURL | SectionPost.Settings.ShowSignature)
         {
             if (ID == 0) throw new ArgumentException("ID must not be empty");
+            session.ThrowIfInvalid();
 
             session.Post("http://www.elitepvpers.com/forum/newreply.php?do=postreply&t=" + ID,
                          new List<KeyValuePair<string, string>>() 
@@ -210,6 +250,21 @@ namespace epvpapi
                              new KeyValuePair<string, string>("rating", "0"),
                              new KeyValuePair<string, string>("openclose", "0")
                          });
+
+            Posts.Add(post);
+        }
+
+        /// <summary>
+        /// Retrieves the thread ID of the given URL
+        /// </summary>
+        /// <param name="url"> URL being parsed </param>
+        /// <returns> Retrieved thread ID </returns>
+        public static uint FromURL(string url)
+        {
+            var match = Regex.Match(url, @"http://www.elitepvpers.com/forum/\S+/(\d+)-\S+.html");
+            if (match.Groups.Count < 2) throw new ParsingFailedException("User could not be exported from the given URL");
+
+            return Convert.ToUInt32(match.Groups[1].Value);
         }
     }
 }

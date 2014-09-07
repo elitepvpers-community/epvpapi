@@ -15,7 +15,7 @@ namespace epvpapi
     /// <summary>
     /// Represents an user in elitepvpers
     /// </summary>
-    public class User : UniqueObject, ISpecializedUpdatable
+    public class User : UniqueWebObject, ISpecializedUpdatable
     {
         /// <summary>
         /// Available usergroups an user can have 
@@ -361,13 +361,9 @@ namespace epvpapi
         /// <summary>
         /// Web URL to the profile page
         /// </summary>
-        public string URL 
+        public override string URL
         {
-            get 
-            {
-                string escapedUserName = Regex.Replace(Name, "([^a-zA-Z0-9]+)", "-").ToLower(); // by default, all usernames are escaped in links by vBulletin itself
-                return "http://www.elitepvpers.com/forum/members/" + ID + "-" + escapedUserName + ".html";
-            }
+            get { return "http://www.elitepvpers.com/forum/members/" + ID + "-" + Name.URLEscape() + ".html"; }
         }
 
         public User(uint id = 0)
@@ -380,7 +376,7 @@ namespace epvpapi
             : base(id)
         {
             Name = name;
-            Blog = new Blog(id); // the blog id is equal to the user id since every user can have just one blog which is bound to the user's profile
+            Blog = new Blog(this); // the blog id is equal to the user id since every user can have just one blog which is bound to the user's profile
             LastActivity = new DateTime();
             Ranks = new List<Rank>();
             Namecolor = "black";
@@ -547,7 +543,6 @@ namespace epvpapi
                     }
                     else if (legendCaption.Contains("Blog -")) // users can specify their own blog name that is trailed behind the 'Blog -' string
                     {
-                        Blog.ID = ID; // the blog id is equal to the user id since every user can have just one blog which is bound to the user's profile
                         var blogEntriesNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
                         // skip the first 2 characters since the value always contains a leading ':' and whitespace 
                         Blog.Entries = new List<Blog.Entry>((blogEntriesNode != null) ? Convert.ToInt32(new string(blogEntriesNode.InnerText.Skip(2).ToArray())) : 0);
