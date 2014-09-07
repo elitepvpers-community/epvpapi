@@ -17,7 +17,7 @@ namespace epvpapi
         /// <summary>
         /// Themed chat-channel of the shoutbox where messages can be stored, send and received. 
         /// </summary>
-        public class Channel : IDefaultUpdatable
+        public class Channel
         {
             /// <summary>
             /// A single shout send by an user
@@ -38,11 +38,6 @@ namespace epvpapi
 
             public uint ID { get; set; }
             public string Name { get; set; }
-
-            /// <summary>
-            /// List of the most recent shouts available in the channel, updated on executing the <c>Update</c> function
-            /// </summary>
-            public List<Shout> Shouts { get; set; }
 
             public Channel(uint id, string name)
             {
@@ -74,7 +69,7 @@ namespace epvpapi
             /// Updates the most recent shouts usually displayed when loading the main page 
             /// </summary>
             /// <param name="session"> Session used for sending the request </param>
-            public void Update(Session session)
+            public List<Shout> Shouts(Session session)
             {
                 session.ThrowIfInvalid();
 
@@ -91,6 +86,8 @@ namespace epvpapi
                                                 new KeyValuePair<string, string>("s", String.Empty),
                                             });
 
+                List<Shout> shouts = new List<Shout>();
+
                 try
                 {
                     HtmlDocument doc = new HtmlDocument();
@@ -98,12 +95,11 @@ namespace epvpapi
 
                     // every shoutbox entry got 3 td nodes. One for the time, one for the username and one for the actual messages
                     // the target nodes are identified by their unique valign: top attribute
-                    List<HtmlNode> tdNodes = new List<HtmlNode>(doc.DocumentNode.GetElementsByTagName("td"));
+                    List<HtmlNode> tdNodes = new List<HtmlNode>(doc.DocumentNode.Descendants("td"));
                     List<HtmlNode> shoutboxNodes = new List<HtmlNode>(tdNodes.Where(node => node.Attributes.Any(attribute => attribute.Name == "valign" && attribute.Value == "top")));
 
                     List<List<HtmlNode>> shoutboxNodeGroups = shoutboxNodes.Split(3);
-                    
-                    Shouts = new List<Shout>();
+
                     foreach(var shoutboxNodeGroup in shoutboxNodeGroups)
                     {
                         if (shoutboxNodeGroup.Count != 3) continue; // every node group needs to have exactly 3 nodes in order to be valid
@@ -121,16 +117,21 @@ namespace epvpapi
                         HtmlNode userNameNode = shoutboxNodeGroup.ElementAt(1).SelectSingleNode(@"span[1]/a[1]/span[1]");
                         string username = (userNameNode != null) ? userNameNode.InnerText : "";
 
+                        HtmlNode userLinkNode = shoutboxNodeGroup.ElementAt(1).SelectSingleNode(@"span[1]/a[1]");
+                        uint userID = (userLinkNode != null) ? userLinkNode.Attributes.Contains("href") ? User.FromURL(userLinkNode.Attributes["href"].Value) : 0 : 0;
+
                         HtmlNode messageNode = shoutboxNodeGroup.ElementAt(2).SelectSingleNode(@"span[1]");
                         string message = (messageNode != null) ? messageNode.InnerText : "";
 
-                        Shouts.Add(new Shout(new PremiumUser(username), message, time));
+                        shouts.Add(new Shout(new PremiumUser(username, userID), message, time));
                     }
                 }
                 catch (HtmlWebException exception)
                 {
                     throw new ParsingFailedException("Parsing recent shouts from response content failed", exception);
                 }
+
+                return shouts;
             }
 
             /// <summary>
