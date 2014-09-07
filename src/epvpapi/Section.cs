@@ -214,39 +214,46 @@ namespace epvpapi
             return parsedThreads;
         }
 
+        private static Section _Main = new Section(206, "main"); 
         public static Section Main
         {
-            get { return new Section(206, "main"); }
+            get { return _Main; }
         }
 
+        private static Section _Suggestions = new Section(749, "suggestions");
         public static Section Suggestions
         {
-            get { return new Section(749, "suggestions"); }
+            get { return _Suggestions; }
         }
 
+        private static Section _JoiningElitepvpers = new Section(210, "joining-e-pvp");
         public static Section JoiningElitepvpers
         {
-            get { return new Section(210, "joining-e-pvp"); }
+            get { return _JoiningElitepvpers; }
         }
 
+        private static Section _ContentTeamApplications = new Section(564, "content-team-applications");
         public static Section ContentTeamApplications
         {
-            get { return new Section(564, "content-team-applications"); }
+            get { return _ContentTeamApplications; }
         }
 
+        private static Section _ComplaintArea = new Section(466, "complaint-area");
         public static Section ComplaintArea
         {
-            get { return new Section(466, "complaint-area"); }
+            get { return _ComplaintArea; }
         }
 
+        private static Section _TBMRatingSupport = new Section(770, "tbm-rating-support");
         public static Section TBMRatingSupport
         {
-            get { return new Section(770, "tbm-rating-support"); }
+            get { return _TBMRatingSupport; }
         }
 
+        private static Section _EliteGoldSupport = new Section(614, "elite-gold-support");
         public static Section EliteGoldSupport
         {
-            get { return new Section(614, "elite-gold-support"); }
+            get { return _EliteGoldSupport; }
         }
     }
 }
