@@ -170,5 +170,33 @@ namespace epvpapi.Connection
                 throw new RequestFailedException("The Session could not be resolved", exception);
             }
         }
+
+        /// <summary>
+        /// Performs a Multipart POST request
+        /// </summary>
+        /// <param name="url"> Location where to post the data </param>
+        /// <param name="content"> Content to post </param>
+        /// <returns> <c>Response</c> associated to the Request sent </returns>
+        public Response PostMultipartFormData(Uri url, MultipartFormDataContent content)
+        {
+            HttpClientHandler Handler = new HttpClientHandler()
+            {
+                UseCookies = true,
+                CookieContainer = Cookies,
+                AllowAutoRedirect = true
+            };
+
+            if (UseProxy)
+            {
+                Handler.UseProxy = true;
+                Handler.Proxy = Proxy;
+            }
+
+            HttpClient client = new HttpClient(Handler);
+
+            Task<HttpResponseMessage> response = client.PostAsync(url, content);
+            if (!response.Result.IsSuccessStatusCode) throw new RequestFailedException("Server returned " + response.Result.StatusCode);
+            return new Response(response.Result);
+        }
     }
 }

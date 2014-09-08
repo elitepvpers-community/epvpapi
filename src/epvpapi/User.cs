@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -405,6 +406,18 @@ namespace epvpapi
             }
 
             return highestRank;
+        }
+
+        public void SetAvatar(Session session, Image image)
+        {
+            MultipartFormDataContent content = new MultipartFormDataContent();
+            content.Add(new ByteArrayContent(image.Data), "upload", image.Name + image.Format);
+            content.Add(new StringContent(String.Empty), "s");
+            content.Add(new StringContent(session.SecurityToken), "securitytoken");
+            content.Add(new StringContent("updateavatar"), "do");
+            content.Add(new StringContent("0"), "avatarid");
+
+            session.PostMultipartFormData(new Uri("http://www.elitepvpers.com/forum/profile.php?do=updateavatar"), content);
         }
 
         protected void ParseAbout<T>(ProfileSession<T> session, HtmlDocument doc) where T : User
