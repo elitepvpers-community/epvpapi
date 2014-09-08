@@ -11,6 +11,7 @@ These pages provide explanations and samples on how to properly use the library.
 * [Private Messages](https://github.com/Mostey/epvpapi/wiki/Private-Messages)
 * [Blogs](https://github.com/Mostey/epvpapi/wiki/Blogs)
 * [Sections](https://github.com/Mostey/epvpapi/wiki/Sections)
+* [Users and Ranks](https://github.com/Mostey/epvpapi/wiki/Users-and-Ranks)
 
 License
 ===
