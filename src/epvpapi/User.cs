@@ -359,6 +359,11 @@ namespace epvpapi
         public string SteamID { get; set; }
 
         /// <summary>
+        /// Holds the URL to the avatar the user has set
+        /// </summary>
+        public string AvatarURL { get; set; }
+
+        /// <summary>
         /// Web URL to the profile page
         /// </summary>
         public override string URL
@@ -640,13 +645,13 @@ namespace epvpapi
             HtmlNode userNameNode = userNameBoxNode.SelectSingleNode("h1[1]/span[1]");
             if (userNameNode != null)
             {
-                Name = userNameNode.InnerText;
+                Name = userNameNode.InnerText.Strip();
             }
             else
             {
                 // In case the user has no special color, the <span> element will be missing and no attributes are used
                 userNameNode = userNameBoxNode.SelectSingleNode("h1[1]");
-                Name = (userNameNode != null) ? userNameNode.InnerText : String.Empty;
+                Name = (userNameNode != null) ? userNameNode.InnerText.Strip() : String.Empty;
             }
 
             HtmlNode userTitleNode = userNameBoxNode.SelectSingleNode("h2[1]");
@@ -680,11 +685,14 @@ namespace epvpapi
             var miniStatsRootNode = document.GetElementbyId("collapseobj_stats_mini");
             if (miniStatsRootNode == null) return;
 
-            miniStatsRootNode = miniStatsRootNode.SelectSingleNode("div[1]/table[1]/tr[1]/td[1]/dl[1]");
+            miniStatsRootNode = miniStatsRootNode.SelectSingleNode("div[1]/table[1]/tr[1]");
             if (miniStatsRootNode == null) return;
 
-            var miniStatsNodes = new List<HtmlNode>(miniStatsRootNode.GetElementsByTagName("dt"));
-            var miniStatsValueNodes = new List<HtmlNode>(miniStatsRootNode.GetElementsByTagName("dd"));
+            var fieldsRootNode = miniStatsRootNode.SelectSingleNode("td[1]/dl[1]");
+            if (fieldsRootNode == null) return;
+
+            var miniStatsNodes = new List<HtmlNode>(fieldsRootNode.GetElementsByTagName("dt"));
+            var miniStatsValueNodes = new List<HtmlNode>(fieldsRootNode.GetElementsByTagName("dd"));
 
             if (miniStatsNodes.Count != miniStatsValueNodes.Count) return;
 
@@ -714,6 +722,9 @@ namespace epvpapi
                     TBMProfile.Negative = (negativeRatingsNode != null) ? Convert.ToUInt32(negativeRatingsNode.InnerText) : TBMProfile.Negative;
                 }
             }
+
+            var avatarNode = miniStatsRootNode.SelectSingleNode("td[2]/img[1]");
+            AvatarURL = (avatarNode != null) ? avatarNode.Attributes.Contains("src") ? avatarNode.Attributes["src"].Value : "" : "";
         }
 
         /// <summary>
