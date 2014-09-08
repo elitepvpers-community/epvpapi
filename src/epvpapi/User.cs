@@ -408,14 +408,39 @@ namespace epvpapi
             return highestRank;
         }
 
+        /// <summary>
+        /// Removes/disables the current Avatar of the <c>User</c>
+        /// </summary>
+        /// <param name="session"> Session used for sending the request </param>
+        public void RemoveAvatar(Session session)
+        {
+            SetAvatar(session, new Image(), -1);
+        }
+
+        /// <summary>
+        /// Sets the Avatar of the <c>User</c>
+        /// </summary>
+        /// <param name="session"> Session used for sending the request </param>
+        /// <param name="image"> <c>Image</c> to set as new avatar </param>
         public void SetAvatar(Session session, Image image)
         {
+            SetAvatar(session, image, 0);
+        }
+
+        /// <summary>
+        /// Sets the Avatar of the <c>User</c>
+        /// </summary>
+        /// <param name="session"> Session used for sending the request </param>
+        /// <param name="image"> <c>Image</c> to set as new avatar </param>
+        /// <param name="changeType"> 0 for uploading a new avatar, -1 for deleting the old one without uploading a new one </param>
+        protected void SetAvatar(Session session, Image image, int changeType)
+        {
             MultipartFormDataContent content = new MultipartFormDataContent();
-            content.Add(new ByteArrayContent(image.Data), "upload", image.Name + image.Format);
+            content.Add(new ByteArrayContent(image.Data), "upload", (String.IsNullOrEmpty(image.Name)) ? "Unnamed.jpeg" : image.Name + image.Format);
             content.Add(new StringContent(String.Empty), "s");
             content.Add(new StringContent(session.SecurityToken), "securitytoken");
             content.Add(new StringContent("updateavatar"), "do");
-            content.Add(new StringContent("0"), "avatarid");
+            content.Add(new StringContent(changeType.ToString()), "avatarid");
 
             session.PostMultipartFormData(new Uri("http://www.elitepvpers.com/forum/profile.php?do=updateavatar"), content);
         }

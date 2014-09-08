@@ -1,36 +1,42 @@
-﻿using System;
+﻿using epvpapi.Connection;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace epvpapi
 {
-    /// <summary>
-    /// Represents an Image
-    /// </summary>
     public class Image
     {
         /// <summary>
-        /// Name of the picture in the used file system
+        /// Name that will be used for uploading and storing the <c>Image</c>
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// Extension of the picture in the used file system
+        /// Extension (.jpg, .png...)
         /// </summary>
         public string Format { get; set; }
 
         /// <summary>
-        /// Binary file data of the picture
+        /// Binary file data
         /// </summary>
         public byte[] Data { get; set; }
 
         public Image()
-        { }
+        {
+            Data = new byte[1024];
+        }
 
+        /// <summary>
+        /// Returns a valid <c>Image</c> object containing the image from the given path
+        /// </summary>
+        /// <param name="path"> Path to the image being loaded </param>
+        /// <returns> <c>Image</c> object containing the actual image from the given path </returns>
         public static Image FromFileSystem(string path)
         {
             if(!Image.IsValid(path)) throw new ArgumentException("Provided path is not a valid path to an image");
@@ -50,6 +56,17 @@ namespace epvpapi
             }
 
             return image;
+        }
+
+        /// <summary>
+        /// Downloads the <c>Image</c> from the given URL
+        /// </summary>
+        /// <param name="url"> URL from where to download </param>
+        /// <param name="imageFormat"> Extension of the <c>Image</c> used for uploading lateron </param>
+        /// <returns> <c>Image</c> object containing the just downloaded image </returns>
+        public static Image FromWeb(Uri url, string imageFormat = ".jpeg")
+        {
+            return new Image() { Data = new WebClient().DownloadData(url), Name = "Unnamed", Format = imageFormat };
         }
 
         /// <summary>
