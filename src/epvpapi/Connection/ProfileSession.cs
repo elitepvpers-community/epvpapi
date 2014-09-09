@@ -208,7 +208,9 @@ namespace epvpapi.Connection
         /// </summary>
         public Profile ConnectedProfile { get; private set; }
 
-        [Obsolete("This property has been replaced and will be removed soon, please use the new ConnectedProfile property to access the connected user.")]
+        /// <summary>
+        /// Shortcut for accessing the <c>User</c> object within the connected profile
+        /// </summary>
         public TUser User
         {
             get { return ConnectedProfile.User; }
@@ -244,7 +246,7 @@ namespace epvpapi.Connection
             Response res = Post("http://www.elitepvpers.com/forum/login.php?do=login",
                                         new List<KeyValuePair<string, string>>()
                                         {
-                                            new KeyValuePair<string, string>("vb_login_username", ConnectedProfile.User.Name),
+                                            new KeyValuePair<string, string>("vb_login_username", User.Name),
                                             new KeyValuePair<string, string>("cookieuser", "1"),
                                             new KeyValuePair<string, string>("s", String.Empty),
                                             new KeyValuePair<string, string>("securitytoken", "guest"),
@@ -255,7 +257,7 @@ namespace epvpapi.Connection
 
             Update();
             if (String.IsNullOrEmpty(SecurityToken))
-                throw new InvalidCredentialsException("Credentials entered for user " + ConnectedProfile.User.Name + " were invalid");
+                throw new InvalidCredentialsException("Credentials entered for user " + User.Name + " were invalid");
         }
 
         public override void Update()
@@ -263,7 +265,7 @@ namespace epvpapi.Connection
             base.Update();
           
             // Update the user associated with the session
-            ConnectedProfile.User.Update(this);
+            User.Update(this);
         }
 
         /// <summary>
@@ -273,7 +275,7 @@ namespace epvpapi.Connection
         {
             if (!Valid) throw new InvalidSessionException("Session is not valid, Cookies: " + Cookies.Count +
                                                           " | Security Token: " + SecurityToken +
-                                                          " | User: " + ConnectedProfile.User.Name);
+                                                          " | User: " + User.Name);
         }
     }
 }

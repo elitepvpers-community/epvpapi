@@ -60,7 +60,7 @@ namespace epvpapi.TBM
         /// <returns> List of <c>Transaction</c> objects representing the Transactions </returns>
         public static List<Transaction> All(ProfileSession<User> session, string secretword)
         {
-            Response res = session.Get("http://www.elitepvpers.com/theblackmarket/api/transactions.php?u=" + session.ConnectedProfile.User.ID + "&type=all&secretword=" + secretword);
+            Response res = session.Get("http://www.elitepvpers.com/theblackmarket/api/transactions.php?u=" + session.User.ID + "&type=all&secretword=" + secretword);
 
             try
             {
@@ -95,7 +95,7 @@ namespace epvpapi.TBM
         /// <returns> List of <c>Transaction</c> objects representing the received Transactions </returns>
         public static List<Transaction> Received(ProfileSession<User> session, string secretword)
         {
-            Response res = session.Get("http://www.elitepvpers.com/theblackmarket/api/transactions.php?u=" + session.ConnectedProfile.User.ID + "&type=received&secretword=" + secretword);
+            Response res = session.Get("http://www.elitepvpers.com/theblackmarket/api/transactions.php?u=" + session.User.ID + "&type=received&secretword=" + secretword);
 
             try
             {
@@ -106,7 +106,7 @@ namespace epvpapi.TBM
                     Transaction transaction = new Transaction(Convert.ToUInt32(jsonTransaction.eg_transactionid));
                     transaction.Note = jsonTransaction.note;
                     transaction.Sender = new User(Convert.ToString(jsonTransaction.eg_fromusername), Convert.ToUInt32(jsonTransaction.eg_from));
-                    transaction.Receiver = session.ConnectedProfile.User;
+                    transaction.Receiver = session.User;
                     transaction.EliteGold = Convert.ToInt32(jsonTransaction.amount);
                     transaction.Time = ((double)(Convert.ToDouble(jsonTransaction.dateline))).ToDateTime();
 
@@ -130,7 +130,7 @@ namespace epvpapi.TBM
         /// <returns> List of <c>Transaction</c> objects representing the Transactions sent </returns>
         public static List<Transaction> Sent(ProfileSession<User> session, string secretword)
         {
-            Response res = session.Get("http://www.elitepvpers.com/theblackmarket/api/transactions.php?u=" + session.ConnectedProfile.User.ID + "&type=sent&secretword=" + secretword);
+            Response res = session.Get("http://www.elitepvpers.com/theblackmarket/api/transactions.php?u=" + session.User.ID + "&type=sent&secretword=" + secretword);
 
             try
             {
@@ -141,7 +141,7 @@ namespace epvpapi.TBM
                     Transaction transaction = new Transaction(Convert.ToUInt32(jsonTransaction.eg_transactionid));
                     transaction.Note = jsonTransaction.note;
                     transaction.Receiver = new User(Convert.ToString(jsonTransaction.eg_tousername), Convert.ToUInt32(jsonTransaction.eg_to));
-                    transaction.Sender = session.ConnectedProfile.User;
+                    transaction.Sender = session.User;
                     transaction.EliteGold = Convert.ToInt32(jsonTransaction.amount);
                     transaction.Time = ((double)(Convert.ToDouble(jsonTransaction.dateline))).ToDateTime();
 

@@ -58,7 +58,7 @@ namespace epvpapi
                             new KeyValuePair<string, string>("do", "message"),
                             new KeyValuePair<string, string>("gmid", String.Empty),
                             new KeyValuePair<string, string>("posthash", String.Empty),
-                            new KeyValuePair<string, string>("loggedinuser", session.ConnectedProfile.User.ID.ToString()),
+                            new KeyValuePair<string, string>("loggedinuser", session.User.ID.ToString()),
                             new KeyValuePair<string, string>("groupid", socialGroup.ID.ToString()),
                             new KeyValuePair<string, string>("discussionid", String.Empty),
                             new KeyValuePair<string, string>("sbutton", "Nachricht+speichern"),
@@ -66,7 +66,7 @@ namespace epvpapi
                             new KeyValuePair<string, string>("parseame", "1"),
                         });
 
-            SocialGroupThread socialGroupThread = new SocialGroupThread(0, socialGroup) { Creator = session.ConnectedProfile.User, Deleted = false };
+            SocialGroupThread socialGroupThread = new SocialGroupThread(0, socialGroup) { Creator = session.User, Deleted = false };
             socialGroupThread.Posts.Insert(0, startPost);
             return socialGroupThread;
         }
@@ -79,7 +79,7 @@ namespace epvpapi
         /// <param name="reason"> Reason for the deletion </param>
         public void Delete<T>(ProfileSession<T> session, string reason) where T : User
         {
-            if (session.ConnectedProfile.User.GetHighestRank() < User.Rank.GlobalModerator && session.ConnectedProfile.User != SocialGroup.Maintainer) throw new InsufficientAccessException("You don't have enough access rights to delete this social group post");
+            if (session.User.GetHighestRank() < User.Rank.GlobalModerator && session.User != SocialGroup.Maintainer) throw new InsufficientAccessException("You don't have enough access rights to delete this social group post");
             if (ID == 0) throw new System.ArgumentException("ID must not be empty");
             session.ThrowIfInvalid();
 
@@ -118,7 +118,7 @@ namespace epvpapi
                             new KeyValuePair<string, string>("do", "message"),
                             new KeyValuePair<string, string>("gmid", String.Empty),
                             new KeyValuePair<string, string>("posthash", String.Empty),
-                            new KeyValuePair<string, string>("loggedinuser", session.ConnectedProfile.User.ID.ToString()),
+                            new KeyValuePair<string, string>("loggedinuser", session.User.ID.ToString()),
                             new KeyValuePair<string, string>("groupid", SocialGroup.ID.ToString()),
                             new KeyValuePair<string, string>("discussionid", ID.ToString()),
                             new KeyValuePair<string, string>("sbutton", "Post+Message"),

@@ -413,7 +413,7 @@ namespace epvpapi
         {
             // Parsing additional information
             // In case the user is the logged in user, all fields are editable and therefore got his own ids. 
-            if (this == session.ConnectedProfile.User)
+            if (this == session.User)
             {
                 HtmlNode biographyNode = doc.GetElementbyId("profilefield_value_1");
                 Biography = (biographyNode != null) ? biographyNode.SelectSingleNode("text()[1]").InnerText.Strip() : "";
@@ -526,7 +526,7 @@ namespace epvpapi
                     else if (legendCaption == "Diverse Informationen" || legendCaption == "General Information")
                     {
                         HtmlNode recommendationsNode = null;
-                        if (CurrentStatus != Status.Invisible || this == session.ConnectedProfile.User)
+                        if (CurrentStatus != Status.Invisible || this == session.User)
                             recommendationsNode = statisticsGroup.SelectSingleNode("ul[1]/li[3]/text()[1]");
                         else
                             recommendationsNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[1]");

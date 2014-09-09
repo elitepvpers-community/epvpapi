@@ -109,7 +109,7 @@ namespace epvpapi
         public void Send<T>(ProfileSession<T> session, Settings settings = Settings.ParseURL | Settings.ShowSignature) where T : User
         {
             session.ThrowIfInvalid();
-            if (session.ConnectedProfile.User.Posts <= 20 && !session.ConnectedProfile.User.HasRank(User.Rank.Premium) && !session.ConnectedProfile.User.HasRank(User.Rank.EliteGoldTrader))
+            if (session.User.Posts <= 20 && !session.User.HasRank(User.Rank.Premium) && !session.User.HasRank(User.Rank.EliteGoldTrader))
                 throw new InsufficientAccessException("More than 20 posts or the premium / elite*gold trader badge is required for sending private messages without captchas");
 
             string recipients = "";

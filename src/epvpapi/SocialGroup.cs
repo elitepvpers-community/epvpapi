@@ -114,8 +114,8 @@ namespace epvpapi
         /// <param name="session"> Session that is used for sending the request </param>
         public void Delete<T>(ProfileSession<T> session) where T : User
         {
-            if (session.ConnectedProfile.User.GetHighestRank() < User.Rank.GlobalModerator 
-                && session.ConnectedProfile.User != Maintainer) throw new InsufficientAccessException("You don't have enough access rights to delete this group");
+            if (session.User.GetHighestRank() < User.Rank.GlobalModerator 
+                && session.User != Maintainer) throw new InsufficientAccessException("You don't have enough access rights to delete this group");
             if (ID == 0) throw new ArgumentException("Group ID must not be zero");
             session.ThrowIfInvalid();
 
