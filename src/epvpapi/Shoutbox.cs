@@ -281,7 +281,7 @@ namespace epvpapi
             MessageCountCurrentDay = (totalMessages24HoursValueNode != null) ? Convert.ToUInt32(totalMessages24HoursValueNode.InnerText) : 0;
 
             HtmlNode ownMessagesValueNode = additionalInfoNodes.ElementAt(2).SelectSingleNode("td[2]");
-            session.User.ShoutboxMessages = (ownMessagesValueNode != null) ? Convert.ToUInt32(ownMessagesValueNode.InnerText) : 0;
+            session.ConnectedProfile.User.ShoutboxMessages = (ownMessagesValueNode != null) ? Convert.ToUInt32(ownMessagesValueNode.InnerText) : 0;
         }
     }
 }

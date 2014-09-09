@@ -108,7 +108,7 @@ namespace epvpapi
                                 new KeyValuePair<string, string>("b", String.Empty),
                                 new KeyValuePair<string, string>("posthash", String.Empty),
                                 new KeyValuePair<string, string>("poststarttime", DateTime.Now.UNIXTimestamp().ToString()),
-                                new KeyValuePair<string, string>("loggedinuser", session.User.ID.ToString()),
+                                new KeyValuePair<string, string>("loggedinuser", session.ConnectedProfile.User.ID.ToString()),
                                 new KeyValuePair<string, string>("u", String.Empty),
                                 new KeyValuePair<string, string>("taglist", tags),
                                 new KeyValuePair<string, string>("allowcomments", Convert.ToUInt32(settings.HasFlag(Settings.AllowComments)).ToString()),

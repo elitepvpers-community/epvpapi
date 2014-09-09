@@ -101,7 +101,7 @@ namespace epvpapi
                             new KeyValuePair<string, string>("do", "postthread"),
                             new KeyValuePair<string, string>("posthash", "74532335f4d3a9f352db6af1b1c257f7"),
                             new KeyValuePair<string, string>("poststarttime", "1389309192"),
-                            new KeyValuePair<string, string>("loggedinuser", session.User.ID.ToString()),
+                            new KeyValuePair<string, string>("loggedinuser", session.ConnectedProfile.User.ID.ToString()),
                             new KeyValuePair<string, string>("sbutton", "Submit New Thread"),
                             new KeyValuePair<string, string>("signature", Convert.ToInt32(settings.HasFlag(SectionPost.Settings.ShowSignature)).ToString()),
                             new KeyValuePair<string, string>("parseurl", Convert.ToInt32(settings.HasFlag(SectionPost.Settings.ParseURL)).ToString()),
@@ -125,7 +125,7 @@ namespace epvpapi
         /// </remarks>
         public void Delete<T>(ProfileSession<T> session, string reason) where T : User
         {
-            if (session.User.GetHighestRank() < User.Rank.GlobalModerator) throw new InsufficientAccessException("You don't have enough access rights to delete this thread");
+            if (session.ConnectedProfile.User.GetHighestRank() < User.Rank.GlobalModerator) throw new InsufficientAccessException("You don't have enough access rights to delete this thread");
             if (ID == 0) throw new System.ArgumentException("ID must not be empty");
             session.ThrowIfInvalid();
 
@@ -238,7 +238,7 @@ namespace epvpapi
                              new KeyValuePair<string, string>("specifiedpost", "0"),
                              new KeyValuePair<string, string>("posthash", "6fd3840e9b2ed6a8dcc9d9d0432abb14"),
                              new KeyValuePair<string, string>("poststarttime", String.Empty),
-                             new KeyValuePair<string, string>("loggedinuser", session.User.ID.ToString()),
+                             new KeyValuePair<string, string>("loggedinuser", session.ConnectedProfile.User.ID.ToString()),
                              new KeyValuePair<string, string>("multiquoteempty", String.Empty),
                              new KeyValuePair<string, string>("sbutton", "Submit Reply"),
                              new KeyValuePair<string, string>("signature", (settings & SectionPost.Settings.ShowSignature).ToString()),
