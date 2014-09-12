@@ -3,20 +3,15 @@
     /// <summary>
     /// Object derived from classes that are unique and accessable through a location in the web
     /// </summary>
-    public abstract class UniqueWebObject
+    public abstract class UniqueObject
     {
         /// <summary>
         /// Unique identifier
         /// </summary>
         public uint ID { get; set; }
 
-        /// <summary>
-        /// Web URL to the unique web object
-        /// </summary>
-        public abstract string URL { get; }
-
         /// <param name="id"> Unique identifier </param>
-        public UniqueWebObject(uint id = 0)
+        public UniqueObject(uint id = 0)
         {
             ID = id;
         }

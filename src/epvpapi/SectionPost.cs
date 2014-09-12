@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace epvpapi
 {
-    public class SectionPost : Post, IReportable
+    public class SectionPost : Post, IReportable, IUniqueWebObject
     {
         /// <summary>
         /// Additional options that can be set when posting messages
@@ -31,11 +31,6 @@ namespace epvpapi
 
         public SectionThread Thread { get; set; }
 
-        public override string URL
-        {
-            get { return "http://www.elitepvpers.com/forum/joining-e-pvp/" + Thread.ID + "-" + Thread.Posts.First().Title.URLEscape() + ".html"; }
-        }
-
         public SectionPost(string content = null, string title = null)
             : this(0, new SectionThread(new Section(0, "")), content, title)
         {  }
@@ -45,6 +40,12 @@ namespace epvpapi
         {
             Thread = thread;
         }
+
+        public string GetUrl()
+        {
+            return "http://www.elitepvpers.com/forum/joining-e-pvp/" + Thread.ID + "-" + Thread.Posts.First().Title.URLEscape() + ".html";
+        } 
+
 
         /// <summary>
         /// Reports the <c>SectionPost</c> using the built-in report function

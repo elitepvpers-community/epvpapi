@@ -10,7 +10,7 @@ namespace epvpapi
     /// <summary>
     /// Represents a subforum
     /// </summary>
-    public class Section : UniqueWebObject, IDefaultUpdatable
+    public class Section : UniqueObject, IDefaultUpdatable, IUniqueWebObject
     {
         /// <summary>
         /// Name of the section
@@ -27,17 +27,12 @@ namespace epvpapi
         /// </summary>
         public string Description { get; set; }
 
-        public class Announcement : Post
+        public class Announcement : Post, IUniqueWebObject
         {
             public DateTime Begins { get; set; }
             public DateTime Ends { get; set; }
             public uint Hits { get; set; }
             public Section Section { get; set; }
-
-            public override string URL
-            {
-                get { return "http://www.elitepvpers.com/forum/" + Section.URLName + "/announcement-" + Title.URLEscape() + ".html"; }
-            }
 
             public Announcement(Section section, uint id = 0)
                 : base(id)
@@ -46,17 +41,18 @@ namespace epvpapi
                 Begins = new DateTime();
                 Ends = new DateTime();
             }
+
+            public string GetUrl()
+            {
+                return "http://www.elitepvpers.com/forum/" + Section.URLName + "/announcement-" + Title.URLEscape() + ".html";
+            } 
+
         }
 
         /// <summary>
         /// List of all announcements available for this section
         /// </summary>
-        public List<Announcement> Announcements { get; set; }
-
-        public override string URL
-        {
-            get { return "http://www.elitepvpers.com/forum/" + URLName + "/"; }
-        }
+        public List<Announcement> Announcements { get; set; } 
 
         public Section(uint id, string urlName)
             : base(id)
@@ -210,6 +206,11 @@ namespace epvpapi
 
             return parsedThreads;
         }
+
+        public string GetUrl()
+        {
+            return "http://www.elitepvpers.com/forum/" + URLName + "/";
+        } 
 
         private static Section _Main = new Section(206, "main"); 
         public static Section Main

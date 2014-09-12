@@ -10,7 +10,7 @@ namespace epvpapi
     /// <summary>
     /// Represents a thread within a section
     /// </summary>
-    public class SectionThread : Thread, IReasonableDeletable, IDefaultUpdatable
+    public class SectionThread : Thread, IReasonableDeletable, IDefaultUpdatable, IUniquePageableWebObject
     {
         /// <summary>
         /// Section under which the <c>SectionThread</c> is listed
@@ -66,13 +66,6 @@ namespace epvpapi
         {
             get { return (Posts.Count > 0) ? Posts.First().Title : ""; }
             set { Posts.First().Title = (Posts.Count > 0) ? value : ""; }
-        }
-
-        public override string URL
-        {
-            get { return "http://www.elitepvpers.com/forum/" + Section.URLName + "/" 
-                                                             + ID + "-" + Title.URLEscape() 
-                                                             + ".html"; }
         }
 
         public SectionThread(Section section)
@@ -278,7 +271,7 @@ namespace epvpapi
             session.ThrowIfInvalid();
             if(ID == 0) throw new ArgumentException("ID must not be empty");
 
-            var res = session.Get(URL);
+            var res = session.Get(GetUrl());
             var htmlDocument = new HtmlDocument();
             htmlDocument.LoadHtml(res.ToString());
 
@@ -323,9 +316,15 @@ namespace epvpapi
                         PageCount = Convert.ToUInt32(countMatch.Groups[1].Value);
                 }
             }
-
         }
 
+        public string GetUrl(uint pageIndex = 1)
+        {
+            return "http://www.elitepvpers.com/forum/" + Section.URLName + "/"
+                                                       + ID + "-" + Title.URLEscape()
+                                                       + ((pageIndex > 1) ? "-" + pageIndex : "")
+                                                       + ".html";
+        }
 
         /// <summary>
         /// Retrieves the thread ID of the given URL

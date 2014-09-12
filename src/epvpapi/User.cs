@@ -12,7 +12,7 @@ namespace epvpapi
     /// <summary>
     /// Represents an user in elitepvpers
     /// </summary>
-    public class User : UniqueWebObject, ISpecializedUpdatable
+    public class User : UniqueObject, ISpecializedUpdatable, IUniqueWebObject
     {
         /// <summary>
         /// Available usergroups an user can have 
@@ -360,13 +360,6 @@ namespace epvpapi
         /// </summary>
         public string AvatarURL { get; set; }
 
-        /// <summary>
-        /// Web URL to the profile page
-        /// </summary>
-        public override string URL
-        {
-            get { return "http://www.elitepvpers.com/forum/members/" + ID + "-" + Name.URLEscape() + ".html"; }
-        }
 
         public User(uint id = 0)
             : this(null, id)
@@ -745,6 +738,11 @@ namespace epvpapi
             ParseMiniStats(doc);
             ParseLastVisitors(doc);
         }
+
+        public string GetUrl()
+        {
+            return "http://www.elitepvpers.com/forum/members/" + ID + "-" + Name.URLEscape() + ".html";
+        } 
 
         /// <summary>
         /// Retrieves the profile ID of the given URL

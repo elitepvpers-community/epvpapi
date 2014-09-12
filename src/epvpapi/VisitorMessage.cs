@@ -7,17 +7,12 @@ namespace epvpapi
     /// <summary>
     /// Represents a message on the profile of an <c>User</c>
     /// </summary>
-    public class VisitorMessage : Message
+    public class VisitorMessage : Message, IUniqueWebObject
     {
         /// <summary>
         /// Recipient of the message
         /// </summary>
         public User Recipient { get; set; }
-
-        public override string URL
-        {
-            get { return "http://www.elitepvpers.com/forum/members/467410-mostey.html#vmessage" + ID; }
-        }
 
         public VisitorMessage(uint id)
             : base(id)
@@ -68,5 +63,10 @@ namespace epvpapi
                             new KeyValuePair<string, string>("message", Content),
                         });
         }
+
+        public string GetUrl()
+        {
+            return "http://www.elitepvpers.com/forum/members/467410-mostey.html#vmessage" + ID;
+        } 
     }
 }

@@ -8,7 +8,7 @@ namespace epvpapi.TBM
     /// <summary>
     /// Represents a <c>Transaction</c> made using The Black Market
     /// </summary>
-    public class Transaction : UniqueWebObject
+    public class Transaction : UniqueObject, IUniqueWebObject
     {
         /// <summary>
         /// User that sent the <c>EliteGold</c>
@@ -35,10 +35,6 @@ namespace epvpapi.TBM
         /// </summary>
         public DateTime Time { get; set; }
 
-        public override string URL
-        {
-            get { return "http://www.elitepvpers.com/theblackmarket/transaction/" + ID; }
-        }
 
         public Transaction(uint id)
             : base(id)
@@ -47,7 +43,6 @@ namespace epvpapi.TBM
             Receiver = new User();
             Time = new DateTime();
         }
-
 
          /// <summary>
         /// Fetches all Transactions that have been both received and sent
@@ -152,5 +147,10 @@ namespace epvpapi.TBM
                 throw new ParsingFailedException("Could not parse received Transactions", exception);
             }
         }
+
+        public string GetUrl()
+        {
+            return "http://www.elitepvpers.com/theblackmarket/transaction/" + ID;
+        } 
     }
 }
