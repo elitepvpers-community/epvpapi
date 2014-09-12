@@ -321,10 +321,102 @@ namespace epvpapi
         /// Retrieves a list of all posts in the <c>SectionThread</c>
         /// </summary>
         /// <param name="session"> Session used for sending the request </param>
+        /// <param name="firstPage"> Index of the first page to fetch </param>
+        /// <param name="pageCount"> Amount of pages to get. The higher this count, the more data will be generated and received </param>
         /// <returns> List of <c>SectionPost</c>s representing the replies </returns>
-        public List<SectionPost> Replies(Session session)
+        public List<SectionPost> Replies(Session session, uint pageCount = 1, uint firstPage = 1)
         {
-            throw new NotImplementedException();
+            session.ThrowIfInvalid();
+            if(ID == 0) throw new ArgumentException("ID must not be empty");
+
+            // in case the amount of pages to fetch is greater than the available page count, set it to the maximum available count
+            pageCount = (pageCount > PageCount && PageCount != 0) ? PageCount : pageCount;
+
+            var retrievedReplies = new List<SectionPost>();
+            for (uint i = 0; i < pageCount; ++i)
+            {
+                var res = session.Get(GetUrl(i));
+                var htmlDocument = new HtmlDocument();
+                htmlDocument.LoadHtml(res.ToString());
+
+                var postsRootNode = htmlDocument.GetElementbyId("posts");
+                if (postsRootNode == null) continue;
+
+                foreach (var postContainerNode in postsRootNode.GetElementsByTagName("div"))
+                {
+                    var fetchedPost = new SectionPost();
+                    var postRootNode = postContainerNode.SelectSingleNode("div[1]/div[1]/div[1]/table[1]/tr[2]");
+                    if (postRootNode == null) continue;
+
+                    var userPartNode = postRootNode.SelectSingleNode("td[1]");
+                    if (userPartNode != null)
+                    {
+                        var postCreatorNode = userPartNode.SelectSingleNode("div[1]/a[1]");
+                        if (postCreatorNode != null)
+                        {
+                            uint creatorId = postCreatorNode.Attributes.Contains("href")
+                                                ? Convert.ToUInt32(User.FromURL(postCreatorNode.Attributes["href"].Value))
+                                                : 0;
+
+                            var userNameNode = postCreatorNode.SelectSingleNode("span[1]");
+                            var userTitleNode = userPartNode.SelectSingleNode("div[3]");
+
+                            var postCreator = new User((userNameNode != null) ? userNameNode.InnerText : "", creatorId)
+                            {
+                                Title = (userTitleNode != null) ? userTitleNode.InnerText : ""
+                            };
+
+                            // Fetch the user title badges. User who do not belong to any group or who don't got any badges, will be lacking of the 'rank' element in their profile page
+                            var userRankNode = userPartNode.SelectSingleNode("div[4]");
+                            if (userRankNode != null)
+                            {
+                                var rankNodes = new List<HtmlNode>(userRankNode.GetElementsByTagName("img")); // every rank badge got his very own 'img' element
+
+                                foreach (var node in rankNodes)
+                                {
+                                    if (!node.Attributes.Contains("src")) continue;
+
+                                    var parsedRank = new User.Rank();
+                                    if (User.Rank.FromURL(node.Attributes["src"].Value, out parsedRank)) // 'src' holds the url to the rank image
+                                        postCreator.Ranks.Add(parsedRank);
+                                }
+                            }
+
+                            fetchedPost.Sender = postCreator;
+                        }
+                    }
+
+                    HtmlNode messagePartNode;
+                    // due to the (optional) title nodes users can set, another div will be inserted sometimes before the actual content
+                    var titleNode = postRootNode.SelectSingleNode("td[2]/div[1]/strong[1]");
+                    if (titleNode != null)
+                    {
+                        InitialPost.Title = titleNode.InnerText;
+                        messagePartNode = postRootNode.SelectSingleNode("td[2]/div[2]");
+                    }
+                    else
+                        messagePartNode = postRootNode.SelectSingleNode("td[2]/div[1]");
+
+                    if (messagePartNode != null)
+                    {
+                        Match idMatch = new Regex("post_message_([0-9]+)").Match(messagePartNode.Id);
+                        if (idMatch.Groups.Count > 1)
+                            fetchedPost.ID = Convert.ToUInt32(idMatch.Groups[1].Value);
+
+                        fetchedPost.Content = String.Join(String.Empty, messagePartNode.GetElementsByTagName("#text").Select(node => node.InnerText));
+                    }
+
+                    retrievedReplies.Add(fetchedPost);
+                }
+
+                if (i == 0 && retrievedReplies.Count != 0)
+                {
+                    InitialPost = retrievedReplies.First();
+                    retrievedReplies.Remove(retrievedReplies.First());
+                }
+            }
+
+            return retrievedReplies;
         }
 
 
