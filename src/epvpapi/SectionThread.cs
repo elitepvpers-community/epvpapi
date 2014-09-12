@@ -34,11 +34,6 @@ namespace epvpapi
         public string PreviewContent { get; set; }
 
         /// <summary>
-        /// List of all posts in the thread
-        /// </summary>
-        public List<SectionPost> Posts { get; set; }
-
-        /// <summary>
         /// Current average rating of the <c>SectionThread</c>
         /// </summary>
         public double Rating { get; set; }
@@ -46,8 +41,13 @@ namespace epvpapi
         /// <summary>
         /// Amount of views that have been recorded
         /// </summary>
-        public uint Views { get; set; }
+        public uint ViewCount { get; set; }
 
+        /// <summary>
+        /// The first post in the <c>SectionThread</c>, usually created by the thread starter
+        /// </summary>
+        public SectionPost InitialPost { get; set; }
+        
         /// <summary>
         /// Tags that have been set for better search results when using the board's search function
         /// </summary>
@@ -65,8 +65,8 @@ namespace epvpapi
 
         public string Title
         {
-            get { return (Posts.Count > 0) ? Posts.First().Title : ""; }
-            set { Posts.First().Title = (Posts.Count > 0) ? value : ""; }
+            get { return InitialPost.Title; }
+            set { InitialPost.Title = value; }
         }
 
         public SectionThread(Section section)
@@ -77,7 +77,7 @@ namespace epvpapi
             : base(id)
         {
             Section = section;
-            Posts = new List<SectionPost>();
+            InitialPost = new SectionPost(0, this);
             Tags = new List<string>();
         }
 
@@ -259,8 +259,6 @@ namespace epvpapi
                              new KeyValuePair<string, string>("rating", "0"),
                              new KeyValuePair<string, string>("openclose", "0")
                          });
-
-            Posts.Add(post);
         }
 
         /// <summary>
@@ -318,6 +316,17 @@ namespace epvpapi
                 }
             }
         }
+
+        /// <summary>
+        /// Retrieves a list of all posts in the <c>SectionThread</c>
+        /// </summary>
+        /// <param name="session"> Session used for sending the request </param>
+        /// <returns> List of <c>SectionPost</c>s representing the replies </returns>
+        public List<SectionPost> Replies(Session session)
+        {
+            throw new NotImplementedException();
+        }
+
 
         public string GetUrl(uint pageIndex = 1)
         {

@@ -166,7 +166,6 @@ namespace epvpapi
                 foreach (var threadNode in totalThreadNodes)
                 {
                     SectionThread parsedThread = new SectionThread(0, this);
-                    parsedThread.Posts.Add(new SectionPost(0, parsedThread));
 
                     var previewContentNode = threadNode.SelectSingleNode("td[3]");
                     parsedThread.PreviewContent = (previewContentNode != null) ? (previewContentNode.Attributes.Contains("title")) ? previewContentNode.Attributes["title"].Value : "" : "";
@@ -174,7 +173,7 @@ namespace epvpapi
                     var titleNode = threadNode.SelectSingleNode("td[3]/div[1]/a[1]");
                     if (titleNode.Id.Contains("thread_gotonew")) // new threads got an additional image displayed (left from the title) wrapped in an 'a' element for quick access to the new reply function
                         titleNode = threadNode.SelectSingleNode("td[3]/div[1]/a[2]");
-                    parsedThread.Posts.First().Title = (titleNode != null) ? titleNode.InnerText : "";
+                    parsedThread.InitialPost.Title = (titleNode != null) ? titleNode.InnerText : "";
                     parsedThread.ID = (titleNode != null) ? (titleNode.Attributes.Contains("href")) ? SectionThread.FromUrl(titleNode.Attributes["href"].Value) : 0 : 0;
 
                     var threadStatusIconNode = threadNode.SelectSingleNode("td[1]/img[1]");
@@ -192,10 +191,10 @@ namespace epvpapi
                     }
 
                     var repliesNode = threadNode.SelectSingleNode("td[5]/a[1]");
-                    parsedThread.Replies = (repliesNode != null) ? (uint)Convert.ToDouble(repliesNode.InnerText) : 0;
+                    parsedThread.ReplyCount = (repliesNode != null) ? (uint)Convert.ToDouble(repliesNode.InnerText) : 0;
 
                     var viewsNode = threadNode.SelectSingleNode("td[6]");
-                    parsedThread.Views = (viewsNode != null) ? (uint)Convert.ToDouble(viewsNode.InnerText) : 0;
+                    parsedThread.ViewCount = (viewsNode != null) ? (uint)Convert.ToDouble(viewsNode.InnerText) : 0;
 
                     if (stickyThreadNodes.Any(stickyThreadNode => stickyThreadNode == threadNode))
                         parsedThread.Sticked = true;
