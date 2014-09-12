@@ -1,5 +1,4 @@
-﻿using System.Security.Cryptography.X509Certificates;
-using epvpapi.Connection;
+﻿using epvpapi.Connection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,7 +50,17 @@ namespace epvpapi
         /// <summary>
         /// Tags that have been set for better search results when using the board's search function
         /// </summary>
-        public List<string> Tags { get; set; } 
+        public List<string> Tags { get; set; }
+
+        /// <summary>
+        /// Amount of pages 
+        /// </summary>
+        public uint PageCount { get; set; }
+
+        /// <summary>
+        /// Amount of posts within all pages
+        /// </summary>
+        public uint PostCount { get; set; }
 
         public string Title
         {
@@ -160,7 +169,7 @@ namespace epvpapi
         /// </remarks>
         public void Close(Session session)
         {
-            if (ID == 0) throw new System.ArgumentException("ID must not be empty");
+            if (ID == 0) throw new ArgumentException("ID must not be empty");
             session.ThrowIfInvalid();
 
             session.Post("http://www.elitepvpers.com/forum/postings.php",
@@ -302,7 +311,19 @@ namespace epvpapi
                 foreach (var tagNode in tagsRootNode.GetElementsByTagName("a"))
                     Tags.Add(tagNode.InnerText);
             }
-           
+
+            var pageCountRootNode = htmlDocument.GetElementbyId("poststop");
+            if (pageCountRootNode != null)
+            {
+                pageCountRootNode = pageCountRootNode.SelectSingleNode("following-sibling::table[1]/tr[1]/td[2]/div[1]/table[1]/tr[1]/td[1]");
+                if (pageCountRootNode != null)
+                {
+                    Match countMatch = new Regex(@"\S+\s{1}[0-9]+\s{1}\S+\s{1}([0-9]+)").Match(pageCountRootNode.InnerText);
+                    if (countMatch.Groups.Count > 1)
+                        PageCount = Convert.ToUInt32(countMatch.Groups[1].Value);
+                }
+            }
+
         }
 
 
@@ -311,7 +332,7 @@ namespace epvpapi
         /// </summary>
         /// <param name="url"> URL being parsed </param>
         /// <returns> Retrieved thread ID </returns>
-        public static uint FromURL(string url)
+        public static uint FromUrl(string url)
         {
             var match = Regex.Match(url, @"http://www.elitepvpers.com/forum/\S+/(\d+)-\S+.html");
             if (match.Groups.Count < 2) throw new ParsingFailedException("User could not be exported from the given URL");
