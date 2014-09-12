@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace epvpapi
+﻿namespace epvpapi
 {
     /// <summary>
     /// Object derived from classes that are unique and accessable through a location in the web
