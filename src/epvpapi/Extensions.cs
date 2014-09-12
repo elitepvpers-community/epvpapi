@@ -17,34 +17,67 @@ namespace epvpapi
             return dtDateTime;
         }
 
-
-        // -> http://stackoverflow.com/questions/10260255/getelementsbytagname-in-htmlagilitypack
-        public static IEnumerable<HtmlNode> GetElementsByName(this HtmlNode parent, string name)
+        /// <summary>
+        /// Gets all descendent elements (unlimited levels) that are matching the specified name (attribute)
+        /// </summary>
+        /// <param name="parent"> Node acting as the starting point </param>
+        /// <param name="name"> Name attribute to search for </param>
+        /// <returns> <c>IEnumarable</c> of <c>HtmlNode</c>s that were found </returns>
+        public static IEnumerable<HtmlNode> GetDescendentElementsByName(this HtmlNode parent, string name)
         {
             return parent.Descendants().Where(node => node.Name == name);
         }
 
-
-        public static IEnumerable<HtmlNode> GetElementsByNameXHTML(this HtmlNode parent, string name)
+        /// <summary>
+        /// Gets all child elements that are matching the specified name (attribute)
+        /// </summary>
+        /// <param name="parent"> Node acting as the starting point </param>
+        /// <param name="name"> Name attribute to search for </param>
+        /// <returns> <c>IEnumarable</c> of <c>HtmlNode</c>s that were found </returns>
+        public static IEnumerable<HtmlNode> GetElementsByName(this HtmlNode parent, string name)
         {
-            List<HtmlNode> matchingNodes = new List<HtmlNode>();
-
-            foreach(HtmlNode node in parent.Descendants())
-            {
-                if (node.Attributes.Contains("name"))
-                {
-                    if (node.Attributes["name"].Value == name)
-                        matchingNodes.Add(node);
-                }
-            }
-
-            return matchingNodes;
+            return parent.ChildNodes.Where(node => node.Name == name);
         }
 
 
-        public static IEnumerable<HtmlNode> GetElementsByTagName(this HtmlNode baseNode, string tagName)
+        /// <summary>
+        /// Gets all descendent elements (unlimited levels) that are matching the specified name (attribute)
+        /// </summary>
+        /// <param name="parent"> Node acting as the starting point </param>
+        /// <param name="name"> Name attribute to search for </param>
+        /// <returns> <c>IEnumarable</c> of <c>HtmlNode</c>s that were found </returns>
+        /// <remarks>
+        /// For XHTML use only
+        /// </remarks>
+        public static IEnumerable<HtmlNode> GetDescendentElementsByNameXHTML(this HtmlNode parent, string name)
         {
-            return baseNode.ChildNodes.Where(node => node.Name == tagName);
+            return
+                parent.Descendants()
+                    .Where(node => node.Attributes.Contains("name"))
+                    .Where(node => node.Attributes["name"].Value == name);
+        }
+
+
+        /// <summary>
+        /// Gets all child elements of the specified tag name
+        /// </summary>
+        /// <param name="parent"> Node acting as the starting point </param>
+        /// <param name="tagName"> Tag name to search for </param>
+        /// <returns> <c>IEnumarable</c> of <c>HtmlNode</c>s that were found </returns>
+        public static IEnumerable<HtmlNode> GetElementsByTagName(this HtmlNode parent, string tagName)
+        {
+            return parent.ChildNodes.Where(node => node.Name == tagName);
+        }
+
+        /// <summary>
+        /// Gets all descendent elements (unlimited levels) of the specified tag name
+        /// </summary>
+        /// <param name="parent"> Node acting as the starting point </param>
+        /// <param name="tagName"> Tag name to search for </param>
+        /// <returns> <c>IEnumarable</c> of <c>HtmlNode</c>s that were found </returns>
+        public static IEnumerable<HtmlNode> GetDescendentElementsByTagName(this HtmlNode parent, string tagName)
+        {
+            return parent.Descendants().Where(node => node.Name == tagName);
         }
 
         // -> http://stackoverflow.com/questions/419019/split-list-into-sublists-with-linq
@@ -90,6 +123,11 @@ namespace epvpapi
                     && (other.Day == self.Month) 
                     && (other.Hour == self.Hour) 
                     && (other.Minute == self.Minute) );
+        }
+
+        public static bool HasClass(this HtmlNode node, string className)
+        {
+            return node.Attributes.Any(attribute => attribute.Name == className);
         }
     }
 }

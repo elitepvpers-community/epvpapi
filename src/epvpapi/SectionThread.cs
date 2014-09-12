@@ -1,15 +1,17 @@
-﻿using epvpapi.Connection;
+﻿using System.Security.Cryptography.X509Certificates;
+using epvpapi.Connection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using HtmlAgilityPack;
 
 namespace epvpapi
 {
     /// <summary>
     /// Represents a thread within a section
     /// </summary>
-    public class SectionThread : Thread, IReasonableDeletable
+    public class SectionThread : Thread, IReasonableDeletable, IDefaultUpdatable
     {
         /// <summary>
         /// Section under which the <c>SectionThread</c> is listed
@@ -39,12 +41,17 @@ namespace epvpapi
         /// <summary>
         /// Current average rating of the <c>SectionThread</c>
         /// </summary>
-        public uint Rating { get; set; }
+        public double Rating { get; set; }
 
         /// <summary>
         /// Amount of views that have been recorded
         /// </summary>
         public uint Views { get; set; }
+
+        /// <summary>
+        /// Tags that have been set for better search results when using the board's search function
+        /// </summary>
+        public List<string> Tags { get; set; } 
 
         public string Title
         {
@@ -68,6 +75,7 @@ namespace epvpapi
         {
             Section = section;
             Posts = new List<SectionPost>();
+            Tags = new List<string>();
         }
 
         /// <summary>
@@ -251,6 +259,52 @@ namespace epvpapi
 
             Posts.Add(post);
         }
+
+        /// <summary>
+        /// Retrieves information about the <c>SectionThread</c>
+        /// </summary>
+        /// <param name="session"> Session used for sending the request </param>
+        public void Update(Session session)
+        {
+            session.ThrowIfInvalid();
+            if(ID == 0) throw new ArgumentException("ID must not be empty");
+
+            var res = session.Get(URL);
+            var htmlDocument = new HtmlDocument();
+            htmlDocument.LoadHtml(res.ToString());
+
+            var postsRootNode = htmlDocument.GetElementbyId("posts");
+            if (postsRootNode == null) return;
+
+            Closed = postsRootNode.GetDescendentElementsByName("img")
+                    .Any(node => node.Attributes.Contains("src")
+                                ? node.Attributes["src"].Value.Contains("threadclosed.gif")
+                                : false);
+
+            var currentRatingNode = htmlDocument.GetElementbyId("threadrating_current");
+            if (currentRatingNode != null)
+            {
+                currentRatingNode = currentRatingNode.SelectSingleNode("img[1]");
+                if (currentRatingNode != null)
+                {
+                    if (currentRatingNode.Attributes.Contains("alt"))
+                    {
+                        Match ratingMatch = new Regex(@",\s+([0-9](?:,|.)[0-9]{2})\s+\S+").Match(currentRatingNode.Attributes["alt"].Value);
+                        if (ratingMatch.Groups.Count > 1)
+                            Rating = Convert.ToDouble(ratingMatch.Groups[1].Value);
+                    }
+                }
+            }
+
+            var tagsRootNode = htmlDocument.GetElementbyId("tag_list_cell");
+            if (tagsRootNode != null)
+            {
+                foreach (var tagNode in tagsRootNode.GetElementsByTagName("a"))
+                    Tags.Add(tagNode.InnerText);
+            }
+           
+        }
+
 
         /// <summary>
         /// Retrieves the thread ID of the given URL
