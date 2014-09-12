@@ -1,4 +1,5 @@
-﻿using epvpapi.Connection;
+﻿using System.Diagnostics;
+using epvpapi.Connection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -278,7 +279,7 @@ namespace epvpapi
             var postsRootNode = htmlDocument.GetElementbyId("posts");
             if (postsRootNode == null) return;
 
-            Closed = postsRootNode.GetDescendentElementsByName("img")
+            Closed = htmlDocument.DocumentNode.GetDescendentElementsByName("img")
                     .Any(node => node.Attributes.Contains("src")
                                 ? node.Attributes["src"].Value.Contains("threadclosed.gif")
                                 : false);
