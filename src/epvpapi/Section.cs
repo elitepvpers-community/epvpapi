@@ -64,64 +64,107 @@ namespace epvpapi
             URLName = urlName;
         }
 
+        class AnnouncementsParseEngine : HtmlParseEngine<Section>, IHtmlNodeParseEngine
+        {
+            public AnnouncementsParseEngine(Section target) : base(target)
+            { }
+
+            public void Execute(HtmlNode coreNode)
+            {
+                Target.Announcements = new List<Announcement>();
+
+                if (coreNode != null)
+                {
+                    coreNode = coreNode.SelectSingleNode("tbody");
+                    var sectionNodes = new List<HtmlNode>(coreNode.GetElementsByTagName("tr"));
+
+                    foreach (var announcementNode in sectionNodes.Take(sectionNodes.Count - 1)) // ignore the last node since that is no actual announcement
+                    {
+                        var announcement = new Announcement(Target);
+
+                        var firstLine = announcementNode.SelectSingleNode("td[2]/div[1]");
+                        if (firstLine != null)
+                        {
+                            var hitsNode = firstLine.SelectSingleNode("span[1]/strong[1]");
+                            announcement.Hits = (hitsNode != null) ? (uint)Convert.ToDouble(hitsNode.InnerText) : 0;
+
+                            var titleNode = firstLine.SelectSingleNode("a[1]");
+                            announcement.Title = (titleNode != null) ? titleNode.InnerText : "";
+                        }
+
+                        var secondLine = announcementNode.SelectSingleNode("td[2]/div[2]");
+                        if (secondLine != null)
+                        {
+                            var beginNode = secondLine.SelectSingleNode("span[1]/span[1]");
+                            if (beginNode != null)
+                            {
+                                var beginDate = new DateTime();
+                                DateTime.TryParseExact(beginNode.InnerText, "MM-dd-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out beginDate);
+                                announcement.Begins = beginDate;
+                            }
+
+                            var creatorNode = secondLine.SelectSingleNode("span[2]/a[1]");
+                            announcement.Sender.Name = (creatorNode != null) ? creatorNode.InnerText : "";
+                            announcement.Sender.Title = secondLine.SelectSingleNode("span[2]/text()[2]").InnerText.Strip();
+                            announcement.Sender.Title = announcement.Sender.Title.Remove(0, 1); // remove the brackets
+                            announcement.Sender.Title = announcement.Sender.Title.Remove(announcement.Sender.Title.Length - 1, 1); // remove the brackets
+                            announcement.Sender.ID = creatorNode.Attributes.Contains("href") ? User.FromURL(creatorNode.Attributes["href"].Value) : 0;
+                        }
+
+                        Target.Announcements.Add(announcement);
+                    }
+                }
+            }
+        }
+
+        public class ThreadListingParseEngine : HtmlParseEngine<SectionThread>, IHtmlNodeParseEngine
+        {
+            public ThreadListingParseEngine(SectionThread target) : base(target)
+            { }
+
+            public void Execute(HtmlNode coreNode)
+            {
+                var previewContentNode = coreNode.SelectSingleNode("td[3]");
+                Target.PreviewContent = (previewContentNode != null) ? (previewContentNode.Attributes.Contains("title")) ? previewContentNode.Attributes["title"].Value : "" : "";
+
+                var titleNode = coreNode.SelectSingleNode("td[3]/div[1]/a[1]");
+                if (titleNode.Id.Contains("thread_gotonew")) // new threads got an additional image displayed (left from the title) wrapped in an 'a' element for quick access to the new reply function
+                    titleNode = coreNode.SelectSingleNode("td[3]/div[1]/a[2]");
+                Target.Posts.First().Title = (titleNode != null) ? titleNode.InnerText : "";
+                Target.ID = (titleNode != null) ? (titleNode.Attributes.Contains("href")) ? SectionThread.FromURL(titleNode.Attributes["href"].Value) : 0 : 0;
+
+                var threadStatusIconNode = coreNode.SelectSingleNode("td[1]/img[1]");
+                Target.Closed = (threadStatusIconNode != null) ? (threadStatusIconNode.Attributes.Contains("src")) ? threadStatusIconNode.Attributes["src"].Value.Contains("lock") : false : false;
+
+                var creatorNode = coreNode.SelectSingleNode("td[3]/div[2]/span[1]");
+                if (creatorNode != null)
+                {
+                    // if the thread has been rated, the element with the yellow stars shows up and is targeted as the first span element
+                    // then, the actual node where the information about the creator is stored is located one element below the rating element
+                    if (!creatorNode.Attributes.Contains("onclick"))
+                        creatorNode = coreNode.SelectSingleNode("td[3]/div[2]/span[2]");
+
+                    Target.Creator = new User(creatorNode.InnerText, creatorNode.Attributes.Contains("onclick") ? User.FromURL(creatorNode.Attributes["onclick"].Value) : 0);
+                }
+
+                var repliesNode = coreNode.SelectSingleNode("td[5]/a[1]");
+                Target.Replies = (repliesNode != null) ? (uint)Convert.ToDouble(repliesNode.InnerText) : 0;
+
+                var viewsNode = coreNode.SelectSingleNode("td[6]");
+                Target.Views = (viewsNode != null) ? (uint)Convert.ToDouble(viewsNode.InnerText) : 0;
+            }
+        }
+
         public void Update(Session session)
         {
             session.ThrowIfInvalid();
             if (URLName == String.Empty) throw new ArgumentException("Sections cannot be updated if no url-address-name is provided");
 
-            Response res = session.Get("http://www.elitepvpers.com/forum/" + URLName + "/");
-            HtmlDocument doc = new HtmlDocument();
+            var res = session.Get("http://www.elitepvpers.com/forum/" + URLName + "/");
+            var doc = new HtmlDocument();
             doc.LoadHtml(res.ToString());
 
-            ParseAnnouncements(doc);
-        }
-
-        protected void ParseAnnouncements(HtmlDocument doc)
-        {
-            Announcements = new List<Announcement>();
-
-            var threadListNode = doc.GetElementbyId("threadslist"); 
-            if (threadListNode != null)
-            {
-                threadListNode = threadListNode.SelectSingleNode("tbody");
-                var sectionNodes = new List<HtmlNode>(threadListNode.GetElementsByTagName("tr"));
-
-                foreach (var announcementNode in sectionNodes.Take(sectionNodes.Count - 1)) // ignore the last node since that is no actual announcement
-                {
-                    Announcement announcement = new Announcement(this);
-
-                    var firstLine = announcementNode.SelectSingleNode("td[2]/div[1]");
-                    if (firstLine != null)
-                    {
-                        var hitsNode = firstLine.SelectSingleNode("span[1]/strong[1]");
-                        announcement.Hits = (hitsNode != null) ? (uint) Convert.ToDouble(hitsNode.InnerText) : 0;
-
-                        var titleNode = firstLine.SelectSingleNode("a[1]");
-                        announcement.Title = (titleNode != null) ? titleNode.InnerText : "";
-                    }
-
-                    var secondLine = announcementNode.SelectSingleNode("td[2]/div[2]");
-                    if(secondLine != null)
-                    {
-                        var beginNode = secondLine.SelectSingleNode("span[1]/span[1]");
-                        if(beginNode != null)
-                        {
-                            DateTime beginDate = new DateTime();
-                            DateTime.TryParseExact(beginNode.InnerText, "MM-dd-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out beginDate);
-                            announcement.Begins = beginDate;
-                        }
-
-                        var creatorNode = secondLine.SelectSingleNode("span[2]/a[1]");
-                        announcement.Sender.Name = (creatorNode != null) ? creatorNode.InnerText : "";
-                        announcement.Sender.Title = secondLine.SelectSingleNode("span[2]/text()[2]").InnerText.Strip();
-                        announcement.Sender.Title = announcement.Sender.Title.Remove(0, 1); // remove the brackets
-                        announcement.Sender.Title = announcement.Sender.Title.Remove(announcement.Sender.Title.Length - 1, 1); // remove the brackets
-                        announcement.Sender.ID = creatorNode.Attributes.Contains("href") ? User.FromURL(creatorNode.Attributes["href"].Value) : 0;   
-                    }
-
-                    Announcements.Add(announcement);
-                }
-            }
+            new AnnouncementsParseEngine(this).Execute(doc.GetElementbyId("threadslist"));
         }
 
         /// <summary>
@@ -136,11 +179,11 @@ namespace epvpapi
             session.ThrowIfInvalid();
             if (URLName == String.Empty) throw new ArgumentException("This section is not addressable, please specify the URLName property before using this function");
 
-            List<SectionThread> parsedThreads = new List<SectionThread>();
+            var parsedThreads = new List<SectionThread>();
             for (uint i = startIndex; i <= pages; ++i)
             {
-                Response res = session.Get("http://www.elitepvpers.com/forum/" + URLName + "/index" + i + ".html");
-                HtmlDocument doc = new HtmlDocument();
+                var res = session.Get("http://www.elitepvpers.com/forum/" + URLName + "/index" + i + ".html");
+                var doc = new HtmlDocument();
                 doc.LoadHtml(res.ToString());
 
                 var threadFrameNode = doc.GetElementbyId("threadbits_forum_" + ID);
@@ -149,9 +192,9 @@ namespace epvpapi
                 var threadNodes = new List<HtmlNode>(threadFrameNode.GetElementsByTagName("tr"));
                 var normalThreadsBeginNode = threadNodes.Find(node => ((node.SelectSingleNode("td[1]") != null) ? node.SelectSingleNode("td[1]").InnerText : "") == "Normal Threads");
                 var stickyThreadsBeginNode = threadNodes.Find(node => ((node.SelectSingleNode("td[1]/strong[1]") != null) ? node.SelectSingleNode("td[1]/strong[1]").InnerText : "") == "Sticky Threads");
-                List<HtmlNode> normalThreadNodes = new List<HtmlNode>();
-                List<HtmlNode> stickyThreadNodes = new List<HtmlNode>();
-                List<HtmlNode> totalThreadNodes = new List<HtmlNode>();
+                var normalThreadNodes = new List<HtmlNode>();
+                var stickyThreadNodes = new List<HtmlNode>();
+                var totalThreadNodes = new List<HtmlNode>();
 
                 if (stickyThreadsBeginNode != null && normalThreadsBeginNode != null) // if there are any sticky threads present
                 {
@@ -169,37 +212,9 @@ namespace epvpapi
 
                 foreach (var threadNode in totalThreadNodes)
                 {
-                    SectionThread parsedThread = new SectionThread(0, this);
+                    var parsedThread = new SectionThread(0, this);
                     parsedThread.Posts.Add(new SectionPost(0, parsedThread));
-
-                    var previewContentNode = threadNode.SelectSingleNode("td[3]");
-                    parsedThread.PreviewContent = (previewContentNode != null) ? (previewContentNode.Attributes.Contains("title")) ? previewContentNode.Attributes["title"].Value : "" : "";
-
-                    var titleNode = threadNode.SelectSingleNode("td[3]/div[1]/a[1]");
-                    if (titleNode.Id.Contains("thread_gotonew")) // new threads got an additional image displayed (left from the title) wrapped in an 'a' element for quick access to the new reply function
-                        titleNode = threadNode.SelectSingleNode("td[3]/div[1]/a[2]");
-                    parsedThread.Posts.First().Title = (titleNode != null) ? titleNode.InnerText : "";
-                    parsedThread.ID = (titleNode != null) ? (titleNode.Attributes.Contains("href")) ? SectionThread.FromURL(titleNode.Attributes["href"].Value) : 0 : 0;
-
-                    var threadStatusIconNode = threadNode.SelectSingleNode("td[1]/img[1]");
-                    parsedThread.Closed = (threadStatusIconNode != null) ? (threadStatusIconNode.Attributes.Contains("src")) ? threadStatusIconNode.Attributes["src"].Value.Contains("lock") : false : false;
-
-                    var creatorNode = threadNode.SelectSingleNode("td[3]/div[2]/span[1]");
-                    if (creatorNode != null)
-                    {
-                        // if the thread has been rated, the element with the yellow stars shows up and is targeted as the first span element
-                        // then, the actual node where the information about the creator is stored is located one element below the rating element
-                        if (!creatorNode.Attributes.Contains("onclick"))
-                            creatorNode = threadNode.SelectSingleNode("td[3]/div[2]/span[2]");
-
-                        parsedThread.Creator = new User(creatorNode.InnerText, creatorNode.Attributes.Contains("onclick") ? User.FromURL(creatorNode.Attributes["onclick"].Value) : 0);
-                    }
-
-                    var repliesNode = threadNode.SelectSingleNode("td[5]/a[1]");
-                    parsedThread.Replies = (repliesNode != null) ? (uint)Convert.ToDouble(repliesNode.InnerText) : 0;
-
-                    var viewsNode = threadNode.SelectSingleNode("td[6]");
-                    parsedThread.Views = (viewsNode != null) ? (uint)Convert.ToDouble(viewsNode.InnerText) : 0;
+                    new ThreadListingParseEngine(parsedThread).Execute(threadNode);
 
                     if (stickyThreadNodes.Any(stickyThreadNode => stickyThreadNode == threadNode))
                         parsedThread.Sticked = true;
