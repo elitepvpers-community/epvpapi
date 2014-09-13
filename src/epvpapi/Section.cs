@@ -64,7 +64,7 @@ namespace epvpapi
             URLName = urlName;
         }
 
-        class AnnouncementsParseEngine : HtmlParseEngine<Section>, IHtmlNodeParseEngine
+        class AnnouncementsParseEngine : TargetableParseEngine<Section>, INodeParseEngine
         {
             public AnnouncementsParseEngine(Section target) : base(target)
             { }
@@ -117,7 +117,7 @@ namespace epvpapi
             }
         }
 
-        public class ThreadListingParseEngine : HtmlParseEngine<SectionThread>, IHtmlNodeParseEngine
+        public class ThreadListingParseEngine : TargetableParseEngine<SectionThread>, INodeParseEngine
         {
             public ThreadListingParseEngine(SectionThread target) : base(target)
             { }

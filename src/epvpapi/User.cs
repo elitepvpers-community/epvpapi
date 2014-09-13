@@ -405,7 +405,7 @@ namespace epvpapi
         }
 
 
-        public class RankParseEngine : HtmlParseEngine<User>, IHtmlNodeParseEngine
+        public class RankParseEngine : TargetableParseEngine<User>, INodeParseEngine
         {
             public RankParseEngine(User target) : base(target)
             { }
@@ -429,7 +429,7 @@ namespace epvpapi
             }
         }
 
-        public class SessionUserAboutParseEngine : HtmlParseEngine<User>, IHtmlDocumentParseEngine
+        public class SessionUserAboutParseEngine : TargetableParseEngine<User>, IDocumentParseEngine
         {
             public SessionUserAboutParseEngine(User target) : base(target)
             { }
@@ -455,7 +455,7 @@ namespace epvpapi
             }
         }
 
-        public class AboutParseEngine : HtmlParseEngine<User>, IHtmlNodeParseEngine
+        public class AboutParseEngine : TargetableParseEngine<User>, INodeParseEngine
         {
             public AboutParseEngine(User target) : base(target)
             { }
@@ -494,7 +494,7 @@ namespace epvpapi
         }
 
 
-        public class LastVisitorsParseEngine : HtmlParseEngine<User>, IHtmlNodeParseEngine
+        public class LastVisitorsParseEngine : TargetableParseEngine<User>, INodeParseEngine
         {
             public LastVisitorsParseEngine(User target) : base(target)
             { }
@@ -523,7 +523,7 @@ namespace epvpapi
         }
 
 
-        public class LastActivityParseEngine : HtmlParseEngine<User>, IHtmlNodeParseEngine
+        public class LastActivityParseEngine : TargetableParseEngine<User>, INodeParseEngine
         {
             public LastActivityParseEngine(User target) : base(target)
             { }
@@ -552,7 +552,7 @@ namespace epvpapi
             }
         }
 
-        public class GeneralInfoParseEngine : HtmlParseEngine<User>, IHtmlNodeParseEngine
+        public class GeneralInfoParseEngine : TargetableParseEngine<User>, INodeParseEngine
         {
             public GeneralInfoParseEngine(User target) : base(target)
             { }
@@ -600,7 +600,7 @@ namespace epvpapi
             }
         }
 
-        public class StatisticsParseEngine : HtmlParseEngine<User>, IHtmlNodeParseEngine
+        public class StatisticsParseEngine : TargetableParseEngine<User>, INodeParseEngine
         {
             public bool IsSessionUser { get; set; }
 
@@ -716,7 +716,7 @@ namespace epvpapi
             }
         }
 
-        public class MiniStatsParseEngine : HtmlParseEngine<User>, IHtmlNodeParseEngine
+        public class MiniStatsParseEngine : TargetableParseEngine<User>, INodeParseEngine
         {
             public MiniStatsParseEngine(User target) : base(target)
             { }

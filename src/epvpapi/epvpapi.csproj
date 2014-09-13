@@ -58,11 +58,11 @@
     <Compile Include="Blog.cs" />
     <Compile Include="Connection\ProfileSession.cs" />
     <Compile Include="Extensions.cs" />
-    <Compile Include="HtmlParseEngine.cs" />
+    <Compile Include="TargetableParseEngine.cs" />
     <Compile Include="IDefaultUpdatable.cs" />
     <Compile Include="IDeletable.cs" />
-    <Compile Include="IHtmlDocumentParseEngine.cs" />
-    <Compile Include="IHtmlNodeParseEngine.cs" />
+    <Compile Include="IDocumentParseEngine.cs" />
+    <Compile Include="INodeParseEngine.cs" />
     <Compile Include="Image.cs" />
     <Compile Include="InsufficientAccessException.cs" />
     <Compile Include="Connection\InvalidSessionException.cs" />

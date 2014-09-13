@@ -7,11 +7,11 @@ using HtmlAgilityPack;
 
 namespace epvpapi
 {
-    public abstract class HtmlParseEngine<T>
+    public abstract class TargetableParseEngine<T>
     {
         public T Target { get; set; }
 
-        public HtmlParseEngine(T target)
+        public TargetableParseEngine(T target)
         {
             Target = target;
         }

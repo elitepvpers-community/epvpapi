@@ -7,8 +7,8 @@ using HtmlAgilityPack;
 
 namespace epvpapi
 {
-    public interface IHtmlNodeParseEngine
+    public interface IDocumentParseEngine
     {
-        void Execute(HtmlNode coreNode);
+        void Execute(HtmlDocument document);
     }
 }
