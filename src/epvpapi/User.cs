@@ -1,4 +1,5 @@
 ﻿using epvpapi.Connection;
+using epvpapi.Evaluation;
 using epvpapi.TBM;
 using HtmlAgilityPack;
 using System;
@@ -405,86 +406,230 @@ namespace epvpapi
         }
 
 
-        protected void ParseAbout<T>(ProfileSession<T> session, HtmlDocument doc) where T : User
+        public class RankParser : TargetableParser<User>, INodeParser
         {
-            // Parsing additional information
-            // In case the user is the logged in user, all fields are editable and therefore got his own ids. 
-            if (this == session.User)
+            public RankParser(User target) : base(target)
+            { }
+
+            public void Execute(HtmlNode coreNode)
             {
-                HtmlNode biographyNode = doc.GetElementbyId("profilefield_value_1");
-                Biography = (biographyNode != null) ? biographyNode.SelectSingleNode("text()[1]").InnerText.Strip() : "";
+                // Fetch the user title badges. User which do not belong to any group or do not have got any badges will be lacking of the 'rank' element in their profile page
+                if (coreNode == null) return;
 
-                HtmlNode locationNode = doc.GetElementbyId("profilefield_value_2");
-                Location = (locationNode != null) ? locationNode.SelectSingleNode("text()[1]").InnerText.Strip() : "";
+                var rankNodes = new List<HtmlNode>(coreNode.GetElementsByTagName("img")); // every rank badge got his very own 'img' element
 
-                HtmlNode interestsNode = doc.GetElementbyId("profilefield_value_3");
-                Interests = (interestsNode != null) ? interestsNode.SelectSingleNode("text()[1]").InnerText.Strip() : "";
-
-                HtmlNode occupationNode = doc.GetElementbyId("profilefield_value_4");
-                Occupation = (occupationNode != null) ? occupationNode.SelectSingleNode("text()[1]").InnerText.Strip() : "";
-
-                HtmlNode steamIDNode = doc.GetElementbyId("profilefield_value_8");
-                SteamID = (steamIDNode != null) ? steamIDNode.SelectSingleNode("text()[1]").InnerText.Strip() : "";
-            }
-            else // otherwise, fields are not owning an id
-            {
-                HtmlNode aboutMeTabNode = doc.GetElementbyId("collapseobj_aboutme");
-                if (aboutMeTabNode != null)
+                foreach (var node in rankNodes)
                 {
-                    HtmlNode profilefieldlistNode = aboutMeTabNode.SelectSingleNode("div[1]/ul[1]/li[1]/dl[1]");
-                    if (profilefieldlistNode != null)
+                    if (!node.Attributes.Contains("src")) continue;
+
+                    var parsedRank = new Rank();
+                    if (Rank.FromURL(node.Attributes["src"].Value, out parsedRank)) // 'src' holds the url to the rank image
+                        Target.Ranks.Add(parsedRank);
+                }
+            }
+        }
+
+        public class SessionUserAboutParser : TargetableParser<User>, IDocumentParser
+        {
+            public SessionUserAboutParser(User target) : base(target)
+            { }
+
+            public void Execute(HtmlDocument document)
+            {
+                var biographyNode = document.GetElementbyId("profilefield_value_1");
+                Target.Biography = (biographyNode != null) ? biographyNode.SelectSingleNode("text()[1]").InnerText.Strip() : "";
+
+                var locationNode = document.GetElementbyId("profilefield_value_2");
+                Target.Location = (locationNode != null) ? locationNode.SelectSingleNode("text()[1]").InnerText.Strip() : "";
+
+                var interestsNode = document.GetElementbyId("profilefield_value_3");
+                Target.Interests = (interestsNode != null) ? interestsNode.SelectSingleNode("text()[1]").InnerText.Strip() : "";
+
+                var occupationNode = document.GetElementbyId("profilefield_value_4");
+                Target.Occupation = (occupationNode != null)
+                            ? occupationNode.SelectSingleNode("text()[1]").InnerText.Strip()
+                            : "";
+
+                var steamIdNode = document.GetElementbyId("profilefield_value_8");
+                Target.SteamID = (steamIdNode != null) ? steamIdNode.SelectSingleNode("text()[1]").InnerText.Strip() : "";
+            }
+        }
+
+        public class AboutParser : TargetableParser<User>, INodeParser
+        {
+            public AboutParser(User target) : base(target)
+            { }
+
+            public void Execute(HtmlNode coreNode)
+            {
+                if (coreNode == null) return;
+
+                var profilefieldlistNode = coreNode.SelectSingleNode("div[1]/ul[1]/li[1]/dl[1]");
+                if (profilefieldlistNode == null) return;
+                
+                var fieldNodes = new List<HtmlNode>(profilefieldlistNode.GetElementsByTagName("dt"));
+                var valueNodes = new List<HtmlNode>(profilefieldlistNode.GetElementsByTagName("dd"));
+
+                if (fieldNodes.Count == valueNodes.Count)
+                {
+                    foreach (var fieldNode in fieldNodes)
                     {
-                        List<HtmlNode> fieldNodes = new List<HtmlNode>(profilefieldlistNode.GetElementsByTagName("dt"));
-                        List<HtmlNode> valueNodes = new List<HtmlNode>(profilefieldlistNode.GetElementsByTagName("dd"));
+                        string actualValue = valueNodes.ElementAt(fieldNodes.IndexOf(fieldNode)).InnerText;
 
-                        if (fieldNodes.Count == valueNodes.Count)
-                        {
-                            foreach (var fieldNode in fieldNodes)
-                            {
-                                string actualValue = valueNodes.ElementAt(fieldNodes.IndexOf(fieldNode)).InnerText;
-
-                                if (fieldNode.InnerText == "Biography")
-                                    Biography = actualValue;
-                                else if (fieldNode.InnerText == "Location")
-                                    Location = actualValue;
-                                else if (fieldNode.InnerText == "Interests")
-                                    Interests = actualValue;
-                                else if (fieldNode.InnerText == "Occupation")
-                                    Occupation = actualValue;
-                                else if (fieldNode.InnerText == "Steam ID")
-                                    SteamID = actualValue;
-                            }
-                        }
+                        if (fieldNode.InnerText == "Biography")
+                            Target.Biography = actualValue;
+                        else if (fieldNode.InnerText == "Location")
+                            Target.Location = actualValue;
+                        else if (fieldNode.InnerText == "Interests")
+                            Target.Interests = actualValue;
+                        else if (fieldNode.InnerText == "Occupation")
+                            Target.Occupation = actualValue;
+                        else if (fieldNode.InnerText == "Steam ID")
+                            Target.SteamID = actualValue;
                     }
                 }
             }
         }
 
-        protected void ParseStatistics<T>(ProfileSession<T> session, HtmlDocument doc) where T : User
+
+        public class LastVisitorsParser : TargetableParser<User>, INodeParser
         {
-            // Statistics
-            HtmlNode statisticsRootNode = doc.GetElementbyId("collapseobj_stats");
-            if (statisticsRootNode != null)
+            public LastVisitorsParser(User target) : base(target)
+            { }
+
+            public void Execute(HtmlNode coreNode)
             {
-                statisticsRootNode = statisticsRootNode.SelectSingleNode("div[1]");
+                if (coreNode == null) return;
+
+                coreNode = coreNode.SelectSingleNode("div[1]/ol[1]");
+                if (coreNode == null) return;
+
+                Target.LastVisitors = new List<User>();
+                foreach (var visitorNode in coreNode.GetElementsByTagName("li"))
+                {
+                    var profileLinkNode = visitorNode.SelectSingleNode("a[1]");
+                    if (profileLinkNode == null) continue;
+                    string profileLink = (profileLinkNode.Attributes.Contains("href")) ? profileLinkNode.Attributes["href"].Value : "";
+
+                    var userNameNode = profileLinkNode.SelectSingleNode("span[1]");
+                    if (userNameNode == null) // non-ranked users got their name wrapped in the 'a' element
+                        userNameNode = profileLinkNode;
+
+                    Target.LastVisitors.Add(new User(userNameNode.InnerText, User.FromURL(profileLink)));
+                }
+            }
+        }
+
+
+        public class LastActivityParser : TargetableParser<User>, INodeParser
+        {
+            public LastActivityParser(User target) : base(target)
+            { }
+
+            public void Execute(HtmlNode coreNode)
+            {
+                if (coreNode != null)
+                {
+                    var lastActivityDateNode = coreNode.SelectSingleNode("text()[2]");
+                    string date = (lastActivityDateNode != null) ? lastActivityDateNode.InnerText.Strip() : String.Empty;
+
+                    if (date == "Heute" || date == "Today")
+                        date = DateTime.Now.Date.ToString("dd/MM/yyyy");
+
+                    var lastActivityTimeNode = coreNode.SelectSingleNode("span[2]");
+                    string time = (lastActivityTimeNode != null) ? lastActivityTimeNode.InnerText.Strip() : String.Empty;
+
+                    var parsedDateTime = new DateTime();
+                    DateTime.TryParse(date + " " + time, out parsedDateTime);
+                    Target.LastActivity = parsedDateTime;
+                }
+                else
+                {
+                    Target.CurrentStatus = Status.Invisible;
+                }
+            }
+        }
+
+        public class GeneralInfoParser : TargetableParser<User>, INodeParser
+        {
+            public GeneralInfoParser(User target) : base(target)
+            { }
+
+            public void Execute(HtmlNode coreNode)
+            {
+                if (coreNode == null) return;
+
+                HtmlNode userNameNode = coreNode.SelectSingleNode("h1[1]/span[1]");
+                if (userNameNode != null)
+                {
+                    Target.Name = userNameNode.InnerText.Strip();
+                }
+                else
+                {
+                    // In case the user has no special color, the <span> element will be missing and no attributes are used
+                    userNameNode = coreNode.SelectSingleNode("h1[1]");
+                    Target.Name = (userNameNode != null) ? userNameNode.InnerText.Strip() : String.Empty;
+                }
+
+                HtmlNode userTitleNode = coreNode.SelectSingleNode("h2[1]");
+                Target.Title = (userTitleNode != null) ? userTitleNode.InnerText : String.Empty;
+
+                if (userNameNode.Attributes.Contains("style"))
+                {
+                    Match match = Regex.Match(userNameNode.Attributes["style"].Value, @"color:(\S+)");
+                    if (match.Groups.Count > 1)
+                        Target.Namecolor = match.Groups[1].Value;
+                }
+
+                HtmlNode userStatusNode = coreNode.SelectSingleNode("h1[1]/img[1]");
+                if (userStatusNode != null)
+                {
+                    if (userStatusNode.Attributes.Contains("src"))
+                    {
+                        string userStatusLink = userStatusNode.Attributes["src"].Value;
+                        if (userStatusLink.Contains("invisible"))
+                            Target.CurrentStatus = Status.Invisible;
+                        else if (userStatusLink.Contains("offline"))
+                            Target.CurrentStatus = Status.Offline;
+                        else if (userStatusLink.Contains("online"))
+                            Target.CurrentStatus = Status.Online;
+                    }
+                }
+            }
+        }
+
+        public class StatisticsParser : TargetableParser<User>, INodeParser
+        {
+            public bool IsSessionUser { get; set; }
+
+            public StatisticsParser(User target, bool isSessionUser = false) : base(target)
+            {
+                IsSessionUser = isSessionUser;
+            }
+
+            public void Execute(HtmlNode coreNode)
+            {
+                if (coreNode == null) return;
+
+                coreNode = coreNode.SelectSingleNode("div[1]");
 
                 // Loop through the fields since vBulletin sorts them dynamically according to rank and certain user settings
-                foreach (var statisticsGroup in statisticsRootNode.GetElementsByTagName("fieldset"))
+                foreach (var statisticsGroup in coreNode.GetElementsByTagName("fieldset"))
                 {
                     string legendCaption = statisticsGroup.SelectSingleNode("legend[1]").InnerText;
 
                     if (legendCaption == "Beiträge" || legendCaption == "Total Posts")
                     {
                         var postsNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
-                        Posts = (postsNode != null) ? (uint)Convert.ToDouble(postsNode.InnerText) : 0;
+                        Target.Posts = (postsNode != null) ? (uint)Convert.ToDouble(postsNode.InnerText) : 0;
 
                         var postsPerDayNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[1]");
-                        PostsPerDay = (postsPerDayNode != null) ? Convert.ToDouble(postsPerDayNode.InnerText) : 0;
+                        Target.PostsPerDay = (postsPerDayNode != null) ? Convert.ToDouble(postsPerDayNode.InnerText) : 0;
                     }
                     else if (legendCaption == "Profilnachrichten" || legendCaption == "Visitor Messages")
                     {
                         var visitorMessagesNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
-                        VisitorMessages = (visitorMessagesNode != null) ? (uint)Convert.ToDouble(visitorMessagesNode.InnerText) : 0;
+                        Target.VisitorMessages = (visitorMessagesNode != null) ? (uint)Convert.ToDouble(visitorMessagesNode.InnerText) : 0;
 
                         var lastVisitorMessageNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[1]");
                         if (lastVisitorMessageNode != null)
@@ -501,13 +646,13 @@ namespace epvpapi
                                 DateTime.TryParseExact(lastVisitorMessageNode.InnerText.Strip(), "MM-dd-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out lastVisitorMessage);
                             }
 
-                            LastVisitorMessage = lastVisitorMessage;
+                            Target.LastVisitorMessage = lastVisitorMessage;
                         }
                     }
                     else if (legendCaption == "Vergebene Thanks" || legendCaption == "Thanks Given")
                     {
                         var givenThanksNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
-                        ThanksGiven = (givenThanksNode != null) ? (uint)Convert.ToDouble(givenThanksNode.InnerText) : 0;
+                        Target.ThanksGiven = (givenThanksNode != null) ? (uint)Convert.ToDouble(givenThanksNode.InnerText) : 0;
 
                         // The received thanks count is stored within the span element and is trailed after the language dependent definition.
                         // Unlike other elements, the count is not seperated and therefore needs some regex in order to extract the count
@@ -516,213 +661,108 @@ namespace epvpapi
                         {
                             Match match = Regex.Match(thanksReceivedNode.InnerText, @"\S+\s*([0-9.]+)"); // language independent
                             if (match.Groups.Count > 1)
-                                ThanksReceived = (uint)Convert.ToDouble(match.Groups[1].Value);
+                                Target.ThanksReceived = (uint)Convert.ToDouble(match.Groups[1].Value);
                         }
                     }
                     else if (legendCaption == "Diverse Informationen" || legendCaption == "General Information")
                     {
                         HtmlNode recommendationsNode = null;
-                        if (CurrentStatus != Status.Invisible || this == session.User)
+                        if (Target.CurrentStatus != Status.Invisible || IsSessionUser)
                             recommendationsNode = statisticsGroup.SelectSingleNode("ul[1]/li[3]/text()[1]");
                         else
                             recommendationsNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[1]");
 
-                        Recommendations = (recommendationsNode != null) ? Convert.ToUInt32(recommendationsNode.InnerText) : 0;
+                        Target.Recommendations = (recommendationsNode != null) ? Convert.ToUInt32(recommendationsNode.InnerText) : 0;
                     }
                     else if (legendCaption == "Benutzernotizen" || legendCaption == "User Notes")
                     {
                         var userNotesNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
-                        UserNotes = (userNotesNode != null) ? (uint)Convert.ToDouble(userNotesNode.InnerText) : 0;
+                        Target.UserNotes = (userNotesNode != null) ? (uint)Convert.ToDouble(userNotesNode.InnerText) : 0;
 
                         var lastNoteDateNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[1]");
                         var lastNoteTimeNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/span[2]");
 
                         if (lastNoteDateNode != null && lastNoteTimeNode != null)
                         {
-                            DateTime lastUserNote = new DateTime();
+                            var lastUserNote = new DateTime();
                             DateTime.TryParseExact(lastNoteDateNode.InnerText + " " + lastNoteTimeNode.InnerText, "MM-dd-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out lastUserNote);
-                            LastUserNote = lastUserNote;
+                            Target.LastUserNote = lastUserNote;
                         }
                     }
                     else if (legendCaption.Contains("Blog -")) // users can specify their own blog name that is trailed behind the 'Blog -' string
                     {
                         var blogEntriesNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
                         // skip the first 2 characters since the value always contains a leading ':' and whitespace 
-                        Blog.Entries = new List<Blog.Entry>((blogEntriesNode != null) ? Convert.ToInt32(new string(blogEntriesNode.InnerText.Skip(2).ToArray())) : 0);
+                        Target.Blog.Entries = new List<Blog.Entry>((blogEntriesNode != null) ? Convert.ToInt32(new string(blogEntriesNode.InnerText.Skip(2).ToArray())) : 0);
 
                         var lastEntryDateNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[2]");
                         string date = (lastEntryDateNode != null) ? lastEntryDateNode.InnerText.Strip() : "";
-                        
+
                         if (date == "Heute" || date == "Today")
                             date = DateTime.Now.ToString("MM-dd-yyyy");
 
                         var lastEntryTimeNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/span[2]");
                         string time = (lastEntryTimeNode != null) ? lastEntryTimeNode.InnerText.Strip() : "";
 
-                        DateTime parsedDate = new DateTime();
+                        var parsedDate = new DateTime();
                         DateTime.TryParseExact(date + " " + time, "MM-dd-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate);
 
-                        Blog.LastEntry = parsedDate;
+                        Target.Blog.LastEntry = parsedDate;
                     }
                 }
             }
         }
 
-        protected void ParseLastActivity(HtmlDocument doc)
+        public class MiniStatsParser : TargetableParser<User>, INodeParser
         {
-            HtmlNode lastActivityNode = doc.GetElementbyId("last_online");
-            if (lastActivityNode != null)
+            public MiniStatsParser(User target) : base(target)
+            { }
+
+            public void Execute(HtmlNode coreNode)
             {
-                HtmlNode lastActivityDateNode = lastActivityNode.SelectSingleNode("text()[2]");
-                string date = (lastActivityDateNode != null) ? lastActivityDateNode.InnerText.Strip() : String.Empty;
+                if (coreNode == null) return;
 
-                if (date == "Heute" || date == "Today")
-                    date = DateTime.Now.Date.ToString("dd/MM/yyyy");
+                coreNode = coreNode.SelectSingleNode("div[1]/table[1]/tr[1]");
+                if (coreNode == null) return;
 
-                HtmlNode lastActivityTimeNode = lastActivityNode.SelectSingleNode("span[2]");
-                string time = (lastActivityTimeNode != null) ? lastActivityTimeNode.InnerText.Strip() : String.Empty;
+                var fieldsRootNode = coreNode.SelectSingleNode("td[1]/dl[1]");
+                if (fieldsRootNode == null) return;
 
-                DateTime parsedDateTime = new DateTime();
-                DateTime.TryParse(date + " " + time, out parsedDateTime);
-                LastActivity = parsedDateTime;
-            }
-            else
-            {
-                CurrentStatus = Status.Invisible;
-            }
-        }
+                var miniStatsNodes = new List<HtmlNode>(fieldsRootNode.GetElementsByTagName("dt"));
+                var miniStatsValueNodes = new List<HtmlNode>(fieldsRootNode.GetElementsByTagName("dd"));
 
-        protected void ParseLastVisitors(HtmlDocument doc)
-        {
-            var lastVisitorsRootNode = doc.GetElementbyId("collapseobj_visitors");
-            if (lastVisitorsRootNode == null) return;
+                if (miniStatsNodes.Count != miniStatsValueNodes.Count) return;
 
-            lastVisitorsRootNode = lastVisitorsRootNode.SelectSingleNode("div[1]/ol[1]");
-            if (lastVisitorsRootNode == null) return;
-
-            LastVisitors = new List<User>();
-            foreach(var visitorNode in lastVisitorsRootNode.GetElementsByTagName("li"))
-            {
-                var profileLinkNode = visitorNode.SelectSingleNode("a[1]");
-                if (profileLinkNode == null) continue;
-                string profileLink = (profileLinkNode.Attributes.Contains("href")) ? profileLinkNode.Attributes["href"].Value : "";
-                    
-                var userNameNode = profileLinkNode.SelectSingleNode("span[1]");
-                if (userNameNode == null) // non-ranked users got their name wrapped in the 'a' element
-                    userNameNode = profileLinkNode;
-
-                LastVisitors.Add(new User(userNameNode.InnerText, User.FromURL(profileLink)));
-               
-            }
-        }
-
-        protected void ParseRanks(HtmlDocument doc)
-        {
-            // Fetch the user title badges. User who do not belong to any group or who don't got any badges, will be lacking of the 'rank' element in their profile page
-            HtmlNode userRankNode = doc.GetElementbyId("rank");
-            if (userRankNode != null)
-            {
-                List<HtmlNode> rankNodes = new List<HtmlNode>(userRankNode.GetElementsByTagName("img")); // every rank badge got his very own 'img' element
-
-                foreach (var node in rankNodes)
+                // loop through the key nodes since they can also occur occasionally (depends on what the user selects to be shown in the profile and/or the rank)
+                foreach (var keyNode in miniStatsNodes)
                 {
-                    if (!node.Attributes.Contains("src")) continue;
+                    if (keyNode.InnerText == "Registriert seit" || keyNode.InnerText == "Join Date")
+                    {
+                        var parsedDateTime = new DateTime();
+                        DateTime.TryParseExact(miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].InnerText, "MM-dd-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDateTime);
+                        Target.JoinDate = parsedDateTime;
+                    }
+                    else if (keyNode.InnerText.Contains("elite*gold"))
+                    {
+                        var eliteGoldValueNode = miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].SelectSingleNode("text()[1]");
+                        Target.EliteGold = (eliteGoldValueNode != null) ? Convert.ToInt32(eliteGoldValueNode.InnerText) : Target.EliteGold;
+                    }
+                    else if (keyNode.InnerText.Contains("The Black Market"))
+                    {
+                        var positiveRatingsNode = miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].SelectSingleNode("span[1]");
+                        Target.TBMProfile.Positive = (positiveRatingsNode != null) ? Convert.ToUInt32(positiveRatingsNode.InnerText) : Target.TBMProfile.Positive;
 
-                    Rank parsedRank = new Rank();
-                    if (Rank.FromURL(node.Attributes["src"].Value, out parsedRank)) // 'src' holds the url to the rank image
-                        Ranks.Add(parsedRank);
+                        var neutralRatingsNode = miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].SelectSingleNode("text()[1]");
+                        Target.TBMProfile.Neutral = (neutralRatingsNode != null) ? Convert.ToUInt32(new string(neutralRatingsNode.InnerText.Skip(1).Take(1).ToArray())) : Target.TBMProfile.Neutral;
+
+                        var negativeRatingsNode = miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].SelectSingleNode("span[2]");
+                        Target.TBMProfile.Negative = (negativeRatingsNode != null) ? Convert.ToUInt32(negativeRatingsNode.InnerText) : Target.TBMProfile.Negative;
+                    }
                 }
+
+                var avatarNode = coreNode.SelectSingleNode("td[2]/img[1]");
+                Target.AvatarURL = (avatarNode != null) ? avatarNode.Attributes.Contains("src") ? avatarNode.Attributes["src"].Value : "" : "";
             }
-        }
-
-        protected void ParseGeneral(HtmlDocument doc)
-        {
-            HtmlNode userNameBoxNode = doc.GetElementbyId("username_box"); // root element
-            if (userNameBoxNode == null) throw new ParsingFailedException("Root node is invalid or was not found");
-
-            HtmlNode userNameNode = userNameBoxNode.SelectSingleNode("h1[1]/span[1]");
-            if (userNameNode != null)
-            {
-                Name = userNameNode.InnerText.Strip();
-            }
-            else
-            {
-                // In case the user has no special color, the <span> element will be missing and no attributes are used
-                userNameNode = userNameBoxNode.SelectSingleNode("h1[1]");
-                Name = (userNameNode != null) ? userNameNode.InnerText.Strip() : String.Empty;
-            }
-
-            HtmlNode userTitleNode = userNameBoxNode.SelectSingleNode("h2[1]");
-            Title = (userTitleNode != null) ? userTitleNode.InnerText : String.Empty;
-
-            if (userNameNode.Attributes.Contains("style"))
-            {
-                Match match = Regex.Match(userNameNode.Attributes["style"].Value, @"color:(\S+)");
-                if (match.Groups.Count > 1)
-                    Namecolor = match.Groups[1].Value;
-            }
-
-            HtmlNode userStatusNode = userNameBoxNode.SelectSingleNode("h1[1]/img[1]");
-            if (userStatusNode != null)
-            {
-                if (userStatusNode.Attributes.Contains("src"))
-                {
-                    string userStatusLink = userStatusNode.Attributes["src"].Value;
-                    if (userStatusLink.Contains("invisible"))
-                        CurrentStatus = Status.Invisible;
-                    else if (userStatusLink.Contains("offline"))
-                        CurrentStatus = Status.Offline;
-                    else if (userStatusLink.Contains("online"))
-                        CurrentStatus = Status.Online;
-                }
-            }
-        }
-
-        public void ParseMiniStats(HtmlDocument document)
-        {
-            var miniStatsRootNode = document.GetElementbyId("collapseobj_stats_mini");
-            if (miniStatsRootNode == null) return;
-
-            miniStatsRootNode = miniStatsRootNode.SelectSingleNode("div[1]/table[1]/tr[1]");
-            if (miniStatsRootNode == null) return;
-
-            var fieldsRootNode = miniStatsRootNode.SelectSingleNode("td[1]/dl[1]");
-            if (fieldsRootNode == null) return;
-
-            var miniStatsNodes = new List<HtmlNode>(fieldsRootNode.GetElementsByTagName("dt"));
-            var miniStatsValueNodes = new List<HtmlNode>(fieldsRootNode.GetElementsByTagName("dd"));
-
-            if (miniStatsNodes.Count != miniStatsValueNodes.Count) return;
-
-            // loop through the key nodes since they can also occur occasionally (depends on what the user selects to be shown in the profile and/or the rank)
-            foreach(var keyNode in miniStatsNodes)
-            {
-                if (keyNode.InnerText == "Registriert seit" || keyNode.InnerText == "Join Date")
-                {
-                    DateTime parsedDateTime = new DateTime();
-                    DateTime.TryParseExact(miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].InnerText, "MM-dd-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDateTime);
-                    JoinDate = parsedDateTime;
-                }
-                else if (keyNode.InnerText.Contains("elite*gold"))
-                {
-                    var eliteGoldValueNode = miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].SelectSingleNode("text()[1]");
-                    EliteGold = (eliteGoldValueNode != null) ? Convert.ToInt32(eliteGoldValueNode.InnerText) : EliteGold;
-                }
-                else if (keyNode.InnerText.Contains("The Black Market"))
-                {
-                    var positiveRatingsNode = miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].SelectSingleNode("span[1]");
-                    TBMProfile.Positive = (positiveRatingsNode != null) ? Convert.ToUInt32(positiveRatingsNode.InnerText) : TBMProfile.Positive;
-
-                    var neutralRatingsNode = miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].SelectSingleNode("text()[1]");
-                    TBMProfile.Neutral = (neutralRatingsNode != null) ? Convert.ToUInt32(new string(neutralRatingsNode.InnerText.Skip(1).Take(1).ToArray())) : TBMProfile.Neutral;
-
-                    var negativeRatingsNode = miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].SelectSingleNode("span[2]");
-                    TBMProfile.Negative = (negativeRatingsNode != null) ? Convert.ToUInt32(negativeRatingsNode.InnerText) : TBMProfile.Negative;
-                }
-            }
-
-            var avatarNode = miniStatsRootNode.SelectSingleNode("td[2]/img[1]");
-            AvatarURL = (avatarNode != null) ? avatarNode.Attributes.Contains("src") ? avatarNode.Attributes["src"].Value : "" : "";
         }
 
         /// <summary>
@@ -732,18 +772,24 @@ namespace epvpapi
         public void Update<T>(ProfileSession<T> session) where T : User
         {
             session.ThrowIfInvalid();
-            Response res = session.Get("http://www.elitepvpers.com/forum/members/" + ID.ToString() + "--.html");
+            var res = session.Get("http://www.elitepvpers.com/forum/members/" + ID.ToString() + "--.html");
 
-            HtmlDocument doc = new HtmlDocument();
+            var doc = new HtmlDocument();
             doc.LoadHtml(res.ToString());
 
-            ParseGeneral(doc);
-            ParseLastActivity(doc);
-            ParseAbout(session, doc);
-            ParseRanks(doc);
-            ParseStatistics(session, doc);
-            ParseMiniStats(doc);
-            ParseLastVisitors(doc);
+            new GeneralInfoParser(this).Execute(doc.GetElementbyId("username_box"));
+            new LastActivityParser(this).Execute(doc.GetElementbyId("last_online"));
+
+            // In case the user is the logged in user, all fields are editable and therefore got his own ids. 
+            if (this == session.User)
+                new SessionUserAboutParser(session.User).Execute(doc);
+            else // otherwise, fields are not owning an id
+                new AboutParser(session.User).Execute(doc.GetElementbyId("collapseobj_aboutme"));
+
+            new RankParser(this).Execute(doc.GetElementbyId("rank"));
+            new StatisticsParser(this, (this == session.User)).Execute(doc.GetElementbyId("collapseobj_stats"));
+            new MiniStatsParser(this).Execute(doc.GetElementbyId("collapseobj_stats_mini"));
+            new LastVisitorsParser(this).Execute(doc.GetElementbyId("collapseobj_visitors"));
         }
 
         /// <summary>
