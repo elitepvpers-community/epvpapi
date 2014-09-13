@@ -7,13 +7,8 @@ using HtmlAgilityPack;
 
 namespace epvpapi
 {
-    public abstract class HtmlParseEngine<T>
+    public interface IHtmlNodeParseEngine
     {
-        public T Target { get; set; }
-
-        public HtmlParseEngine(T target)
-        {
-            Target = target;
-        }
+        void Execute(HtmlNode coreNode);
     }
 }

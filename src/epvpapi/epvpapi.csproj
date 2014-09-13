@@ -61,6 +61,8 @@
     <Compile Include="HtmlParseEngine.cs" />
     <Compile Include="IDefaultUpdatable.cs" />
     <Compile Include="IDeletable.cs" />
+    <Compile Include="IHtmlDocumentParseEngine.cs" />
+    <Compile Include="IHtmlNodeParseEngine.cs" />
     <Compile Include="Image.cs" />
     <Compile Include="InsufficientAccessException.cs" />
     <Compile Include="Connection\InvalidSessionException.cs" />
