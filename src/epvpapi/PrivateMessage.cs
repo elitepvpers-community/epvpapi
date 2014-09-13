@@ -1,4 +1,5 @@
 ﻿using epvpapi.Connection;
+using epvpapi.Evaluation;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
@@ -140,9 +141,9 @@ namespace epvpapi
     
         }
 
-        class ContentParseEngine : TargetableParseEngine<PrivateMessage>, INodeParseEngine
+        class ContentParser : TargetableParser<PrivateMessage>, INodeParser
         {
-            public ContentParseEngine(PrivateMessage target) : base(target)
+            public ContentParser(PrivateMessage target) : base(target)
             { }
 
             public void Execute(HtmlNode coreNode)
@@ -160,9 +161,9 @@ namespace epvpapi
             }
         }
 
-        class SenderParseEngine : TargetableParseEngine<User>, INodeParseEngine
+        class SenderParser : TargetableParser<User>, INodeParser
         {
-            public SenderParseEngine(User target) : base(target)
+            public SenderParser(User target) : base(target)
             { }
 
             public void Execute(HtmlNode coreNode)
@@ -191,8 +192,8 @@ namespace epvpapi
             var doc = new HtmlDocument();
             doc.LoadHtml(res.ToString());
 
-            new SenderParseEngine(Sender).Execute(doc.GetElementbyId("post"));
-            new ContentParseEngine(this).Execute(doc.GetElementbyId("td_post_"));
+            new SenderParser(Sender).Execute(doc.GetElementbyId("post"));
+            new ContentParser(this).Execute(doc.GetElementbyId("td_post_"));
         }
 
         public void Report(Session session, string reason)

@@ -1,4 +1,5 @@
 ﻿using epvpapi.Connection;
+using epvpapi.Evaluation;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
@@ -64,9 +65,9 @@ namespace epvpapi
             URLName = urlName;
         }
 
-        class AnnouncementsParseEngine : TargetableParseEngine<Section>, INodeParseEngine
+        class AnnouncementsParser : TargetableParser<Section>, INodeParser
         {
-            public AnnouncementsParseEngine(Section target) : base(target)
+            public AnnouncementsParser(Section target) : base(target)
             { }
 
             public void Execute(HtmlNode coreNode)
@@ -117,9 +118,9 @@ namespace epvpapi
             }
         }
 
-        public class ThreadListingParseEngine : TargetableParseEngine<SectionThread>, INodeParseEngine
+        public class ThreadListingParser : TargetableParser<SectionThread>, INodeParser
         {
-            public ThreadListingParseEngine(SectionThread target) : base(target)
+            public ThreadListingParser(SectionThread target) : base(target)
             { }
 
             public void Execute(HtmlNode coreNode)
@@ -164,7 +165,7 @@ namespace epvpapi
             var doc = new HtmlDocument();
             doc.LoadHtml(res.ToString());
 
-            new AnnouncementsParseEngine(this).Execute(doc.GetElementbyId("threadslist"));
+            new AnnouncementsParser(this).Execute(doc.GetElementbyId("threadslist"));
         }
 
         /// <summary>
@@ -214,7 +215,7 @@ namespace epvpapi
                 {
                     var parsedThread = new SectionThread(0, this);
                     parsedThread.Posts.Add(new SectionPost(0, parsedThread));
-                    new ThreadListingParseEngine(parsedThread).Execute(threadNode);
+                    new ThreadListingParser(parsedThread).Execute(threadNode);
 
                     if (stickyThreadNodes.Any(stickyThreadNode => stickyThreadNode == threadNode))
                         parsedThread.Sticked = true;

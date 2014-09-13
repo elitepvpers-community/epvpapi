@@ -1,4 +1,5 @@
 ﻿using epvpapi.Connection;
+using epvpapi.Evaluation;
 using epvpapi.TBM;
 using HtmlAgilityPack;
 using System;
@@ -405,33 +406,32 @@ namespace epvpapi
         }
 
 
-        public class RankParseEngine : TargetableParseEngine<User>, INodeParseEngine
+        public class RankParser : TargetableParser<User>, INodeParser
         {
-            public RankParseEngine(User target) : base(target)
+            public RankParser(User target) : base(target)
             { }
 
             public void Execute(HtmlNode coreNode)
             {
-                // Fetch the user title badges. User who do not belong to any group or who don't got any badges, will be lacking of the 'rank' element in their profile page
-                if (coreNode != null)
+                // Fetch the user title badges. User which do not belong to any group or do not have got any badges will be lacking of the 'rank' element in their profile page
+                if (coreNode == null) return;
+
+                var rankNodes = new List<HtmlNode>(coreNode.GetElementsByTagName("img")); // every rank badge got his very own 'img' element
+
+                foreach (var node in rankNodes)
                 {
-                    var rankNodes = new List<HtmlNode>(coreNode.GetElementsByTagName("img")); // every rank badge got his very own 'img' element
+                    if (!node.Attributes.Contains("src")) continue;
 
-                    foreach (var node in rankNodes)
-                    {
-                        if (!node.Attributes.Contains("src")) continue;
-
-                        var parsedRank = new Rank();
-                        if (Rank.FromURL(node.Attributes["src"].Value, out parsedRank)) // 'src' holds the url to the rank image
-                            Target.Ranks.Add(parsedRank);
-                    }
+                    var parsedRank = new Rank();
+                    if (Rank.FromURL(node.Attributes["src"].Value, out parsedRank)) // 'src' holds the url to the rank image
+                        Target.Ranks.Add(parsedRank);
                 }
             }
         }
 
-        public class SessionUserAboutParseEngine : TargetableParseEngine<User>, IDocumentParseEngine
+        public class SessionUserAboutParser : TargetableParser<User>, IDocumentParser
         {
-            public SessionUserAboutParseEngine(User target) : base(target)
+            public SessionUserAboutParser(User target) : base(target)
             { }
 
             public void Execute(HtmlDocument document)
@@ -455,48 +455,46 @@ namespace epvpapi
             }
         }
 
-        public class AboutParseEngine : TargetableParseEngine<User>, INodeParseEngine
+        public class AboutParser : TargetableParser<User>, INodeParser
         {
-            public AboutParseEngine(User target) : base(target)
+            public AboutParser(User target) : base(target)
             { }
 
             public void Execute(HtmlNode coreNode)
             {
-                if (coreNode != null)
+                if (coreNode == null) return;
+
+                var profilefieldlistNode = coreNode.SelectSingleNode("div[1]/ul[1]/li[1]/dl[1]");
+                if (profilefieldlistNode == null) return;
+                
+                var fieldNodes = new List<HtmlNode>(profilefieldlistNode.GetElementsByTagName("dt"));
+                var valueNodes = new List<HtmlNode>(profilefieldlistNode.GetElementsByTagName("dd"));
+
+                if (fieldNodes.Count == valueNodes.Count)
                 {
-                    var profilefieldlistNode = coreNode.SelectSingleNode("div[1]/ul[1]/li[1]/dl[1]");
-                    if (profilefieldlistNode != null)
+                    foreach (var fieldNode in fieldNodes)
                     {
-                        var fieldNodes = new List<HtmlNode>(profilefieldlistNode.GetElementsByTagName("dt"));
-                        var valueNodes = new List<HtmlNode>(profilefieldlistNode.GetElementsByTagName("dd"));
+                        string actualValue = valueNodes.ElementAt(fieldNodes.IndexOf(fieldNode)).InnerText;
 
-                        if (fieldNodes.Count == valueNodes.Count)
-                        {
-                            foreach (var fieldNode in fieldNodes)
-                            {
-                                string actualValue = valueNodes.ElementAt(fieldNodes.IndexOf(fieldNode)).InnerText;
-
-                                if (fieldNode.InnerText == "Biography")
-                                    Target.Biography = actualValue;
-                                else if (fieldNode.InnerText == "Location")
-                                    Target.Location = actualValue;
-                                else if (fieldNode.InnerText == "Interests")
-                                    Target.Interests = actualValue;
-                                else if (fieldNode.InnerText == "Occupation")
-                                    Target.Occupation = actualValue;
-                                else if (fieldNode.InnerText == "Steam ID")
-                                    Target.SteamID = actualValue;
-                            }
-                        }
+                        if (fieldNode.InnerText == "Biography")
+                            Target.Biography = actualValue;
+                        else if (fieldNode.InnerText == "Location")
+                            Target.Location = actualValue;
+                        else if (fieldNode.InnerText == "Interests")
+                            Target.Interests = actualValue;
+                        else if (fieldNode.InnerText == "Occupation")
+                            Target.Occupation = actualValue;
+                        else if (fieldNode.InnerText == "Steam ID")
+                            Target.SteamID = actualValue;
                     }
                 }
             }
         }
 
 
-        public class LastVisitorsParseEngine : TargetableParseEngine<User>, INodeParseEngine
+        public class LastVisitorsParser : TargetableParser<User>, INodeParser
         {
-            public LastVisitorsParseEngine(User target) : base(target)
+            public LastVisitorsParser(User target) : base(target)
             { }
 
             public void Execute(HtmlNode coreNode)
@@ -523,9 +521,9 @@ namespace epvpapi
         }
 
 
-        public class LastActivityParseEngine : TargetableParseEngine<User>, INodeParseEngine
+        public class LastActivityParser : TargetableParser<User>, INodeParser
         {
-            public LastActivityParseEngine(User target) : base(target)
+            public LastActivityParser(User target) : base(target)
             { }
 
             public void Execute(HtmlNode coreNode)
@@ -552,14 +550,14 @@ namespace epvpapi
             }
         }
 
-        public class GeneralInfoParseEngine : TargetableParseEngine<User>, INodeParseEngine
+        public class GeneralInfoParser : TargetableParser<User>, INodeParser
         {
-            public GeneralInfoParseEngine(User target) : base(target)
+            public GeneralInfoParser(User target) : base(target)
             { }
 
             public void Execute(HtmlNode coreNode)
             {
-                if (coreNode == null) throw new ParsingFailedException("Root node is invalid or was not found");
+                if (coreNode == null) return;
 
                 HtmlNode userNameNode = coreNode.SelectSingleNode("h1[1]/span[1]");
                 if (userNameNode != null)
@@ -600,125 +598,124 @@ namespace epvpapi
             }
         }
 
-        public class StatisticsParseEngine : TargetableParseEngine<User>, INodeParseEngine
+        public class StatisticsParser : TargetableParser<User>, INodeParser
         {
             public bool IsSessionUser { get; set; }
 
-            public StatisticsParseEngine(User target, bool isSessionUser = false) : base(target)
+            public StatisticsParser(User target, bool isSessionUser = false) : base(target)
             {
                 IsSessionUser = isSessionUser;
             }
 
             public void Execute(HtmlNode coreNode)
             {
-                if (coreNode != null)
+                if (coreNode == null) return;
+
+                coreNode = coreNode.SelectSingleNode("div[1]");
+
+                // Loop through the fields since vBulletin sorts them dynamically according to rank and certain user settings
+                foreach (var statisticsGroup in coreNode.GetElementsByTagName("fieldset"))
                 {
-                    coreNode = coreNode.SelectSingleNode("div[1]");
+                    string legendCaption = statisticsGroup.SelectSingleNode("legend[1]").InnerText;
 
-                    // Loop through the fields since vBulletin sorts them dynamically according to rank and certain user settings
-                    foreach (var statisticsGroup in coreNode.GetElementsByTagName("fieldset"))
+                    if (legendCaption == "Beiträge" || legendCaption == "Total Posts")
                     {
-                        string legendCaption = statisticsGroup.SelectSingleNode("legend[1]").InnerText;
+                        var postsNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
+                        Target.Posts = (postsNode != null) ? (uint)Convert.ToDouble(postsNode.InnerText) : 0;
 
-                        if (legendCaption == "Beiträge" || legendCaption == "Total Posts")
+                        var postsPerDayNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[1]");
+                        Target.PostsPerDay = (postsPerDayNode != null) ? Convert.ToDouble(postsPerDayNode.InnerText) : 0;
+                    }
+                    else if (legendCaption == "Profilnachrichten" || legendCaption == "Visitor Messages")
+                    {
+                        var visitorMessagesNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
+                        Target.VisitorMessages = (visitorMessagesNode != null) ? (uint)Convert.ToDouble(visitorMessagesNode.InnerText) : 0;
+
+                        var lastVisitorMessageNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[1]");
+                        if (lastVisitorMessageNode != null)
                         {
-                            var postsNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
-                            Target.Posts = (postsNode != null) ? (uint)Convert.ToDouble(postsNode.InnerText) : 0;
-
-                            var postsPerDayNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[1]");
-                            Target.PostsPerDay = (postsPerDayNode != null) ? Convert.ToDouble(postsPerDayNode.InnerText) : 0;
-                        }
-                        else if (legendCaption == "Profilnachrichten" || legendCaption == "Visitor Messages")
-                        {
-                            var visitorMessagesNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
-                            Target.VisitorMessages = (visitorMessagesNode != null) ? (uint)Convert.ToDouble(visitorMessagesNode.InnerText) : 0;
-
-                            var lastVisitorMessageNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[1]");
-                            if (lastVisitorMessageNode != null)
+                            DateTime lastVisitorMessage = new DateTime();
+                            if (lastVisitorMessageNode.InnerText.Contains("Today") || lastVisitorMessageNode.InnerText.Contains("Heute"))
                             {
-                                DateTime lastVisitorMessage = new DateTime();
-                                if (lastVisitorMessageNode.InnerText.Contains("Today") || lastVisitorMessageNode.InnerText.Contains("Heute"))
-                                {
-                                    Match match = Regex.Match(lastVisitorMessageNode.InnerText, @"\S+ (\S+)");
-                                    string time = (match.Groups.Count > 1) ? match.Groups[1].Value : "";
-                                    DateTime.TryParseExact(DateTime.Now.ToString("MM-dd-yyyy") + " " + time, "MM-dd-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out lastVisitorMessage);
-                                }
-                                else
-                                {
-                                    DateTime.TryParseExact(lastVisitorMessageNode.InnerText.Strip(), "MM-dd-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out lastVisitorMessage);
-                                }
-
-                                Target.LastVisitorMessage = lastVisitorMessage;
+                                Match match = Regex.Match(lastVisitorMessageNode.InnerText, @"\S+ (\S+)");
+                                string time = (match.Groups.Count > 1) ? match.Groups[1].Value : "";
+                                DateTime.TryParseExact(DateTime.Now.ToString("MM-dd-yyyy") + " " + time, "MM-dd-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out lastVisitorMessage);
                             }
-                        }
-                        else if (legendCaption == "Vergebene Thanks" || legendCaption == "Thanks Given")
-                        {
-                            var givenThanksNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
-                            Target.ThanksGiven = (givenThanksNode != null) ? (uint)Convert.ToDouble(givenThanksNode.InnerText) : 0;
-
-                            // The received thanks count is stored within the span element and is trailed after the language dependent definition.
-                            // Unlike other elements, the count is not seperated and therefore needs some regex in order to extract the count
-                            var thanksReceivedNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/span[1]");
-                            if (thanksReceivedNode != null)
-                            {
-                                Match match = Regex.Match(thanksReceivedNode.InnerText, @"\S+\s*([0-9.]+)"); // language independent
-                                if (match.Groups.Count > 1)
-                                    Target.ThanksReceived = (uint)Convert.ToDouble(match.Groups[1].Value);
-                            }
-                        }
-                        else if (legendCaption == "Diverse Informationen" || legendCaption == "General Information")
-                        {
-                            HtmlNode recommendationsNode = null;
-                            if (Target.CurrentStatus != Status.Invisible || IsSessionUser)
-                                recommendationsNode = statisticsGroup.SelectSingleNode("ul[1]/li[3]/text()[1]");
                             else
-                                recommendationsNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[1]");
-
-                            Target.Recommendations = (recommendationsNode != null) ? Convert.ToUInt32(recommendationsNode.InnerText) : 0;
-                        }
-                        else if (legendCaption == "Benutzernotizen" || legendCaption == "User Notes")
-                        {
-                            var userNotesNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
-                            Target.UserNotes = (userNotesNode != null) ? (uint)Convert.ToDouble(userNotesNode.InnerText) : 0;
-
-                            var lastNoteDateNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[1]");
-                            var lastNoteTimeNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/span[2]");
-
-                            if (lastNoteDateNode != null && lastNoteTimeNode != null)
                             {
-                                DateTime lastUserNote = new DateTime();
-                                DateTime.TryParseExact(lastNoteDateNode.InnerText + " " + lastNoteTimeNode.InnerText, "MM-dd-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out lastUserNote);
-                                Target.LastUserNote = lastUserNote;
+                                DateTime.TryParseExact(lastVisitorMessageNode.InnerText.Strip(), "MM-dd-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out lastVisitorMessage);
                             }
+
+                            Target.LastVisitorMessage = lastVisitorMessage;
                         }
-                        else if (legendCaption.Contains("Blog -")) // users can specify their own blog name that is trailed behind the 'Blog -' string
+                    }
+                    else if (legendCaption == "Vergebene Thanks" || legendCaption == "Thanks Given")
+                    {
+                        var givenThanksNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
+                        Target.ThanksGiven = (givenThanksNode != null) ? (uint)Convert.ToDouble(givenThanksNode.InnerText) : 0;
+
+                        // The received thanks count is stored within the span element and is trailed after the language dependent definition.
+                        // Unlike other elements, the count is not seperated and therefore needs some regex in order to extract the count
+                        var thanksReceivedNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/span[1]");
+                        if (thanksReceivedNode != null)
                         {
-                            var blogEntriesNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
-                            // skip the first 2 characters since the value always contains a leading ':' and whitespace 
-                            Target.Blog.Entries = new List<Blog.Entry>((blogEntriesNode != null) ? Convert.ToInt32(new string(blogEntriesNode.InnerText.Skip(2).ToArray())) : 0);
-
-                            var lastEntryDateNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[2]");
-                            string date = (lastEntryDateNode != null) ? lastEntryDateNode.InnerText.Strip() : "";
-
-                            if (date == "Heute" || date == "Today")
-                                date = DateTime.Now.ToString("MM-dd-yyyy");
-
-                            var lastEntryTimeNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/span[2]");
-                            string time = (lastEntryTimeNode != null) ? lastEntryTimeNode.InnerText.Strip() : "";
-
-                            DateTime parsedDate = new DateTime();
-                            DateTime.TryParseExact(date + " " + time, "MM-dd-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate);
-
-                            Target.Blog.LastEntry = parsedDate;
+                            Match match = Regex.Match(thanksReceivedNode.InnerText, @"\S+\s*([0-9.]+)"); // language independent
+                            if (match.Groups.Count > 1)
+                                Target.ThanksReceived = (uint)Convert.ToDouble(match.Groups[1].Value);
                         }
+                    }
+                    else if (legendCaption == "Diverse Informationen" || legendCaption == "General Information")
+                    {
+                        HtmlNode recommendationsNode = null;
+                        if (Target.CurrentStatus != Status.Invisible || IsSessionUser)
+                            recommendationsNode = statisticsGroup.SelectSingleNode("ul[1]/li[3]/text()[1]");
+                        else
+                            recommendationsNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[1]");
+
+                        Target.Recommendations = (recommendationsNode != null) ? Convert.ToUInt32(recommendationsNode.InnerText) : 0;
+                    }
+                    else if (legendCaption == "Benutzernotizen" || legendCaption == "User Notes")
+                    {
+                        var userNotesNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
+                        Target.UserNotes = (userNotesNode != null) ? (uint)Convert.ToDouble(userNotesNode.InnerText) : 0;
+
+                        var lastNoteDateNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[1]");
+                        var lastNoteTimeNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/span[2]");
+
+                        if (lastNoteDateNode != null && lastNoteTimeNode != null)
+                        {
+                            var lastUserNote = new DateTime();
+                            DateTime.TryParseExact(lastNoteDateNode.InnerText + " " + lastNoteTimeNode.InnerText, "MM-dd-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out lastUserNote);
+                            Target.LastUserNote = lastUserNote;
+                        }
+                    }
+                    else if (legendCaption.Contains("Blog -")) // users can specify their own blog name that is trailed behind the 'Blog -' string
+                    {
+                        var blogEntriesNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
+                        // skip the first 2 characters since the value always contains a leading ':' and whitespace 
+                        Target.Blog.Entries = new List<Blog.Entry>((blogEntriesNode != null) ? Convert.ToInt32(new string(blogEntriesNode.InnerText.Skip(2).ToArray())) : 0);
+
+                        var lastEntryDateNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[2]");
+                        string date = (lastEntryDateNode != null) ? lastEntryDateNode.InnerText.Strip() : "";
+
+                        if (date == "Heute" || date == "Today")
+                            date = DateTime.Now.ToString("MM-dd-yyyy");
+
+                        var lastEntryTimeNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/span[2]");
+                        string time = (lastEntryTimeNode != null) ? lastEntryTimeNode.InnerText.Strip() : "";
+
+                        var parsedDate = new DateTime();
+                        DateTime.TryParseExact(date + " " + time, "MM-dd-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate);
+
+                        Target.Blog.LastEntry = parsedDate;
                     }
                 }
             }
         }
 
-        public class MiniStatsParseEngine : TargetableParseEngine<User>, INodeParseEngine
+        public class MiniStatsParser : TargetableParser<User>, INodeParser
         {
-            public MiniStatsParseEngine(User target) : base(target)
+            public MiniStatsParser(User target) : base(target)
             { }
 
             public void Execute(HtmlNode coreNode)
@@ -780,19 +777,19 @@ namespace epvpapi
             var doc = new HtmlDocument();
             doc.LoadHtml(res.ToString());
 
-            new GeneralInfoParseEngine(this).Execute(doc.GetElementbyId("username_box"));
-            new LastActivityParseEngine(this).Execute(doc.GetElementbyId("last_online"));
+            new GeneralInfoParser(this).Execute(doc.GetElementbyId("username_box"));
+            new LastActivityParser(this).Execute(doc.GetElementbyId("last_online"));
 
             // In case the user is the logged in user, all fields are editable and therefore got his own ids. 
             if (this == session.User)
-                new SessionUserAboutParseEngine(session.User).Execute(doc);
+                new SessionUserAboutParser(session.User).Execute(doc);
             else // otherwise, fields are not owning an id
-                new AboutParseEngine(session.User).Execute(doc.GetElementbyId("collapseobj_aboutme"));
+                new AboutParser(session.User).Execute(doc.GetElementbyId("collapseobj_aboutme"));
 
-            new RankParseEngine(this).Execute(doc.GetElementbyId("rank"));
-            new StatisticsParseEngine(this, (this == session.User)).Execute(doc.GetElementbyId("collapseobj_stats"));
-            new MiniStatsParseEngine(this).Execute(doc.GetElementbyId("collapseobj_stats_mini"));
-            new LastVisitorsParseEngine(this).Execute(doc.GetElementbyId("collapseobj_visitors"));
+            new RankParser(this).Execute(doc.GetElementbyId("rank"));
+            new StatisticsParser(this, (this == session.User)).Execute(doc.GetElementbyId("collapseobj_stats"));
+            new MiniStatsParser(this).Execute(doc.GetElementbyId("collapseobj_stats_mini"));
+            new LastVisitorsParser(this).Execute(doc.GetElementbyId("collapseobj_visitors"));
         }
 
         /// <summary>
