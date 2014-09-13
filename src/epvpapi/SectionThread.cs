@@ -63,12 +63,6 @@ namespace epvpapi
         /// </summary>
         public uint PostCount { get; set; }
 
-        public string Title
-        {
-            get { return InitialPost.Title; }
-            set { InitialPost.Title = value; }
-        }
-
         public SectionThread(Section section)
             : this(0, section)
         { }
@@ -344,7 +338,7 @@ namespace epvpapi
 
                 foreach (var postContainerNode in postsRootNode.GetElementsByTagName("div"))
                 {
-                    var fetchedPost = new SectionPost();
+                    var fetchedPost = new SectionPost(0, this);
                     var postRootNode = postContainerNode.SelectSingleNode("div[1]/div[1]/div[1]/table[1]/tr[2]");
                     if (postRootNode == null) continue;
 
@@ -359,6 +353,9 @@ namespace epvpapi
                                                 : 0;
 
                             var userNameNode = postCreatorNode.SelectSingleNode("span[1]");
+                            if (userNameNode == null) 
+                                userNameNode = postCreatorNode.SelectSingleNode("text()[1]"); 
+
                             var userTitleNode = userPartNode.SelectSingleNode("div[3]");
 
                             var postCreator = new User((userNameNode != null) ? userNameNode.InnerText : "", creatorId)
@@ -382,16 +379,40 @@ namespace epvpapi
                                 }
                             }
 
+                            var userAvatarNode = userPartNode.SelectSingleNode("div[5]/a[1]/img[1]");
+                            if (userAvatarNode != null)
+                                postCreator.AvatarURL = userAvatarNode.Attributes.Contains("src")
+                                    ? userAvatarNode.Attributes["src"].Value
+                                    : "";
+
+                            var additionalStatsNode = userPartNode.SelectSingleNode("div[6]"); // node that contains posts, thanks, elite*gold, the join date...
+                            if (additionalStatsNode != null)
+                            {
+                                var statsNodes = additionalStatsNode.GetElementsByTagName("div");
+                                if (statsNodes != null)
+                                {
+                                    if (statsNodes.Count() >= 5)
+                                    {
+                                        // elite*gold
+                                        var elitegoldNode = statsNodes.First().SelectSingleNode("text()[2]");
+                                        postCreator.EliteGold = (elitegoldNode != null)
+                                                                ? Convert.ToInt32(new String(elitegoldNode.InnerText.Skip(2).ToArray()))
+                                                                : 0;
+                                    }
+                                }
+
+                            }
+
                             fetchedPost.Sender = postCreator;
                         }
                     }
 
                     HtmlNode messagePartNode;
                     // due to the (optional) title nodes users can set, another div will be inserted sometimes before the actual content
-                    var titleNode = postRootNode.SelectSingleNode("td[2]/div[1]/strong[1]");
+                    var titleNode = postRootNode.SelectSingleNode("td[2]/div[1]/strong[1]/text()[1]");
                     if (titleNode != null)
                     {
-                        InitialPost.Title = titleNode.InnerText;
+                        fetchedPost.Title = titleNode.InnerText;
                         messagePartNode = postRootNode.SelectSingleNode("td[2]/div[2]");
                     }
                     else
@@ -423,7 +444,7 @@ namespace epvpapi
         public string GetUrl(uint pageIndex = 1)
         {
             return "http://www.elitepvpers.com/forum/" + Section.URLName + "/"
-                                                       + ID + "-" + Title.URLEscape()
+                                                       + ID + "-" + InitialPost.Title.URLEscape()
                                                        + ((pageIndex > 1) ? "-" + pageIndex : "")
                                                        + ".html";
         }
