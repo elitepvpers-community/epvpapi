@@ -58,6 +58,7 @@
     <Compile Include="Blog.cs" />
     <Compile Include="Connection\ProfileSession.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="HtmlParseEngine.cs" />
     <Compile Include="IDefaultUpdatable.cs" />
     <Compile Include="IDeletable.cs" />
     <Compile Include="Image.cs" />
