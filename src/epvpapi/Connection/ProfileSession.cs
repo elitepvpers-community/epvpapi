@@ -57,108 +57,103 @@ namespace epvpapi.Connection
             /// </remarks>
             public List<PrivateMessage> GetPrivateMessages(uint firstPage, uint pageCount, PrivateMessage.Folder folder)
             {
-                List<PrivateMessage> fetchedMessages = new List<PrivateMessage>();
+                var fetchedMessages = new List<PrivateMessage>();
 
-                for (int i = 0; i < pageCount; ++i)
+                for (var i = 0; i < pageCount; ++i)
                 {
                     // setting 'pp' to 100 will get you exactly 100 messages per page. This is the highest count that can be set.
                     Response res = Session.Get("http://www.elitepvpers.com/forum/private.php?folderid=" + folder.ID + "&pp=100&sort=date&page=" + i);
-                    HtmlDocument document = new HtmlDocument();
+                    var document = new HtmlDocument();
                     document.LoadHtml(res.ToString());
 
-                    HtmlNode formRootNode = document.GetElementbyId("pmform");
+                    var formRootNode = document.GetElementbyId("pmform");
                     if (formRootNode == null) continue;
                     formRootNode = formRootNode.ParentNode;
 
                     if (formRootNode == null) continue;
-                    HtmlNode tborderNode = formRootNode.SelectSingleNode("table[2]");
+                    var tborderNode = formRootNode.SelectSingleNode("table[2]");
                     if (tborderNode == null) continue;
 
                     // Get the amount of messages stored in the specified folder
                     // If the amount of messages is lower than the specified page count * 100, adjust the pageCount variable to fit
                     // Otherwise, vBulletin will redirect you to the previous page if it can't find the page index causing duplicate messages
-                    HtmlNode messageCountNode = tborderNode.SelectSingleNode("thead[1]/tr[1]/td[1]/span[1]/label[1]/strong[1]");
+                    var messageCountNode = tborderNode.SelectSingleNode("thead[1]/tr[1]/td[1]/span[1]/label[1]/strong[1]");
                     if (messageCountNode == null) break;
 
                     uint messageCount = Convert.ToUInt32(messageCountNode.InnerText);
                     if (messageCount == 0)
                         break;
-                    else
-                        pageCount = (uint)Math.Ceiling((double)messageCount / 100);
+                    
+                    pageCount = (uint)Math.Ceiling((double)messageCount / 100);
 
-                    List<HtmlNode> categoryNodes = new List<HtmlNode>(tborderNode.GetElementsByTagName("tbody").Where(node => node.Id != String.Empty));
+                    var categoryNodes = new List<HtmlNode>(tborderNode.GetElementsByTagName("tbody").Where(node => node.Id != String.Empty));
                     foreach (var subNodes in categoryNodes.Select(categoryNode => categoryNode.GetElementsByTagName("tr")))
                     {
                         foreach (var subNode in subNodes)
                         {
-                            HtmlNode tdBaseNode = subNode.SelectSingleNode("td[3]");
+                            var tdBaseNode = subNode.SelectSingleNode("td[3]");
                             if (tdBaseNode == null) continue;
                             uint pmID = Convert.ToUInt32(new string(tdBaseNode.Id.Skip(1).ToArray())); // skip the first character that is always prefixed before the actual id
 
-                            HtmlNode dateNode = tdBaseNode.SelectSingleNode("div[1]/span[1]");
+                            var dateNode = tdBaseNode.SelectSingleNode("div[1]/span[1]");
                             string date = (dateNode != null) ? dateNode.InnerText : "";
 
-                            HtmlNode timeNode = tdBaseNode.SelectSingleNode("div[2]/span[1]");
+                            var timeNode = tdBaseNode.SelectSingleNode("div[2]/span[1]");
                             string time = (timeNode != null) ? timeNode.InnerText : "";
 
-                            bool messageUnread = false;
+                            var messageUnread = false;
 
                             string title = "";
-                            HtmlNode titleNode = tdBaseNode.SelectSingleNode("div[1]/a[1]");
+                            var titleNode = tdBaseNode.SelectSingleNode("div[1]/a[1]");
                             if (titleNode == null)
                             {
                                 // Unread messages are shown with bold font
                                 titleNode = tdBaseNode.SelectSingleNode("div[1]/a[1]/strong[1]");
-                                title = (titleNode != null) ? titleNode.InnerText : "";
                                 messageUnread = true;
                             }
-                            else
-                                title = (titleNode != null) ? titleNode.InnerText : "";
+                            title = (titleNode != null) ? titleNode.InnerText : "";
 
                             string userName = "";
-                            HtmlNode userNameNode = tdBaseNode.SelectSingleNode("div[2]/span[2]");
+                            var userNameNode = tdBaseNode.SelectSingleNode("div[2]/span[2]");
                             if (userNameNode == null)
                             {
                                 // Unread messages are shown with bold font
                                 userNameNode = tdBaseNode.SelectSingleNode("div[2]/strong[1]/span[1]");
-                                userName = (userNameNode != null) ? userNameNode.InnerText : "";
                                 messageUnread = true;
                             }
-                            else
-                                userName = (userNameNode != null) ? userNameNode.InnerText : "";
+                            userName = (userNameNode != null) ? userNameNode.InnerText : "";
 
-                            DateTime dateTime = new DateTime();
-                            DateTime.TryParseExact(date + " " + time, "MM-dd-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime);
+                            var sender = new User(userName);
+                            if (userNameNode != null)
+                            {
+                                var regexMatch = Regex.Match(userNameNode.Attributes["onclick"].Value,
+                                    @"window.location='(\S+)';");
+                                    // the profile link is stored within a javascript page redirect command
+                                if (regexMatch.Groups.Count > 1)
+                                    sender = new User(userName, epvpapi.User.FromURL(regexMatch.Groups[1].Value));
+                            }
 
-                            User sender = new User(userName);
-                            Match regexMatch = Regex.Match(userNameNode.Attributes["onclick"].Value, @"window.location='(\S+)';"); // the profile link is stored within a javascript page redirect command
-                            if (regexMatch.Groups.Count > 1)
-                                sender = new User(userName, epvpapi.User.FromURL(regexMatch.Groups[1].Value));
+                            var fetchedPrivateMessage = new PrivateMessage(pmID)
+                                                        {
+                                                            Title = title,
+                                                            Date = (date + " " + time).ToElitepvpersDateTime(),
+                                                            Unread = messageUnread
+                                                        };
 
                             // Messages that were send are labeled with the user that received the message. If messages were received, they were labeled with the sender
                             // so we need to know wether the folder stores received or sent messages
                             if (folder.StorageType == PrivateMessage.Folder.Storage.Received)
                             {
-                                fetchedMessages.Add(new PrivateMessage(pmID)
-                                {
-                                    Recipients = new List<User>() { User },
-                                    Sender = sender,
-                                    Title = title,
-                                    Date = dateTime,
-                                    Unread = messageUnread
-                                });
+                                fetchedPrivateMessage.Recipients = new List<User>() {User};
+                                fetchedPrivateMessage.Sender = sender;
                             }
                             else
                             {
-                                fetchedMessages.Add(new PrivateMessage(pmID)
-                                {
-                                    Recipients = new List<User>() { sender },
-                                    Sender = User,
-                                    Title = title,
-                                    Date = dateTime,
-                                    Unread = messageUnread
-                                });
+                                fetchedPrivateMessage.Recipients = new List<User>() {sender};
+                                fetchedPrivateMessage.Sender = User;
                             }
+
+                            fetchedMessages.Add(fetchedPrivateMessage);
                         }
                     }
                 }
@@ -190,12 +185,17 @@ namespace epvpapi.Connection
             /// <param name="changeType"> 0 for uploading a new avatar, -1 for deleting the old one without uploading a new one </param>
             protected void SetAvatar(Image image, int changeType)
             {
-                MultipartFormDataContent content = new MultipartFormDataContent();
-                content.Add(new ByteArrayContent(image.Data), "upload", (String.IsNullOrEmpty(image.Name)) ? "Unnamed.jpeg" : image.Name + image.Format);
-                content.Add(new StringContent(String.Empty), "s");
-                content.Add(new StringContent(Session.SecurityToken), "securitytoken");
-                content.Add(new StringContent("updateavatar"), "do");
-                content.Add(new StringContent(changeType.ToString()), "avatarid");
+                var content = new MultipartFormDataContent
+                {
+                    {
+                        new ByteArrayContent(image.Data), "upload",
+                        (String.IsNullOrEmpty(image.Name)) ? "Unnamed.jpeg" : image.Name + image.Format
+                    },
+                    { new StringContent(String.Empty), "s" },
+                    { new StringContent(Session.SecurityToken), "securitytoken" },
+                    { new StringContent("updateavatar"), "do" },
+                    { new StringContent(changeType.ToString()), "avatarid" }
+                };
 
                 Session.PostMultipartFormData(new Uri("http://www.elitepvpers.com/forum/profile.php?do=updateavatar"), content);
             }
