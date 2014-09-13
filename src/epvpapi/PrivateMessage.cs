@@ -1,4 +1,5 @@
 ﻿using epvpapi.Connection;
+using epvpapi.Evaluation;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
@@ -135,6 +136,44 @@ namespace epvpapi
     
         }
 
+        class ContentParser : TargetableParser<PrivateMessage>, INodeParser
+        {
+            public ContentParser(PrivateMessage target) : base(target)
+            { }
+
+            public void Execute(HtmlNode coreNode)
+            {
+                if (coreNode == null) return;
+                
+                var titleNode = coreNode.SelectSingleNode("div[1]/strong[1]");
+                Target.Title = (titleNode != null) ? titleNode.InnerText : "";
+
+                // The actual message content is stored within several nodes. There may be different tags (such as <a> for links, linebreaks...)
+                // This is why just all descendent text nodes are retrieved.
+                var contentNodes = new List<HtmlNode>(coreNode.SelectSingleNode("div[2]").Descendants()
+                                                                .Where(node => node.Name == "#text" && node.InnerText.Strip() != ""));
+                contentNodes.ForEach(node => Target.Content += node.InnerText);         
+            }
+        }
+
+        class SenderParser : TargetableParser<User>, INodeParser
+        {
+            public SenderParser(User target) : base(target)
+            { }
+
+            public void Execute(HtmlNode coreNode)
+            {
+                if (coreNode == null) return;
+                coreNode = coreNode.SelectSingleNode("tr[2]/td[1]/div[1]/a[1]");
+                if (coreNode == null) return;
+
+                var userNameNode = coreNode.SelectSingleNode("span[1]");
+
+                Target.Name = (userNameNode != null) ? userNameNode.InnerText : "";
+                Target.ID = (coreNode.Attributes.Contains("href")) ? User.FromURL(coreNode.Attributes["href"].Value) : 0;
+            }
+        }
+
         /// <summary>
         /// Retrieves information about the messages such as title, content and sender
         /// </summary>
@@ -144,29 +183,12 @@ namespace epvpapi
             session.ThrowIfInvalid();
             if (ID == 0) throw new System.ArgumentException("ID must not be emtpy");
 
-            Response res = session.Get("http://www.elitepvpers.com/forum/private.php?do=showpm&pmid=" + ID.ToString());
-            HtmlDocument doc = new HtmlDocument();
+            var res = session.Get("http://www.elitepvpers.com/forum/private.php?do=showpm&pmid=" + ID.ToString());
+            var doc = new HtmlDocument();
             doc.LoadHtml(res.ToString());
 
-            HtmlNode messageRootNode = doc.GetElementbyId("post");
-            if (messageRootNode == null) throw new ParsingFailedException("Private message could not be parsed, root node wasn't found or is invalid");
-
-            HtmlNode userNode = messageRootNode.SelectSingleNode("tr[2]/td[1]/div[1]/a[1]");
-            string userName = (userNode.SelectSingleNode("span[1]") != null) ? userNode.SelectSingleNode("span[1]").InnerText : "";
-            Sender = (userNode != null) ? new User(userName, User.FromURL(userNode.Attributes["href"].Value)) : new User(userName);
-
-            HtmlNode messageNode = doc.GetElementbyId("td_post_");
-            if(messageNode != null)
-            {
-                HtmlNode titleNode = messageNode.SelectSingleNode("div[1]/strong[1]");
-                Title = (titleNode != null) ? titleNode.InnerText : "";
-
-                // The actual message content is stored within several nodes. There may be different tags (such as <a> for links, linebreaks...)
-                // This is why just all descendent text nodes are retrieved.
-                List<HtmlNode> contentNodes = new List<HtmlNode>(messageNode.SelectSingleNode("div[2]").Descendants()
-                                                                .Where(node => node.Name == "#text" && node.InnerText.Strip() != ""));
-                contentNodes.ForEach(node => Content += node.InnerText);
-            }
+            new SenderParser(Sender).Execute(doc.GetElementbyId("post"));
+            new ContentParser(this).Execute(doc.GetElementbyId("td_post_"));
         }
 
         public void Report(Session session, string reason)

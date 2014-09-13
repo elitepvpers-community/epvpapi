@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace epvpapi
+namespace epvpapi.Evaluation
 {
     public class ParsingFailedException : Exception
     {
