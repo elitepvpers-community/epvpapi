@@ -238,7 +238,7 @@ namespace epvpapi.Connection
         /// <summary>
         /// Logs in the session user
         /// </summary>
-        /// <param name="md5Password"> Hashed password (MD5) of the session user </param>
+        /// <param name="md5Password"> Hashed (MD5) or unhashed password of the session user </param>
         public void Login(string md5Password)
         {
             Response res = Post("http://www.elitepvpers.com/forum/login.php?do=login",
