@@ -4,7 +4,7 @@ using System.Text;
 
 namespace epvpapi.Generation
 {
-    class Cryptography
+    public class Cryptography
     {
         public static string GetMD5(string str)
         {
