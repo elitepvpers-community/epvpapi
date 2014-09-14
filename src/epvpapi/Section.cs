@@ -94,11 +94,7 @@ namespace epvpapi
                         {
                             var beginNode = secondLine.SelectSingleNode("span[1]/span[1]");
                             if (beginNode != null)
-                            {
-                                var beginDate = new DateTime();
-                                DateTime.TryParseExact(beginNode.InnerText, "MM-dd-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out beginDate);
-                                announcement.Begins = beginDate;
-                            }
+                                announcement.Begins = beginNode.InnerText.ToElitepvpersDateTime();
 
                             var creatorNode = secondLine.SelectSingleNode("span[2]/a[1]");
                             announcement.Sender.Name = (creatorNode != null) ? creatorNode.InnerText : "";

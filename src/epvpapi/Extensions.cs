@@ -136,6 +136,8 @@ namespace epvpapi
                 "dd.MM.yyyy HH:mm",
                 "dd.MM.yyyy, HH:mm",
                 "MM/dd/yyyy, HH:mm",
+                "MM/dd/yyyy",
+                "dd/MM/yyyy"
             };
 
             formattedTime = formattedTime.Strip();

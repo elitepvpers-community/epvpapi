@@ -526,15 +526,10 @@ namespace epvpapi
                     var lastActivityDateNode = coreNode.SelectSingleNode("text()[2]");
                     string date = (lastActivityDateNode != null) ? lastActivityDateNode.InnerText.Strip() : String.Empty;
 
-                    if (date == "Heute" || date == "Today")
-                        date = DateTime.Now.Date.ToString("dd/MM/yyyy");
-
                     var lastActivityTimeNode = coreNode.SelectSingleNode("span[2]");
                     string time = (lastActivityTimeNode != null) ? lastActivityTimeNode.InnerText.Strip() : String.Empty;
 
-                    var parsedDateTime = new DateTime();
-                    DateTime.TryParse(date + " " + time, out parsedDateTime);
-                    Target.LastActivity = parsedDateTime;
+                    Target.LastActivity = (date + " " + time).ToElitepvpersDateTime();
                 }
                 else
                 {
@@ -625,22 +620,9 @@ namespace epvpapi
                         Target.VisitorMessages = (visitorMessagesNode != null) ? (uint)Convert.ToDouble(visitorMessagesNode.InnerText) : 0;
 
                         var lastVisitorMessageNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[1]");
-                        if (lastVisitorMessageNode != null)
-                        {
-                            DateTime lastVisitorMessage = new DateTime();
-                            if (lastVisitorMessageNode.InnerText.Contains("Today") || lastVisitorMessageNode.InnerText.Contains("Heute"))
-                            {
-                                Match match = Regex.Match(lastVisitorMessageNode.InnerText, @"\S+ (\S+)");
-                                string time = (match.Groups.Count > 1) ? match.Groups[1].Value : "";
-                                DateTime.TryParseExact(DateTime.Now.ToString("MM-dd-yyyy") + " " + time, "MM-dd-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out lastVisitorMessage);
-                            }
-                            else
-                            {
-                                DateTime.TryParseExact(lastVisitorMessageNode.InnerText.Strip(), "MM-dd-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out lastVisitorMessage);
-                            }
-
-                            Target.LastVisitorMessage = lastVisitorMessage;
-                        }
+                        Target.LastVisitorMessage = (lastVisitorMessageNode != null)
+                                                    ? lastVisitorMessageNode.InnerText.ToElitepvpersDateTime()
+                                                    : new DateTime();
                     }
                     else if (legendCaption == "Vergebene Thanks" || legendCaption == "Thanks Given")
                     {
@@ -676,11 +658,7 @@ namespace epvpapi
                         var lastNoteTimeNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/span[2]");
 
                         if (lastNoteDateNode != null && lastNoteTimeNode != null)
-                        {
-                            var lastUserNote = new DateTime();
-                            DateTime.TryParseExact(lastNoteDateNode.InnerText + " " + lastNoteTimeNode.InnerText, "MM-dd-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out lastUserNote);
-                            Target.LastUserNote = lastUserNote;
-                        }
+                            Target.LastUserNote = (lastNoteDateNode.InnerText + " " + lastNoteTimeNode.InnerText).ToElitepvpersDateTime();
                     }
                     else if (legendCaption.Contains("Blog -")) // users can specify their own blog name that is trailed behind the 'Blog -' string
                     {
@@ -691,16 +669,10 @@ namespace epvpapi
                         var lastEntryDateNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[2]");
                         string date = (lastEntryDateNode != null) ? lastEntryDateNode.InnerText.Strip() : "";
 
-                        if (date == "Heute" || date == "Today")
-                            date = DateTime.Now.ToString("MM-dd-yyyy");
-
                         var lastEntryTimeNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/span[2]");
                         string time = (lastEntryTimeNode != null) ? lastEntryTimeNode.InnerText.Strip() : "";
 
-                        var parsedDate = new DateTime();
-                        DateTime.TryParseExact(date + " " + time, "MM-dd-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate);
-
-                        Target.Blog.LastEntry = parsedDate;
+                        Target.Blog.LastEntry = (date + " " + time).ToElitepvpersDateTime();
                     }
                 }
             }
@@ -730,10 +702,8 @@ namespace epvpapi
                 foreach (var keyNode in miniStatsNodes)
                 {
                     if (keyNode.InnerText == "Registriert seit" || keyNode.InnerText == "Join Date")
-                    {
-                        var parsedDateTime = new DateTime();
-                        DateTime.TryParseExact(miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].InnerText, "MM-dd-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDateTime);
-                        Target.JoinDate = parsedDateTime;
+                    {  
+                        Target.JoinDate = miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].InnerText.ToElitepvpersDateTime();
                     }
                     else if (keyNode.InnerText.Contains("elite*gold"))
                     {
