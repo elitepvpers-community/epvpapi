@@ -380,45 +380,73 @@ namespace epvpapi
                                 {
                                     if (statsNodes.Count() >= 5)
                                     {
-                                        // elite*gold
-                                        var elitegoldNode = statsNodes.First().SelectSingleNode("text()[2]");
-                                        postCreator.EliteGold = (elitegoldNode != null)
-                                                                ? Convert.ToInt32(new String(elitegoldNode.InnerText.Skip(2).ToArray()))
-                                                                : 0;
-
-                                        // The Black Market
-                                        var tbmPositiveNode = statsNodes.ElementAt(1).SelectSingleNode("span[1]");
-                                        postCreator.TBMProfile.Positive = (tbmPositiveNode != null)
-                                                                            ? Convert.ToUInt32(tbmPositiveNode.InnerText)
-                                                                            : 0;
-                                        var tbmNeutralNode = statsNodes.ElementAt(1).SelectSingleNode("text()[3]");
-                                        postCreator.TBMProfile.Neutral = (tbmNeutralNode != null)
-                                                                            ? Convert.ToUInt32(tbmNeutralNode.InnerText.TrimStart('/').TrimEnd('/'))
-                                                                            : 0;
-
-                                        var tbmNegativeNode = statsNodes.ElementAt(1).SelectSingleNode("span[2]");
-                                        postCreator.TBMProfile.Negative = (tbmNegativeNode != null)
-                                                                            ? Convert.ToUInt32(tbmNegativeNode.InnerText)
-                                                                            : 0;
-
-
-                                        // Join Date
-                                        var joinDateNode = statsNodes.ElementAt(2);
-                                        if (joinDateNode != null)
+                                        // Loop through the nodes and check for their descriptors since the 
+                                        // number of nodes depend on the user's rank and settings
+                                        foreach (var statsNode in statsNodes)
                                         {
-                                            // since the join date is formatted with the first 3 characters of the month + year, we'd need to use some regex here
-                                            // data may look as follows: Registriert seit: Jun 2007 (German)
-                                            var match = new Regex(@"([a-zA-Z]{3})\s{1}([0-9]+)").Match(joinDateNode.InnerText);
-                                            if (match.Groups.Count == 3)
+                                            string innerText = statsNode.InnerText;
+
+                                            if (innerText.Contains("elite*gold"))
                                             {
-                                                for (var j = 1; j <= 12; j++)
+                                                var elitegoldNode = statsNodes.First().SelectSingleNode("text()[2]");
+                                                postCreator.EliteGold = (elitegoldNode != null)
+                                                                        ? Convert.ToInt32(new String(elitegoldNode.InnerText.Skip(2).ToArray()))
+                                                                        : 0;
+
+                                            }
+                                            else if (innerText.Contains("The Black Market"))
+                                            {
+                                                var tbmPositiveNode = statsNodes.ElementAt(1).SelectSingleNode("span[1]");
+                                                postCreator.TBMProfile.Positive = (tbmPositiveNode != null)
+                                                                                    ? Convert.ToUInt32(tbmPositiveNode.InnerText)
+                                                                                    : 0;
+                                            }
+                                            else if (innerText.Contains("Mediations"))
+                                            {
+                                                // in progress
+                                            }
+                                            else if (innerText.Contains("Registriert seit") ||
+                                                     innerText.Contains("Join Date"))
+                                            {
+                                                var joinDateNode = statsNodes.ElementAt(2);
+                                                if (joinDateNode != null)
                                                 {
-                                                    if(CultureInfo.InvariantCulture.DateTimeFormat.GetMonthName(j).Contains(match.Groups[1].Value))
-                                                        postCreator.JoinDate = new DateTime(Convert.ToInt32(match.Groups[2].Value), j, 1);
+                                                    // since the join date is formatted with the first 3 characters of the month + year, we'd need to use some regex here
+                                                    // data may look as follows: Registriert seit: Jun 2007 (German)
+                                                    var match = new Regex(@"([a-zA-Z]{3})\s{1}([0-9]+)").Match(joinDateNode.InnerText);
+                                                    if (match.Groups.Count == 3)
+                                                    {
+                                                        for (var j = 1; j <= 12; j++)
+                                                        {
+                                                            if (CultureInfo.InvariantCulture.DateTimeFormat.GetMonthName(j).Contains(match.Groups[1].Value))
+                                                                postCreator.JoinDate = new DateTime(Convert.ToInt32(match.Groups[2].Value), j, 1);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            else if (innerText.Contains("Beiträge") || innerText.Contains("Posts"))
+                                            {
+                                                var postsNode = statsNodes.ElementAt(3);
+                                                if (postsNode != null)
+                                                {
+                                                    var match = new Regex("(?:Beiträge|Posts): ([0-9]+(?:.|,)[0-9]+)").Match(postsNode.InnerText);
+                                                    if (match.Groups.Count > 1)
+                                                        postCreator.Posts = (uint)double.Parse(match.Groups[1].Value);
+                                                }
+                                            }
+                                            else if (innerText.Contains("Erhaltene Thanks") ||
+                                                     innerText.Contains("Received Thanks"))
+                                            {
+                                                var receivedThanksNode = statsNodes.ElementAt(4);
+                                                if (receivedThanksNode != null)
+                                                {
+                                                    var match = new Regex("(?:Erhaltene Thanks|Received Thanks): ([0-9]+(?:.|,)[0-9]+)").Match(receivedThanksNode.InnerText);
+                                                    if (match.Groups.Count > 1)
+                                                        postCreator.ThanksReceived = (uint)double.Parse(match.Groups[1].Value);
                                                 }
                                             }
 
-                                        }  
+                                        }
                                     }
                                 }
 
