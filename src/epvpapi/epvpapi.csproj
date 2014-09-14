@@ -59,6 +59,8 @@
     <Compile Include="Connection\ProfileSession.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Evaluation\TargetableParser.cs" />
+    <Compile Include="Generation\Cryptography.cs" />
+    <Compile Include="Generation\HardwareID.cs" />
     <Compile Include="IDefaultUpdatable.cs" />
     <Compile Include="IDeletable.cs" />
     <Compile Include="Evaluation\IDocumentParser.cs" />

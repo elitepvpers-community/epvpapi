@@ -39,7 +39,7 @@ namespace epvpapi
         { }
 
         public Message(uint id, string content)
-            : base(0)
+            : base(id)
         {
             Content = content;       
             Date = new DateTime();

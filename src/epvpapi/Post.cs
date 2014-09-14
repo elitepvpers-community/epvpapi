@@ -13,7 +13,7 @@
         public User Sender { get; set; }
 
         public Post(uint id, User sender, string content, string title = null)
-            : base(content)
+            : base(id, content)
         {
             Title = title;
             Sender = sender;

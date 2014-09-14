@@ -1,4 +1,6 @@
-﻿using HtmlAgilityPack;
+﻿using System.Globalization;
+using System.Runtime.Remoting.Messaging;
+using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -65,7 +67,7 @@ namespace epvpapi
         /// <param name="tagName"> Tag name to search for </param>
         /// <returns> <c>IEnumarable</c> of <c>HtmlNode</c>s that were found </returns>
         public static IEnumerable<HtmlNode> GetElementsByTagName(this HtmlNode parent, string tagName)
-        {
+                {
             return parent.ChildNodes.Where(node => node.Name == tagName);
         }
 
@@ -123,6 +125,26 @@ namespace epvpapi
                     && (other.Day == self.Month) 
                     && (other.Hour == self.Hour) 
                     && (other.Minute == self.Minute) );
+        }
+
+        public static DateTime ToElitepvpersDateTime(this string formattedTime)
+        {
+            var commonFormats = new List<string>
+            {
+                "MM-dd-yyyy HH:mm",
+                "MM/dd/yyyy HH:mm",
+                "dd.MM.yyyy HH:mm"
+            };
+
+            var dateTime = new DateTime();
+            foreach(var format in commonFormats)
+            {
+                if (DateTime.TryParseExact(formattedTime, format, CultureInfo.InvariantCulture,
+                    DateTimeStyles.None, out dateTime))
+                    return dateTime;
+            }
+
+            return dateTime;
         }
 
         public static bool HasClass(this HtmlNode node, string className)
