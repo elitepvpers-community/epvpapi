@@ -397,13 +397,27 @@ namespace epvpapi
                                             else if (innerText.Contains("The Black Market"))
                                             {
                                                 var tbmPositiveNode = statsNodes.ElementAt(1).SelectSingleNode("span[1]");
-                                                postCreator.TBMProfile.Positive = (tbmPositiveNode != null)
+                                                postCreator.TBMProfile.Ratings.Positive = (tbmPositiveNode != null)
                                                                                     ? Convert.ToUInt32(tbmPositiveNode.InnerText)
+                                                                                    : 0;
+
+                                                var tbmNeutralNode = statsNodes.ElementAt(1).SelectSingleNode("text()[3]");
+                                                postCreator.TBMProfile.Ratings.Neutral = (tbmNeutralNode != null)
+                                                                                ? Convert.ToUInt32(tbmNeutralNode.InnerText.TrimStart('/').TrimEnd('/'))
+                                                                                    : 0;
+ 
+                                                var tbmNegativeNode = statsNodes.ElementAt(1).SelectSingleNode("span[2]");
+                                                postCreator.TBMProfile.Ratings.Negative = (tbmNegativeNode != null)
+                                                                                    ? Convert.ToUInt32(tbmNegativeNode.InnerText)
                                                                                     : 0;
                                             }
                                             else if (innerText.Contains("Mediations"))
                                             {
-                                                // in progress
+                                                var positiveNode = statsNode.SelectSingleNode("span[1]");
+                                                postCreator.TBMProfile.Mediations.Positive = Convert.ToUInt32(positiveNode.InnerText);
+
+                                                var neutralNode = statsNode.SelectSingleNode("text()[2]");
+                                                postCreator.TBMProfile.Mediations.Neutral = Convert.ToUInt32(neutralNode.InnerText.TrimStart('/'));
                                             }
                                             else if (innerText.Contains("Registriert seit") ||
                                                      innerText.Contains("Join Date"))

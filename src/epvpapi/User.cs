@@ -743,13 +743,13 @@ namespace epvpapi
                     else if (keyNode.InnerText.Contains("The Black Market"))
                     {
                         var positiveRatingsNode = miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].SelectSingleNode("span[1]");
-                        Target.TBMProfile.Positive = (positiveRatingsNode != null) ? Convert.ToUInt32(positiveRatingsNode.InnerText) : Target.TBMProfile.Positive;
+                        Target.TBMProfile.Ratings.Positive = (positiveRatingsNode != null) ? Convert.ToUInt32(positiveRatingsNode.InnerText) : Target.TBMProfile.Ratings.Positive;
 
                         var neutralRatingsNode = miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].SelectSingleNode("text()[1]");
-                        Target.TBMProfile.Neutral = (neutralRatingsNode != null) ? Convert.ToUInt32(new string(neutralRatingsNode.InnerText.Skip(1).Take(1).ToArray())) : Target.TBMProfile.Neutral;
+                        Target.TBMProfile.Ratings.Neutral = (neutralRatingsNode != null) ? Convert.ToUInt32(new string(neutralRatingsNode.InnerText.Skip(1).Take(1).ToArray())) : Target.TBMProfile.Ratings.Neutral;
 
                         var negativeRatingsNode = miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].SelectSingleNode("span[2]");
-                        Target.TBMProfile.Negative = (negativeRatingsNode != null) ? Convert.ToUInt32(negativeRatingsNode.InnerText) : Target.TBMProfile.Negative;
+                        Target.TBMProfile.Ratings.Negative = (negativeRatingsNode != null) ? Convert.ToUInt32(negativeRatingsNode.InnerText) : Target.TBMProfile.Ratings.Negative;
                     }
                 }
 
