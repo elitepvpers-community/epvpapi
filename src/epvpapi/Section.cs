@@ -11,7 +11,7 @@ namespace epvpapi
     /// <summary>
     /// Represents a subforum
     /// </summary>
-    public class Section : UniqueWebObject, IDefaultUpdatable
+    public class Section : UniqueObject, IDefaultUpdatable, IUniqueWebObject
     {
         /// <summary>
         /// Name of the section
@@ -28,17 +28,12 @@ namespace epvpapi
         /// </summary>
         public string Description { get; set; }
 
-        public class Announcement : Post
+        public class Announcement : Post, IUniqueWebObject
         {
             public DateTime Begins { get; set; }
             public DateTime Ends { get; set; }
             public uint Hits { get; set; }
             public Section Section { get; set; }
-
-            public override string URL
-            {
-                get { return "http://www.elitepvpers.com/forum/" + Section.URLName + "/announcement-" + Title.URLEscape() + ".html"; }
-            }
 
             public Announcement(Section section, uint id = 0)
                 : base(id)
@@ -47,17 +42,18 @@ namespace epvpapi
                 Begins = new DateTime();
                 Ends = new DateTime();
             }
+
+            public string GetUrl()
+            {
+                return "http://www.elitepvpers.com/forum/" + Section.URLName + "/announcement-" + Title.URLEscape() + ".html";
+            } 
+
         }
 
         /// <summary>
         /// List of all announcements available for this section
         /// </summary>
-        public List<Announcement> Announcements { get; set; }
-
-        public override string URL
-        {
-            get { return "http://www.elitepvpers.com/forum/" + URLName + "/"; }
-        }
+        public List<Announcement> Announcements { get; set; } 
 
         public Section(uint id, string urlName)
             : base(id)
@@ -131,8 +127,8 @@ namespace epvpapi
                 var titleNode = coreNode.SelectSingleNode("td[3]/div[1]/a[1]");
                 if (titleNode.Id.Contains("thread_gotonew")) // new threads got an additional image displayed (left from the title) wrapped in an 'a' element for quick access to the new reply function
                     titleNode = coreNode.SelectSingleNode("td[3]/div[1]/a[2]");
-                Target.Posts.First().Title = (titleNode != null) ? titleNode.InnerText : "";
-                Target.ID = (titleNode != null) ? (titleNode.Attributes.Contains("href")) ? SectionThread.FromURL(titleNode.Attributes["href"].Value) : 0 : 0;
+                Target.InitialPost.Title = (titleNode != null) ? titleNode.InnerText : "";
+                Target.ID = (titleNode != null) ? (titleNode.Attributes.Contains("href")) ? SectionThread.FromUrl(titleNode.Attributes["href"].Value) : 0 : 0;
 
                 var threadStatusIconNode = coreNode.SelectSingleNode("td[1]/img[1]");
                 Target.Closed = (threadStatusIconNode != null) ? (threadStatusIconNode.Attributes.Contains("src")) ? threadStatusIconNode.Attributes["src"].Value.Contains("lock") : false : false;
@@ -149,10 +145,10 @@ namespace epvpapi
                 }
 
                 var repliesNode = coreNode.SelectSingleNode("td[5]/a[1]");
-                Target.Replies = (repliesNode != null) ? (uint)Convert.ToDouble(repliesNode.InnerText) : 0;
+                Target.ReplyCount = (repliesNode != null) ? (uint)Convert.ToDouble(repliesNode.InnerText) : 0;
 
                 var viewsNode = coreNode.SelectSingleNode("td[6]");
-                Target.Views = (viewsNode != null) ? (uint)Convert.ToDouble(viewsNode.InnerText) : 0;
+                Target.ViewCount = (viewsNode != null) ? (uint)Convert.ToDouble(viewsNode.InnerText) : 0;
             }
         }
 
@@ -209,12 +205,11 @@ namespace epvpapi
                 else
                 {
                     totalThreadNodes = threadNodes;
-                }               
+                }
 
                 foreach (var threadNode in totalThreadNodes)
                 {
                     var parsedThread = new SectionThread(0, this);
-                    parsedThread.Posts.Add(new SectionPost(0, parsedThread));
                     new ThreadListingParser(parsedThread).Execute(threadNode);
 
                     if (stickyThreadNodes.Any(stickyThreadNode => stickyThreadNode == threadNode))
@@ -226,6 +221,11 @@ namespace epvpapi
 
             return parsedThreads;
         }
+
+        public string GetUrl()
+        {
+            return "http://www.elitepvpers.com/forum/" + URLName + "/";
+        } 
 
         private static Section _Main = new Section(206, "main"); 
         public static Section Main

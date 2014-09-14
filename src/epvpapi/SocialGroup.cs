@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace epvpapi
 {
-    public class SocialGroup : UniqueWebObject, IDeletable
+    public class SocialGroup : UniqueObject, IDeletable, IUniqueWebObject
     {
         [Flags]
         public enum Options
@@ -58,10 +58,6 @@ namespace epvpapi
         /// </summary>
         public Access AccessMode { get; set; }
 
-        public override string URL
-        {
-            get { return "http://www.elitepvpers.com/forum/groups/" + ID + "-" + Name.URLEscape() + ".html"; }
-        }
 
         public SocialGroup(uint id)
             : base(id)
@@ -321,6 +317,11 @@ namespace epvpapi
                             new KeyValuePair<string, string>("confirm", "++Yes++")
                         });
         }
+
+        public string GetUrl()
+        {
+            return "http://www.elitepvpers.com/forum/groups/" + ID + "-" + Name.URLEscape() + ".html";
+        } 
 
     }
 }

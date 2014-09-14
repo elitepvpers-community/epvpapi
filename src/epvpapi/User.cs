@@ -13,7 +13,7 @@ namespace epvpapi
     /// <summary>
     /// Represents an user in elitepvpers
     /// </summary>
-    public class User : UniqueWebObject, ISpecializedUpdatable
+    public class User : UniqueObject, ISpecializedUpdatable, IUniqueWebObject
     {
         /// <summary>
         /// Available usergroups an user can have 
@@ -361,13 +361,6 @@ namespace epvpapi
         /// </summary>
         public string AvatarURL { get; set; }
 
-        /// <summary>
-        /// Web URL to the profile page
-        /// </summary>
-        public override string URL
-        {
-            get { return "http://www.elitepvpers.com/forum/members/" + ID + "-" + Name.URLEscape() + ".html"; }
-        }
 
         public User(uint id = 0)
             : this(null, id)
@@ -750,13 +743,13 @@ namespace epvpapi
                     else if (keyNode.InnerText.Contains("The Black Market"))
                     {
                         var positiveRatingsNode = miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].SelectSingleNode("span[1]");
-                        Target.TBMProfile.Positive = (positiveRatingsNode != null) ? Convert.ToUInt32(positiveRatingsNode.InnerText) : Target.TBMProfile.Positive;
+                        Target.TBMProfile.Ratings.Positive = (positiveRatingsNode != null) ? Convert.ToUInt32(positiveRatingsNode.InnerText) : Target.TBMProfile.Ratings.Positive;
 
                         var neutralRatingsNode = miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].SelectSingleNode("text()[1]");
-                        Target.TBMProfile.Neutral = (neutralRatingsNode != null) ? Convert.ToUInt32(new string(neutralRatingsNode.InnerText.Skip(1).Take(1).ToArray())) : Target.TBMProfile.Neutral;
+                        Target.TBMProfile.Ratings.Neutral = (neutralRatingsNode != null) ? Convert.ToUInt32(new string(neutralRatingsNode.InnerText.Skip(1).Take(1).ToArray())) : Target.TBMProfile.Ratings.Neutral;
 
                         var negativeRatingsNode = miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].SelectSingleNode("span[2]");
-                        Target.TBMProfile.Negative = (negativeRatingsNode != null) ? Convert.ToUInt32(negativeRatingsNode.InnerText) : Target.TBMProfile.Negative;
+                        Target.TBMProfile.Ratings.Negative = (negativeRatingsNode != null) ? Convert.ToUInt32(negativeRatingsNode.InnerText) : Target.TBMProfile.Ratings.Negative;
                     }
                 }
 
@@ -791,6 +784,11 @@ namespace epvpapi
             new MiniStatsParser(this).Execute(doc.GetElementbyId("collapseobj_stats_mini"));
             new LastVisitorsParser(this).Execute(doc.GetElementbyId("collapseobj_visitors"));
         }
+
+        public string GetUrl()
+        {
+            return "http://www.elitepvpers.com/forum/members/" + ID + "-" + Name.URLEscape() + ".html";
+        } 
 
         /// <summary>
         /// Retrieves the profile ID of the given URL

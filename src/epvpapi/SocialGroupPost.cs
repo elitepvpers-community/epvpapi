@@ -4,17 +4,12 @@ using System.Collections.Generic;
 
 namespace epvpapi
 {
-    public class SocialGroupPost : Post, IReasonableDeletable
+    public class SocialGroupPost : Post, IReasonableDeletable, IUniqueWebObject
     {
         /// <summary>
         /// Thread that contains the post
         /// </summary>
         public SocialGroupThread Thread { get; set; }
-
-        public override string URL
-        {
-            get { return Thread.URL + "#gmessage" + ID; }
-        }
 
         public SocialGroupPost(uint id, string content = null)
             : base(id, content)
@@ -50,5 +45,10 @@ namespace epvpapi
                             new KeyValuePair<string, string>("deletereason", reason)
                         });
         }
+
+        public string GetUrl()
+        {
+            return Thread.GetUrl() + "#gmessage" + ID;
+        } 
     }
 }

@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace epvpapi
 {
-    public class PrivateMessage : Post, IReportable, IDefaultUpdatable
+    public class PrivateMessage : Post, IReportable, IDefaultUpdatable, IUniqueWebObject
     {
         public class Folder
         {
@@ -70,11 +70,6 @@ namespace epvpapi
         /// If true, the message is marked as new message that wasn't read yet
         /// </summary>
         public bool Unread { get; set; }
-
-        public override string URL
-        {
-            get { return "http://www.elitepvpers.com/forum/private.php?do=showpm&pmid=" + ID; }
-        }
 
         public PrivateMessage(uint id)
             : this(id, null, new List<User>())
@@ -211,5 +206,10 @@ namespace epvpapi
                              new KeyValuePair<string, string>("url", "http://www.elitepvpers.com/forum/private.php?do=showpm&pmid=" + ID.ToString())
                          });
         }
+
+        public string GetUrl()
+        {
+            return "http://www.elitepvpers.com/forum/private.php?do=showpm&pmid=" + ID;
+        }  
     }
 }

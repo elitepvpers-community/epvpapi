@@ -1,10 +1,10 @@
 ﻿namespace epvpapi
 {
-    public abstract class Thread : UniqueWebObject 
+    public abstract class Thread : UniqueObject 
     {
         public User Creator { get; set; }
         public bool Deleted { get; set; }
-        public uint Replies { get; set; }
+        public uint ReplyCount { get; set; }
 
         public Thread(uint id)
             : base(id)

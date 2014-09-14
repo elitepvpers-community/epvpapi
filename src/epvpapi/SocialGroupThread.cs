@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace epvpapi
 {
-    public class SocialGroupThread : Thread, IReasonableDeletable
+    public class SocialGroupThread : Thread, IReasonableDeletable, IUniqueWebObject
     {
         /// <summary>
         /// <c>SocialGroup</c> under which the thread is listed
@@ -17,13 +17,6 @@ namespace epvpapi
         /// </summary>
         public List<SocialGroupPost> Posts { get; set; }
 
-        public override string URL
-        {
-            get { return "http://www.elitepvpers.com/forum/groups/" + SocialGroup.ID 
-                                                                    + "-" + SocialGroup.Name.URLEscape() 
-                                                                    + "-d" + ID + "-" 
-                                                                    + Posts.First().Title.URLEscape() + ".html"; }
-        }
 
         public SocialGroupThread(uint id, SocialGroup socialGroup)
             : base(id)
@@ -124,5 +117,13 @@ namespace epvpapi
                             new KeyValuePair<string, string>("parseame", "1"),
                         });
         }
+
+        public string GetUrl()
+        {
+            return "http://www.elitepvpers.com/forum/groups/" + SocialGroup.ID
+                                                            + "-" + SocialGroup.Name.URLEscape()
+                                                            + "-d" + ID + "-"
+                                                            + Posts.First().Title.URLEscape() + ".html";
+        } 
     }
 }

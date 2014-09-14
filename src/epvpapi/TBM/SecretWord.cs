@@ -23,7 +23,7 @@ namespace epvpapi.TBM
             HtmlDocument doc = new HtmlDocument();
             doc.LoadHtml(res.ToString());
 
-            return doc.DocumentNode.GetElementsByNameXHTML("secretword").FirstOrDefault().Attributes["value"].Value;
+            return doc.DocumentNode.GetDescendentElementsByNameXHTML("secretword").FirstOrDefault().Attributes["value"].Value;
         }
 
         /// <summary>

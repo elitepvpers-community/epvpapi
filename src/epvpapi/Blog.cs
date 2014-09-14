@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace epvpapi
 {
-    public class Blog : UniqueWebObject
+    public class Blog : UniqueObject, IUniqueWebObject
     {
         public class Entry : Post
         {
@@ -40,11 +40,6 @@ namespace epvpapi
             public List<string> Tags { get; set; }
             public Blog Blog { get; set; }
 
-            public override string URL
-            {
-                get { return "http://www.elitepvpers.com/forum/blogs/" + Blog.Owner.ID + "-" + Blog.Owner.Name.URLEscape() + "/" + ID + "-" + Title.URLEscape() + ".html"; }
-            }
-
             public Entry(uint id, string content, string title = null)
                 : base(id, content, title)
             {
@@ -58,7 +53,6 @@ namespace epvpapi
             public Entry(uint id)
                 : this(id, null)
             { }
-
 
             /// <summary>
             /// Publishes the <c>Entry</c> in the logged-in user's blog
@@ -124,16 +118,16 @@ namespace epvpapi
                                 new KeyValuePair<string, string>("sbutton", "Submit")
                             });
             }
+
+            public string GetUrl()
+            {
+                return "http://www.elitepvpers.com/forum/blogs/" + Blog.Owner.ID + "-" + Blog.Owner.Name.URLEscape() + "/" + ID + "-" + Title.URLEscape() + ".html";
+            }
         }
 
         public List<Entry> Entries { get; set; }
         public DateTime LastEntry { get; set; }
         public User Owner { get; set; }
-
-        public override string URL
-        {
-            get { return "http://www.elitepvpers.com/forum/blogs/" + Owner.ID + "-" + Owner.Name.URLEscape() + ".html"; }
-        }
 
         public Blog(User owner) :
             base(owner.ID)
@@ -141,5 +135,10 @@ namespace epvpapi
             Entries = new List<Entry>();
             Owner = owner;
         }
+
+        public string GetUrl()
+        {
+            return "http://www.elitepvpers.com/forum/blogs/" + Owner.ID + "-" + Owner.Name.URLEscape() + ".html";
+        }   
     }
 }

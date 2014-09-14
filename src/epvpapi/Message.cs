@@ -5,7 +5,7 @@ namespace epvpapi
     /// <summary>
     /// Base class for messages within the forum
     /// </summary>
-    public abstract class Message : UniqueWebObject
+    public abstract class Message : UniqueObject
     {
         /// <summary>
         /// Additional options that can be set when posting messages
