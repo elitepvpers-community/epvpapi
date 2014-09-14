@@ -313,7 +313,7 @@ namespace epvpapi
             }
         }
 
-        public class ReplyCreatorStatisticParser : TargetableParser<User>, INodeParser
+        protected class ReplyCreatorStatisticParser : TargetableParser<User>, INodeParser
         {
             public ReplyCreatorStatisticParser(User target) : base(target)
             { }
@@ -386,7 +386,7 @@ namespace epvpapi
             }
         }
 
-        public class ReplyCreatorParser : TargetableParser<User>, INodeParser
+        protected class ReplyCreatorParser : TargetableParser<User>, INodeParser
         {
             public ReplyCreatorParser(User target) : base(target)
             { }
