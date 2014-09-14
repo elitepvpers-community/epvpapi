@@ -133,8 +133,18 @@ namespace epvpapi
             {
                 "MM-dd-yyyy HH:mm",
                 "MM/dd/yyyy HH:mm",
-                "dd.MM.yyyy HH:mm"
+                "dd.MM.yyyy HH:mm",
+                "dd.MM.yyyy, HH:mm",
+                "MM/dd/yyyy, HH:mm",
             };
+
+            formattedTime = formattedTime.Strip();
+            if (formattedTime.Contains("Today"))
+            {
+                int index = formattedTime.IndexOf("Today");
+                formattedTime = formattedTime.Remove(index, 5);
+                formattedTime = formattedTime.Insert(index, DateTime.Now.Date.ToString("dd/MM/yyyy"));
+            }
 
             var dateTime = new DateTime();
             foreach(var format in commonFormats)

@@ -241,7 +241,7 @@ namespace epvpapi.Connection
         /// <param name="md5Password"> Hashed (MD5) password of the session user </param>
         public void Login(string md5Password)
         {
-            Response res = Post("http://www.elitepvpers.com/forum/login.php?do=login&langid=2",
+            Response res = Post("http://www.elitepvpers.com/forum/login.php?do=login&langid=1",
                                         new List<KeyValuePair<string, string>>()
                                         {
                                             new KeyValuePair<string, string>("vb_login_username", User.Name),

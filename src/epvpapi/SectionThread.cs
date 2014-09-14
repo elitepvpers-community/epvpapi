@@ -459,6 +459,11 @@ namespace epvpapi
                 foreach (var postContainerNode in postsRootNode.GetElementsByTagName("div"))
                 {
                     var fetchedPost = new SectionPost(0, this);
+                    var dateTimeNode = postContainerNode.SelectSingleNode("div[1]/div[1]/div[1]/table[1]/tr[1]/td[1]/text()[3]");
+                    fetchedPost.Date = (dateTimeNode != null)
+                                        ? dateTimeNode.InnerText.ToElitepvpersDateTime()
+                                        : new DateTime();
+
                     var postRootNode = postContainerNode.SelectSingleNode("div[1]/div[1]/div[1]/table[1]/tr[2]");
                     if (postRootNode == null) continue;
 
