@@ -67,7 +67,7 @@ namespace epvpapi.Connection
         /// </summary>
         public virtual void Update()
         {
-            Response res = Get("http://www.elitepvpers.com/forum/");
+            var res = Get("http://www.elitepvpers.com/forum/");
             SecurityToken = new Regex("SECURITYTOKEN = \"(\\S+)\";").Match(res.ToString()).Groups[1].Value;
         }
 

@@ -75,6 +75,7 @@ namespace epvpapi
             Section = section;
             InitialPost = new SectionPost(0, this);
             Tags = new List<string>();
+            PageCount = 1;
         }
 
         /// <summary>
@@ -261,10 +262,14 @@ namespace epvpapi
         /// Retrieves information about the <c>SectionThread</c>
         /// </summary>
         /// <param name="session"> Session used for sending the request </param>
+        /// <remarks>
+        /// ID and the section represented by a <c>Section</c> object is required in order to update.
+        /// </remarks>
         public void Update(Session session)
         {
             session.ThrowIfInvalid();
             if(ID == 0) throw new ArgumentException("ID must not be empty");
+            if(String.IsNullOrEmpty(Section.URLName)) throw new ArgumentException("The section needs to be addressable");
 
             var res = session.Get(GetUrl());
             var htmlDocument = new HtmlDocument();
@@ -436,7 +441,7 @@ namespace epvpapi
         /// </summary>
         /// <param name="session"> Session used for sending the request </param>
         /// <param name="firstPage"> Index of the first page to fetch </param>
-        /// <param name="pageCount"> Amount of pages to get. The higher this count, the more data will be generated and received </param>
+        /// <param name="pageCount"> Amount of pages to get replies from. The higher this count, the more data will be generated and received </param>
         /// <returns> List of <c>SectionPost</c>s representing the replies </returns>
         public List<SectionPost> Replies(Session session, uint pageCount = 1, uint firstPage = 1)
         {

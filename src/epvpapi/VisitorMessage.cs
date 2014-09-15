@@ -56,7 +56,7 @@ namespace epvpapi
                             new KeyValuePair<string, string>("u", Recipient.ID.ToString()),
                             new KeyValuePair<string, string>("u2", String.Empty),
                             new KeyValuePair<string, string>("loggedinuser", String.Empty),
-                            new KeyValuePair<string, string>("parseurl", (settings & VisitorMessage.Settings.ParseURL).ToString()),
+                            new KeyValuePair<string, string>("parseurl", (settings & Settings.ParseURL).ToString()),
                             new KeyValuePair<string, string>("lastcomment", "1381528657"),
                             new KeyValuePair<string, string>("allow_ajax_qc", "1"),
                             new KeyValuePair<string, string>("fromconverse", String.Empty),
@@ -66,7 +66,7 @@ namespace epvpapi
 
         public string GetUrl()
         {
-            return "http://www.elitepvpers.com/forum/members/467410-mostey.html#vmessage" + ID;
+            return "http://www.elitepvpers.com/forum/members/" + Recipient.ID + "-" + Recipient.Name.URLEscape() + ".html#vmessage" + ID;
         } 
     }
 }

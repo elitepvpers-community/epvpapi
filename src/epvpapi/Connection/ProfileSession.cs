@@ -27,6 +27,27 @@ namespace epvpapi.Connection
             }
 
             /// <summary>
+            /// Logs in the user
+            /// </summary>
+            /// <param name="md5Password"> Hashed (MD5) password of the session user </param>
+            public void Login(string md5Password)
+            {
+                var res = Session.Post("http://www.elitepvpers.com/forum/login.php?do=login&langid=1",
+                                            new List<KeyValuePair<string, string>>()
+                                        {
+                                            new KeyValuePair<string, string>("vb_login_username", User.Name),
+                                            new KeyValuePair<string, string>("cookieuser", "1"),
+                                            new KeyValuePair<string, string>("s", String.Empty),
+                                            new KeyValuePair<string, string>("securitytoken", "guest"),
+                                            new KeyValuePair<string, string>("do", "login"),
+                                            new KeyValuePair<string, string>("vb_login_md5password", md5Password),
+                                            new KeyValuePair<string, string>("vb_login_md5password_utf", md5Password)
+                                        });
+
+                Session.Update();
+            }
+
+            /// <summary>
             /// Gets all private messages stored in the specified folder
             /// </summary>
             /// <param name="folder"> 
@@ -219,7 +240,7 @@ namespace epvpapi.Connection
         {
             Cookies = new CookieContainer();
             ConnectedProfile = new Profile(user, this);
-            Login(md5Password);
+            ConnectedProfile.Login(md5Password);
         }
 
         public ProfileSession(Profile profile, WebProxy proxy)
@@ -233,35 +254,14 @@ namespace epvpapi.Connection
         {
             Cookies = new CookieContainer();
             ConnectedProfile = profile;
-        }
-
-        /// <summary>
-        /// Logs in the session user
-        /// </summary>
-        /// <param name="md5Password"> Hashed (MD5) password of the session user </param>
-        public void Login(string md5Password)
-        {
-            Response res = Post("http://www.elitepvpers.com/forum/login.php?do=login&langid=1",
-                                        new List<KeyValuePair<string, string>>()
-                                        {
-                                            new KeyValuePair<string, string>("vb_login_username", User.Name),
-                                            new KeyValuePair<string, string>("cookieuser", "1"),
-                                            new KeyValuePair<string, string>("s", String.Empty),
-                                            new KeyValuePair<string, string>("securitytoken", "guest"),
-                                            new KeyValuePair<string, string>("do", "login"),
-                                            new KeyValuePair<string, string>("vb_login_md5password", md5Password),
-                                            new KeyValuePair<string, string>("vb_login_md5password_utf", md5Password)
-                                        });
-
-            Update();
-            if (String.IsNullOrEmpty(SecurityToken))
-                throw new InvalidCredentialsException("Credentials entered for user " + User.Name + " were invalid");
-        }
+        }      
 
         public override void Update()
         {
             base.Update();
-          
+            if (String.IsNullOrEmpty(SecurityToken) || SecurityToken == "guest")
+                throw new InvalidCredentialsException("Credentials entered for user " + User.Name + " were invalid");
+
             // Update the user associated with the session
             User.Update(this);
         }
