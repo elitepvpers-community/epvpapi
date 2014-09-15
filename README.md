@@ -12,6 +12,7 @@ These pages provide explanations and samples on how to properly use the library.
 * [Blogs](https://github.com/Mostey/epvpapi/wiki/Blogs)
 * [Sections](https://github.com/Mostey/epvpapi/wiki/Sections)
 * [Users and Ranks](https://github.com/Mostey/epvpapi/wiki/Users-and-Ranks)
+* [Threads](https://github.com/Mostey/epvpapi/wiki/Threads)
 
 License
 ===
