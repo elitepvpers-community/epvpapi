@@ -118,7 +118,13 @@ namespace epvpapi
             public void Execute(HtmlNode coreNode)
             {
                 var previewContentNode = coreNode.SelectSingleNode("td[3]");
-                Target.PreviewContent = (previewContentNode != null) ? (previewContentNode.Attributes.Contains("title")) ? previewContentNode.Attributes["title"].Value : "" : "";
+                if (previewContentNode != null)
+                {
+                    if (previewContentNode.InnerText.Contains("Moved")) return; // moved threads do not contain any data to parse
+                    Target.PreviewContent = (previewContentNode.Attributes.Contains("title"))
+                                            ? previewContentNode.Attributes["title"].Value
+                                            : "";
+                }
 
                 var titleNode = coreNode.SelectSingleNode("td[3]/div[1]/a[1]");
                 if (titleNode.Id.Contains("thread_gotonew")) // new threads got an additional image displayed (left from the title) wrapped in an 'a' element for quick access to the new reply function
@@ -211,7 +217,8 @@ namespace epvpapi
                     if (stickyThreadNodes.Any(stickyThreadNode => stickyThreadNode == threadNode))
                         parsedThread.Sticked = true;
 
-                    parsedThreads.Add(parsedThread);
+                    if(parsedThread.ID != 0)
+                        parsedThreads.Add(parsedThread);
                 }
             }
 
