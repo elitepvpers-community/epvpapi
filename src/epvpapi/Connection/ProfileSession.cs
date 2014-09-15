@@ -1,7 +1,6 @@
 ﻿using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -260,7 +259,7 @@ namespace epvpapi.Connection
         {
             base.Update();
             if (String.IsNullOrEmpty(SecurityToken) || SecurityToken == "guest")
-                throw new InvalidCredentialsException("Credentials entered for user " + User.Name + " were invalid");
+                throw new InvalidAuthenticationException("Credentials entered for user " + User.Name + " were invalid");
 
             // Update the user associated with the session
             User.Update(this);

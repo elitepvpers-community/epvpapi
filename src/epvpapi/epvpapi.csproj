@@ -69,7 +69,7 @@
     <Compile Include="InsufficientAccessException.cs" />
     <Compile Include="Connection\InvalidSessionException.cs" />
     <Compile Include="IReasonableDeletable.cs" />
-    <Compile Include="InvalidCredentialsException.cs" />
+    <Compile Include="InvalidAuthenticationException.cs" />
     <Compile Include="IReportable.cs" />
     <Compile Include="ISpecializedUpdateable.cs" />
     <Compile Include="Message.cs" />

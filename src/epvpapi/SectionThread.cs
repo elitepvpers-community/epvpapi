@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Globalization;
+﻿using System.Globalization;
 using epvpapi.Connection;
 using System;
 using System.Collections.Generic;
