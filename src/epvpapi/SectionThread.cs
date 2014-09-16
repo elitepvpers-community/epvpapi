@@ -359,8 +359,7 @@ namespace epvpapi
                     var neutralNode = coreNode.SelectSingleNode("text()[2]");
                     Target.TBMProfile.Mediations.Neutral = Convert.ToUInt32(neutralNode.InnerText.TrimStart('/'));
                 }
-                else if (innerText.Contains("Registriert seit") ||
-                            innerText.Contains("Join Date"))
+                else if (innerText.Contains("Join Date"))
                 {
                     // since the join date is formatted with the first 3 characters of the month + year, we'd need to use some regex here
                     // data may look as follows: Registriert seit: Jun 2007 (German)
@@ -374,16 +373,15 @@ namespace epvpapi
                         }
                     }         
                 }
-                else if (innerText.Contains("Beiträge") || innerText.Contains("Posts"))
+                else if (innerText.Contains("Posts"))
                 {      
-                    var match = new Regex("(?:Beiträge|Posts): ([0-9]+(?:.|,)[0-9]+)").Match(coreNode.InnerText);
+                    var match = new Regex("(?:Posts): ([0-9]+(?:.|,)[0-9]+)").Match(coreNode.InnerText);
                     if (match.Groups.Count > 1)
                         Target.Posts = (uint)double.Parse(match.Groups[1].Value);       
                 }
-                else if (innerText.Contains("Erhaltene Thanks") ||
-                            innerText.Contains("Received Thanks"))
+                else if (innerText.Contains("Received Thanks"))
                 {
-                    var match = new Regex("(?:Erhaltene Thanks|Received Thanks): ([0-9]+(?:.|,)[0-9]+)").Match(coreNode.InnerText);
+                    var match = new Regex("(?:Received Thanks): ([0-9]+(?:.|,)[0-9]+)").Match(coreNode.InnerText);
                     if (match.Groups.Count > 1)
                         Target.ThanksReceived = (uint)double.Parse(match.Groups[1].Value);
                 }                         

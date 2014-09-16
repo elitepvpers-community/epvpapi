@@ -605,7 +605,7 @@ namespace epvpapi
                 {
                     string legendCaption = statisticsGroup.SelectSingleNode("legend[1]").InnerText;
 
-                    if (legendCaption == "Beiträge" || legendCaption == "Total Posts")
+                    if (legendCaption == "Total Posts")
                     {
                         var postsNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
                         Target.Posts = (postsNode != null) ? (uint)Convert.ToDouble(postsNode.InnerText) : 0;
@@ -613,7 +613,7 @@ namespace epvpapi
                         var postsPerDayNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[1]");
                         Target.PostsPerDay = (postsPerDayNode != null) ? Convert.ToDouble(postsPerDayNode.InnerText) : 0;
                     }
-                    else if (legendCaption == "Profilnachrichten" || legendCaption == "Visitor Messages")
+                    else if (legendCaption == "Visitor Messages")
                     {
                         var visitorMessagesNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
                         Target.VisitorMessages = (visitorMessagesNode != null) ? (uint)Convert.ToDouble(visitorMessagesNode.InnerText) : 0;
@@ -623,7 +623,7 @@ namespace epvpapi
                                                     ? lastVisitorMessageNode.InnerText.ToElitepvpersDateTime()
                                                     : new DateTime();
                     }
-                    else if (legendCaption == "Vergebene Thanks" || legendCaption == "Thanks Given")
+                    else if (legendCaption == "Thanks Given")
                     {
                         var givenThanksNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
                         Target.ThanksGiven = (givenThanksNode != null) ? (uint)Convert.ToDouble(givenThanksNode.InnerText) : 0;
@@ -638,7 +638,7 @@ namespace epvpapi
                                 Target.ThanksReceived = (uint)Convert.ToDouble(match.Groups[1].Value);
                         }
                     }
-                    else if (legendCaption == "Diverse Informationen" || legendCaption == "General Information")
+                    else if (legendCaption == "General Information")
                     {
                         HtmlNode recommendationsNode = null;
                         if (Target.CurrentStatus != Status.Invisible || IsSessionUser)
@@ -648,7 +648,7 @@ namespace epvpapi
 
                         Target.Recommendations = (recommendationsNode != null) ? Convert.ToUInt32(recommendationsNode.InnerText) : 0;
                     }
-                    else if (legendCaption == "Benutzernotizen" || legendCaption == "User Notes")
+                    else if (legendCaption == "User Notes")
                     {
                         var userNotesNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
                         Target.UserNotes = (userNotesNode != null) ? (uint)Convert.ToDouble(userNotesNode.InnerText) : 0;
