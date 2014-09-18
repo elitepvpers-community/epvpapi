@@ -94,6 +94,7 @@
     <Compile Include="TBM\Mediations.cs" />
     <Compile Include="TBM\SecretWord.cs" />
     <Compile Include="TBM\Transaction.cs" />
+    <Compile Include="TBM\Treasure.cs" />
     <Compile Include="Thread.cs" />
     <Compile Include="IUniquePageableWebObject.cs" />
     <Compile Include="UniqueObject.cs" />

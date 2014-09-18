@@ -804,7 +804,7 @@ namespace epvpapi
             var rootNode = htmlDocument.DocumentNode.SelectSingleNode("users");
 
             return (rootNode != null)
-                    ? (from userNode in htmlDocument.DocumentNode.SelectSingleNode("users").GetElementsByTagName("user")
+                    ? (from userNode in rootNode.GetElementsByTagName("user")
                         where userNode.Attributes.Contains("userid")
                         select new User(userNode.InnerText, Convert.ToUInt32(userNode.Attributes["userid"].Value))).ToList()
                     : new List<User>();
