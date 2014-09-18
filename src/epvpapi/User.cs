@@ -377,7 +377,7 @@ namespace epvpapi
             Namecolor = "black";
             LastVisitorMessage = new DateTime();
             JoinDate = new DateTime();
-            TBMProfile = new Profile();
+            TBMProfile = new Profile(id);
         }
 
         public bool HasRank(Rank rank)
@@ -777,7 +777,7 @@ namespace epvpapi
         /// <returns> Retrieved profile ID </returns>
         public static uint FromURL(string url)
         {
-            var match = Regex.Match(url, @"(?:http://www.elitepvpers.com/forum/)?members/(\d+)-\S+.html");
+            var match = Regex.Match(url, @"(?:http://www.elitepvpers.com/(?:forum/)*)(?:members|theblackmarket/profile)/([0-9]+)(?:-[a-zA-Z]+.html)*");
             if(match.Groups.Count < 2) throw new ParsingFailedException("User could not be exported from the given URL");
             
             return Convert.ToUInt32(match.Groups[1].Value);
@@ -804,7 +804,7 @@ namespace epvpapi
             var rootNode = htmlDocument.DocumentNode.SelectSingleNode("users");
 
             return (rootNode != null)
-                    ? (from userNode in htmlDocument.DocumentNode.SelectSingleNode("users").GetElementsByTagName("user")
+                    ? (from userNode in rootNode.GetElementsByTagName("user")
                         where userNode.Attributes.Contains("userid")
                         select new User(userNode.InnerText, Convert.ToUInt32(userNode.Attributes["userid"].Value))).ToList()
                     : new List<User>();

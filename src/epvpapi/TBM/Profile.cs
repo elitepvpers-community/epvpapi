@@ -6,13 +6,14 @@ using Newtonsoft.Json;
 
 namespace epvpapi.TBM
 {
-    public class Profile
+    public class Profile : UniqueObject, IUniqueWebObject
     {
         public Ratings Ratings { get; protected set; }
         public Mediations Mediations { get; protected set; }
         public SecretWord SecretWord { get; set; }
 
-        public Profile()
+        public Profile(uint id = 0):
+            base(id)
         {
             Ratings = new Ratings();
             Mediations = new Mediations();
@@ -134,6 +135,11 @@ namespace epvpapi.TBM
             {
                 throw new ParsingFailedException("Could not parse received Transactions", exception);
             }
+        }
+
+        public string GetUrl()
+        {
+            return "http://www.elitepvpers.com/theblackmarket/profile/" + ID;
         }
     }
 }
