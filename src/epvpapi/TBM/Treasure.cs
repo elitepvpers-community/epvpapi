@@ -17,12 +17,16 @@ namespace epvpapi.TBM
         /// <summary>
         /// Title of the treasure, visible for everyone
         /// </summary>
+        /// remarks>
+        /// The title must be at least 4 characters long to be accepted by the system
+        /// </remarks>
         public string Title { get; set; }
 
         /// <summary>
         /// User-defined content that will be visible once the <c>Treasure</c> has been bought
         /// <remarks>
         /// The content must be at least 4 characters long to be accepted by the system
+        /// Content is only visible for the buyer
         /// </remarks>
         /// </summary>
         public string Content { get; set; }
@@ -40,6 +44,9 @@ namespace epvpapi.TBM
         /// <summary>
         /// Treasure purchase cost given in elite*gold
         /// </summary>
+        /// <remarks>
+        /// The cost must amount to 1 elite*gold or higher
+        /// </remarks>
         public uint Cost { get; set; }
 
         /// <summary>
@@ -51,6 +58,12 @@ namespace epvpapi.TBM
         /// Date and time when the <c>Treasure</c> was bought
         /// </summary>
         public DateTime PurchaseDate { get; set; }
+
+        /// <summary>
+        /// If the <c>Treasure</c> was already sold to someone, this value is set to true
+        /// </summary>
+        public bool Sold { get; set; }
+
 
         public Treasure(string title, string content, uint cost):
             this(0, title, content, cost)
@@ -163,6 +176,12 @@ namespace epvpapi.TBM
                     else if (key == "Creation date:")
                     {
                         CreationDate = valueNode.InnerText.ToElitepvpersDateTime();
+                    }
+                    else if (key == "Purchase date:")
+                    {
+                        Sold = true;
+                        var countdownNode = valueNode.SelectSingleNode("div[1]");
+                        PurchaseDate = (countdownNode != null) ? countdownNode.InnerText.ToElitepvpersDateTime() : new DateTime();
                     }
                 }
             }

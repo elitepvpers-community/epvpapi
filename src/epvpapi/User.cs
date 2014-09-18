@@ -377,7 +377,7 @@ namespace epvpapi
             Namecolor = "black";
             LastVisitorMessage = new DateTime();
             JoinDate = new DateTime();
-            TBMProfile = new Profile();
+            TBMProfile = new Profile(id);
         }
 
         public bool HasRank(Rank rank)
