@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using epvpapi.Connection;
+using HtmlAgilityPack;
 
 namespace epvpapi.TBM
 {
@@ -112,8 +114,63 @@ namespace epvpapi.TBM
         public void Update(Session session)
         {
             var res = session.Get(GetUrl());
-            throw new NotImplementedException();
+            var htmlDocument = new HtmlDocument();
+            htmlDocument.LoadHtml(res.ToString());
+
+            var rootFormNode = htmlDocument.GetElementbyId("contentbg");
+            if (rootFormNode == null) return;
+
+            rootFormNode = rootFormNode.SelectSingleNode("table[1]/tr[1]/td[1]/table[1]/tr[2]/td[1]");
+            if (rootFormNode == null) return;
+            
+            var treasureInfoNode = rootFormNode.SelectSingleNode("div[1]/div[3]/table[1]/tr[1]/td[1]/table[1]");
+            if (treasureInfoNode != null)
+            {
+                foreach (var treasureAttributeNode in treasureInfoNode.GetElementsByTagName("tr"))
+                {
+                    var keyNode = treasureAttributeNode.SelectSingleNode("td[1]");
+                    var valueNode = treasureAttributeNode.SelectSingleNode("td[2]");
+                    if (keyNode == null || valueNode == null) continue;
+                    var key = keyNode.InnerText.Strip();
+
+                    if (key == "Title:")
+                    {
+                        Title = valueNode.InnerText;
+                    }
+                    else if (key == "Seller:" || key == "Buyer:")
+                    {
+                        var userRefNode = valueNode.SelectSingleNode("a[1]");
+                        if (userRefNode != null)
+                        {
+                            if (key == "Seller:")
+                                Seller = new User(userRefNode.InnerText,
+                                    userRefNode.Attributes.Contains("href")
+                                        ? User.FromURL(userRefNode.Attributes["href"].Value)
+                                        : 0);
+                            else if (key == "Buyer:")
+                                Buyer = new User(userRefNode.InnerText,
+                                    userRefNode.Attributes.Contains("href")
+                                        ? User.FromURL(userRefNode.Attributes["href"].Value)
+                                        : 0);
+                        }
+                    }
+                    else if (key == "Cost:")
+                    {
+                        var match = new Regex(@"([0-9]+) eg").Match(valueNode.InnerText);
+                        if (match.Groups.Count > 1)
+                            Cost = Convert.ToUInt32(match.Groups[1].Value);
+                    }
+                    else if (key == "Creation date:")
+                    {
+                        CreationDate = valueNode.InnerText.ToElitepvpersDateTime();
+                    }
+                }
+            }
+
+            var treasureContentNode = rootFormNode.SelectSingleNode("div[2]/div[3]");
+            Content = (treasureContentNode != null) ? treasureContentNode.InnerText.Strip() : "";
         }
+
 
         public string GetUrl()
         {
