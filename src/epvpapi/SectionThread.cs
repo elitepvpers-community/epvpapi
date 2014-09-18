@@ -354,10 +354,10 @@ namespace epvpapi
                 else if (innerText.Contains("Mediations"))
                 {
                     var positiveNode = coreNode.SelectSingleNode("span[1]");
-                    Target.TBMProfile.Mediations.Positive = Convert.ToUInt32(positiveNode.InnerText);
+                    Target.TBMProfile.Mediations.Positive = (positiveNode != null) ? Convert.ToUInt32(positiveNode.InnerText) : 0;
 
                     var neutralNode = coreNode.SelectSingleNode("text()[2]");
-                    Target.TBMProfile.Mediations.Neutral = Convert.ToUInt32(neutralNode.InnerText.TrimStart('/'));
+                    Target.TBMProfile.Mediations.Neutral = (neutralNode != null) ? Convert.ToUInt32(neutralNode.InnerText.TrimStart('/')) : 0;
                 }
                 else if (innerText.Contains("Join Date"))
                 {

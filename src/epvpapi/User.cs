@@ -700,25 +700,36 @@ namespace epvpapi
                 // loop through the key nodes since they can also occur occasionally (depends on what the user selects to be shown in the profile and/or the rank)
                 foreach (var keyNode in miniStatsNodes)
                 {
-                    if (keyNode.InnerText == "Registriert seit" || keyNode.InnerText == "Join Date")
-                    {  
-                        Target.JoinDate = miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].InnerText.ToElitepvpersDateTime();
+                    var valueNode = miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)];
+                    if (valueNode == null) continue;
+
+                    if (keyNode.InnerText == "Join Date")
+                    {
+                        Target.JoinDate = valueNode.InnerText.ToElitepvpersDateTime();
                     }
                     else if (keyNode.InnerText.Contains("elite*gold"))
                     {
-                        var eliteGoldValueNode = miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].SelectSingleNode("text()[1]");
+                        var eliteGoldValueNode = valueNode.SelectSingleNode("text()[1]");
                         Target.EliteGold = (eliteGoldValueNode != null) ? Convert.ToInt32(eliteGoldValueNode.InnerText) : Target.EliteGold;
                     }
                     else if (keyNode.InnerText.Contains("The Black Market"))
                     {
-                        var positiveRatingsNode = miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].SelectSingleNode("span[1]");
+                        var positiveRatingsNode = valueNode.SelectSingleNode("span[1]");
                         Target.TBMProfile.Ratings.Positive = (positiveRatingsNode != null) ? Convert.ToUInt32(positiveRatingsNode.InnerText) : Target.TBMProfile.Ratings.Positive;
 
-                        var neutralRatingsNode = miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].SelectSingleNode("text()[1]");
+                        var neutralRatingsNode = valueNode.SelectSingleNode("text()[1]");
                         Target.TBMProfile.Ratings.Neutral = (neutralRatingsNode != null) ? Convert.ToUInt32(new string(neutralRatingsNode.InnerText.Skip(1).Take(1).ToArray())) : Target.TBMProfile.Ratings.Neutral;
 
-                        var negativeRatingsNode = miniStatsValueNodes[miniStatsNodes.IndexOf(keyNode)].SelectSingleNode("span[2]");
+                        var negativeRatingsNode = valueNode.SelectSingleNode("span[2]");
                         Target.TBMProfile.Ratings.Negative = (negativeRatingsNode != null) ? Convert.ToUInt32(negativeRatingsNode.InnerText) : Target.TBMProfile.Ratings.Negative;
+                    }
+                    else if (keyNode.InnerText.Contains("Mediations"))
+                    {
+                        var positiveNode = valueNode.SelectSingleNode("span[1]");
+                        Target.TBMProfile.Mediations.Positive = (positiveNode != null) ? Convert.ToUInt32(positiveNode.InnerText) : 0;
+
+                        var neutralNode = valueNode.SelectSingleNode("text()[1]");
+                        Target.TBMProfile.Mediations.Neutral = (neutralNode != null) ? Convert.ToUInt32(neutralNode.InnerText.TrimStart('/')) : 0;
                     }
                 }
 
