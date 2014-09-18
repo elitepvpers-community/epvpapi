@@ -10,7 +10,7 @@ namespace epvpapi.TBM
     /// <summary>
     /// Represents a treasure containing user-defined content that can be purchased with elite*gold
     /// </summary>
-    public class Treasure : UniqueObject, IUniqueWebObject, IDefaultUpdatable
+    public class Treasure : UniqueObject, IUniqueWebObject, IDefaultUpdatable, IDeletable
     {
         /// <summary>
         /// Title of the treasure, visible for everyone
@@ -74,6 +74,8 @@ namespace epvpapi.TBM
         public void Create<TUser>(ProfileSession<TUser> session) where TUser : User
         {
             if (Content.Length < 4) throw new ArgumentException("The content is too short (4 characters minimum)");
+            if (Title.Length < 4) throw new ArgumentException("The title is too short (4 characters minimum)");
+            if (Cost < 1) throw new ArgumentException("The price is too low (at least 1 elite*gold)");
 
             session.Post("http://www.elitepvpers.com/theblackmarket/treasures/",
                         new List<KeyValuePair<string, string>>()
@@ -89,6 +91,21 @@ namespace epvpapi.TBM
         }
 
         /// <summary>
+        /// Deletes the <c>Treasure</c> permanently
+        /// </summary>
+        /// <param name="session"> Session used for sending the request </param>
+        public void Delete<T>(ProfileSession<T> session) where T : User
+        {
+            if(ID == 0) throw new ArgumentException("ID must not be empty");
+
+            var res = session.Post(GetUrl(),
+                                    new List<KeyValuePair<string, string>>()
+                                    {
+                                        new KeyValuePair<string, string>("deletetreasure", "1")
+                                    });
+        }
+
+        /// <summary>
         /// Updates the <c>Treasure</c> by requesting the treasure page
         /// </summary>
         /// <param name="session"> Session used for sending the request </param>
@@ -100,7 +117,8 @@ namespace epvpapi.TBM
 
         public string GetUrl()
         {
-            return "http://www.elitepvpers.com/theblackmarket/treasures/" + ID;
+            return "http://www.elitepvpers.com/theblackmarket/treasure/" + ID;
         }
+
     }
 }
