@@ -771,5 +771,32 @@ namespace epvpapi
             
             return Convert.ToUInt32(match.Groups[1].Value);
         }
+
+        /// <summary>
+        /// Performs an user lookup request and searches for users with the specified name
+        /// </summary>
+        /// <param name="session"> Session used for sending the request </param>
+        /// <param name="name"> User name to search for </param>
+        /// <returns> List of <c>User</c>s that were found </returns>
+        public static List<User> Search(Session session, string name)
+        {
+            var res = session.Post("http://www.elitepvpers.com/forum/ajax.php?do=usersearch",
+                                    new List<KeyValuePair<string, string>>()
+                                    {
+                                        new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
+                                        new KeyValuePair<string, string>("do", "usersearch"),
+                                        new KeyValuePair<string, string>("fragment", name)
+                                    });
+
+            var htmlDocument = new HtmlDocument();
+            htmlDocument.LoadHtml(res.ToString());
+            var rootNode = htmlDocument.DocumentNode.SelectSingleNode("users");
+
+            return (rootNode != null)
+                    ? (from userNode in htmlDocument.DocumentNode.SelectSingleNode("users").GetElementsByTagName("user")
+                        where userNode.Attributes.Contains("userid")
+                        select new User(userNode.InnerText, Convert.ToUInt32(userNode.Attributes["userid"].Value))).ToList()
+                    : new List<User>();
+        }
     }
 }
