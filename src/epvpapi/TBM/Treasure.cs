@@ -15,6 +15,19 @@ namespace epvpapi.TBM
     /// </summary>
     public class Treasure : UniqueObject, IUniqueWebObject, IDefaultUpdatable, IDeletable
     {
+        public enum Query
+        {
+            /// <summary>
+            /// If the <c>Treasure</c> was bought, basically the same as <c>SoldListed</c>
+            /// </summary>
+            Bought,
+
+            /// <summary>
+            /// If the <c>Treasure</c> was sold and/or listed
+            /// </summary>
+            SoldListed
+        }
+
         /// <summary>
         /// Title of the treasure, visible for everyone
         /// </summary>
@@ -61,17 +74,16 @@ namespace epvpapi.TBM
         public DateTime PurchaseDate { get; set; }
 
         /// <summary>
-        /// If the <c>Treasure</c> was already sold to someone, this value is set to true
+        /// If the <c>Treasure</c> was already sold to someone, this value is set to fakse
         /// </summary>
-        public bool Sold { get; set; }
-
+        public bool Available { get; set; }
 
         public Treasure(string title, string content, uint cost):
             this(0, title, content, cost)
         { }
 
 
-        public Treasure(uint id, string title = null, string content = null, uint cost = 0):
+        public Treasure(uint id = 0, string title = null, string content = null, uint cost = 0):
             base(id)
         {
             Title = title;
@@ -81,6 +93,7 @@ namespace epvpapi.TBM
             Buyer = new User();
             CreationDate = new DateTime();
             PurchaseDate = new DateTime();
+            Available = true;
         }
 
         /// <summary>
@@ -185,7 +198,7 @@ namespace epvpapi.TBM
                     }
                     else if (key == "Purchase date:")
                     {
-                        Sold = true;
+                        Available = false;
                         var countdownNode = valueNode.SelectSingleNode("div[1]");
                         PurchaseDate = (countdownNode != null) ? countdownNode.InnerText.ToElitepvpersDateTime() : new DateTime();
                     }
