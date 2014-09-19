@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -88,6 +89,7 @@ namespace epvpapi.TBM
         /// <param name="session"> Session used for sending the request </param>
         public void Create<TUser>(ProfileSession<TUser> session) where TUser : User
         {
+            session.ThrowIfInvalid();
             if (Content.Length < 4) throw new ArgumentException("The content is too short (4 characters minimum)");
             if (Title.Length < 4) throw new ArgumentException("The title is too short (4 characters minimum)");
             if (Cost < 1) throw new ArgumentException("The price is too low (at least 1 elite*gold)");
@@ -111,7 +113,8 @@ namespace epvpapi.TBM
         /// <param name="session"> Session used for sending the request </param>
         public void Delete<T>(ProfileSession<T> session) where T : User
         {
-            if(ID == 0) throw new ArgumentException("ID must not be empty");
+            session.ThrowIfInvalid();
+            if (ID == 0) throw new ArgumentException("ID must not be zero");
 
             var res = session.Post(GetUrl(),
                                     new List<KeyValuePair<string, string>>()
@@ -126,6 +129,9 @@ namespace epvpapi.TBM
         /// <param name="session"> Session used for sending the request </param>
         public void Update(Session session)
         {
+            session.ThrowIfInvalid();
+            if(ID == 0) throw new ArgumentException("ID must not be zero");
+
             var res = session.Get(GetUrl());
             var htmlDocument = new HtmlDocument();
             htmlDocument.LoadHtml(res.ToString());
