@@ -1,6 +1,7 @@
 Introduction
 ===
-This library is currently a work-in-progress. We are working on the documentation and try to provide as much as we can to enable you to use this library for your custom projects regarding elitepvpers.
+This library is currently a work-in-progress and almost reached alpha status, please let us know if something does not work as expected or if you find a documentation article is lacking information.
+
 
 References
 ===
@@ -12,7 +13,9 @@ These pages provide explanations and samples on how to properly use the library.
 * [Blogs](https://github.com/Mostey/epvpapi/wiki/Blogs)
 * [Sections](https://github.com/Mostey/epvpapi/wiki/Sections)
 * [Users and Ranks](https://github.com/Mostey/epvpapi/wiki/Users-and-Ranks)
+* [Profiles (Session Users)](https://github.com/Mostey/epvpapi/wiki/Profiles-(Session-Users))
 * [Threads](https://github.com/Mostey/epvpapi/wiki/Threads)
+* [The Black Market (Treasures, Transactions, ...)](https://github.com/Mostey/epvpapi/wiki/The-Black-Market-(Treasures,-Transactions,-...))
 
 License
 ===
