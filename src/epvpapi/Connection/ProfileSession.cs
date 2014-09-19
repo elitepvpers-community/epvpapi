@@ -183,7 +183,17 @@ namespace epvpapi.Connection
             }
 
 
-            public List<Treasure> GetTreasures(Treasure.Status queryStatus = Treasure.Status.Sold, uint pageCount = 1, uint startIndex = 1)
+            /// <summary>
+            /// Retrieves all <c>Treasure</c>s that have been bought and/or sold using the logged-in user account
+            /// </summary>
+            /// <param name="queryStatus">
+            /// Type of <c>Treasure</c> to query. Either <c>Treasure.Query.SoldListed</c> 
+            /// for querying treasures that have been sold/listed or <c>Treasure.Query.Bought</c> 
+            /// for treasure that have been bought </param>
+            /// <param name="pageCount"> Amount of pages to retrieve, one page may contain up to 15 treasures </param>
+            /// <param name="startIndex"> Index indcating the page to start from </param>
+            /// <returns> List of all <c>Treasure</c>s that could be retrieved </returns>
+            public List<Treasure> GetTreasures(Treasure.Query queryStatus = Treasure.Query.SoldListed, uint pageCount = 1, uint startIndex = 1)
             {
                 Session.ThrowIfInvalid();
 
@@ -191,7 +201,7 @@ namespace epvpapi.Connection
                 for (var i = startIndex; i < (startIndex + pageCount); ++i)
                 {
                     var res = Session.Get("http://www.elitepvpers.com/theblackmarket/treasures/" +
-                                         ((queryStatus == Treasure.Status.Bought) ?  "bought" : "soldunsold") 
+                                         ((queryStatus == Treasure.Query.Bought) ?  "bought" : "soldunsold") 
                                          + "/" + i);
                     var htmlDocument = new HtmlDocument();
                     htmlDocument.LoadHtml(res.ToString());
@@ -215,11 +225,11 @@ namespace epvpapi.Connection
                             ID = (idNode != null) ? Convert.ToUInt32(idNode.InnerText.TrimStart('#')) : 0,
 
                             // second column is the treasure title
-                            Title = (titleNode != null) ? titleNode.InnerText : ""
+                            Title = (titleNode != null) ? titleNode.InnerText : "",
                         };
 
                         // since this function is only available for logged-in users, the seller (or buyer, depends on the request) is automatically the logged-in user
-                        if (queryStatus == Treasure.Status.Bought)
+                        if (queryStatus == Treasure.Query.Bought)
                             listedTreasure.Buyer = User;
                         else
                             listedTreasure.Seller = User;
@@ -240,10 +250,16 @@ namespace epvpapi.Connection
                                                     epvpapi.User.FromURL(opponentNode.Attributes["href"].Value))
                                                 : new User();
 
-                                if (queryStatus == Treasure.Status.Bought)
+                                if (queryStatus == Treasure.Query.Bought)
+                                {
                                     listedTreasure.Seller = opponent;
+                                    listedTreasure.Available = false;
+                                }
                                 else
+                                {
                                     listedTreasure.Buyer = opponent;
+                                    listedTreasure.Available = false;
+                                }
                             }
                         }
 
