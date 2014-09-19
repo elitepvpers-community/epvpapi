@@ -14,6 +14,13 @@ namespace epvpapi.TBM
     /// </summary>
     public class Treasure : UniqueObject, IUniqueWebObject, IDefaultUpdatable, IDeletable
     {
+        public enum Status
+        {
+            Bought,
+            Listed,
+            Sold
+        };
+
         /// <summary>
         /// Title of the treasure, visible for everyone
         /// </summary>
@@ -64,13 +71,12 @@ namespace epvpapi.TBM
         /// </summary>
         public bool Sold { get; set; }
 
-
         public Treasure(string title, string content, uint cost):
             this(0, title, content, cost)
         { }
 
 
-        public Treasure(uint id, string title = null, string content = null, uint cost = 0):
+        public Treasure(uint id = 0, string title = null, string content = null, uint cost = 0):
             base(id)
         {
             Title = title;

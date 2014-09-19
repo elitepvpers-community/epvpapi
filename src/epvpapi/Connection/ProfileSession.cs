@@ -1,4 +1,5 @@
-﻿using HtmlAgilityPack;
+﻿using epvpapi.TBM;
+using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -180,6 +181,79 @@ namespace epvpapi.Connection
 
                 return fetchedMessages;
             }
+
+
+            public List<Treasure> GetTreasures(Treasure.Status queryStatus = Treasure.Status.Sold, uint pageCount = 1, uint startIndex = 1)
+            {
+                Session.ThrowIfInvalid();
+
+                var listedTreasures = new List<Treasure>();
+                for (var i = startIndex; i < (startIndex + pageCount); ++i)
+                {
+                    var res = Session.Get("http://www.elitepvpers.com/theblackmarket/treasures/" +
+                                         ((queryStatus == Treasure.Status.Bought) ?  "bought" : "soldunsold") 
+                                         + "/" + i);
+                    var htmlDocument = new HtmlDocument();
+                    htmlDocument.LoadHtml(res.ToString());
+
+                    var rootFormNode = htmlDocument.GetElementbyId("contentbg");
+                    if (rootFormNode == null) continue;
+
+                    var tableNode = rootFormNode.SelectSingleNode("table[1]/tr[1]/td[1]/table[1]/tr[2]/td[1]/div[1]/div[3]/table[1]");
+                    if (tableNode == null) continue;
+
+                    // skip the first <tr> element since that is the table header
+                    foreach (var treasureListingNode in tableNode.GetElementsByTagName("tr").Skip(1))
+                    {
+                        var idNode = treasureListingNode.SelectSingleNode("td[1]");
+                        var titleNode = treasureListingNode.SelectSingleNode("td[2]");
+                        var costNode = treasureListingNode.SelectSingleNode("td[3]");
+                        var opponentNode = treasureListingNode.SelectSingleNode("td[4]");
+                        var listedTreasure = new Treasure
+                        {
+                            // first column is the id with a trailing #
+                            ID = (idNode != null) ? Convert.ToUInt32(idNode.InnerText.TrimStart('#')) : 0,
+
+                            // second column is the treasure title
+                            Title = (titleNode != null) ? titleNode.InnerText : ""
+                        };
+
+                        // since this function is only available for logged-in users, the seller (or buyer, depends on the request) is automatically the logged-in user
+                        if (queryStatus == Treasure.Status.Bought)
+                            listedTreasure.Buyer = User;
+                        else
+                            listedTreasure.Seller = User;
+
+                        // third column is the cost
+                        var match = new Regex(@"([0-9]+) eg").Match(costNode.InnerText);
+                        if (match.Groups.Count > 1)
+                            listedTreasure.Cost = Convert.ToUInt32(match.Groups[1].Value);
+
+                        // the last column is the treasure buyer or seller
+                        if (opponentNode != null)
+                        {
+                            opponentNode = opponentNode.SelectSingleNode("a[1]");
+                            if (opponentNode != null)
+                            {
+                                var opponent = opponentNode.Attributes.Contains("href")
+                                                ? new User(opponentNode.InnerText,
+                                                    epvpapi.User.FromURL(opponentNode.Attributes["href"].Value))
+                                                : new User();
+
+                                if (queryStatus == Treasure.Status.Bought)
+                                    listedTreasure.Seller = opponent;
+                                else
+                                    listedTreasure.Buyer = opponent;
+                            }
+                        }
+
+                        listedTreasures.Add(listedTreasure);
+                    }
+                }
+
+                return listedTreasures;
+            }
+
 
             /// <summary>
             /// Removes/disables the current Avatar of the <c>User</c>
