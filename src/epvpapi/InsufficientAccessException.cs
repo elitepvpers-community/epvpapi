@@ -6,6 +6,7 @@ namespace epvpapi
     {
         public InsufficientAccessException(string message)
             : base(message)
-        { }
+        {
+        }
     }
 }

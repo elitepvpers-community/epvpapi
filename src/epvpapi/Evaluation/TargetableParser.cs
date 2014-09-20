@@ -2,11 +2,11 @@
 {
     public abstract class TargetableParser<T>
     {
-        public T Target { get; set; }
-
-        public TargetableParser(T target)
+        protected TargetableParser(T target)
         {
             Target = target;
         }
+
+        protected T Target { get; private set; }
     }
 }

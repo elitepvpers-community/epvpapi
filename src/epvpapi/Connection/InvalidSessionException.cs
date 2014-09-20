@@ -6,6 +6,7 @@ namespace epvpapi.Connection
     {
         public InvalidSessionException(string message)
             : base(message)
-        { }
+        {
+        }
     }
 }

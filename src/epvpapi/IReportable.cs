@@ -3,12 +3,12 @@
 namespace epvpapi
 {
     /// <summary>
-    /// Interface implemented by objects that can be reported
+    ///     Interface implemented by objects that can be reported
     /// </summary>
-    interface IReportable
+    internal interface IReportable
     {
         /// <summary>
-        /// Reports the object 
+        ///     Reports the object
         /// </summary>
         /// <param name="session"> Session that is used for sending the request </param>
         /// <param name="reason"> Reason of the report </param>

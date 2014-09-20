@@ -3,46 +3,43 @@
 namespace epvpapi
 {
     /// <summary>
-    /// Base class for messages within the forum
+    ///     Base class for messages within the forum
     /// </summary>
     public abstract class Message : UniqueObject
     {
         /// <summary>
-        /// Additional options that can be set when posting messages
+        ///     Additional options that can be set when posting messages
         /// </summary>
         [Flags]
         public enum Settings
         {
             /// <summary>
-            /// If set, all URLs in the message are going to be parsed
+            ///     If set, all URLs in the message are going to be parsed
             /// </summary>
-            ParseURL = 1,
+            ParseUrl = 1,
+        }
+
+
+        protected Message(string content)
+            : this(0, content)
+        {
+        }
+
+        protected Message(uint id, string content = null)
+            : base(id)
+        {
+            Content = content;
+            Date = new DateTime();
         }
 
         /// <summary>
-        /// Content of the post
+        ///     Content of the post
         /// </summary>
         public string Content { get; set; }
 
         /// <summary>
-        /// Date and time when the message was created
+        ///     Date and time when the message was created
         /// </summary>
         public DateTime Date { get; set; }
-
-
-        public Message(uint id)
-            : this(id, null)
-        { }
-
-        public Message(string content)
-            : this(0, content)
-        { }
-
-        public Message(uint id, string content)
-            : base(id)
-        {
-            Content = content;       
-            Date = new DateTime();
-        }
     }
 }
