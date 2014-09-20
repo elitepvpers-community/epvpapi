@@ -1,9 +1,9 @@
-﻿using System.Globalization;
-using HtmlAgilityPack;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using HtmlAgilityPack;
 
 namespace epvpapi
 {
@@ -13,13 +13,13 @@ namespace epvpapi
         public static DateTime ToDateTime(this double unixTimeStamp)
         {
             // Unix timestamp is seconds past epoch
-            System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+            var dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             dtDateTime = dtDateTime.AddSeconds(unixTimeStamp).ToLocalTime();
             return dtDateTime;
         }
 
         /// <summary>
-        /// Gets all descendent elements (unlimited levels) that are matching the specified name (attribute)
+        ///     Gets all descendent elements (unlimited levels) that are matching the specified name (attribute)
         /// </summary>
         /// <param name="parent"> Node acting as the starting point </param>
         /// <param name="name"> Name attribute to search for </param>
@@ -30,7 +30,7 @@ namespace epvpapi
         }
 
         /// <summary>
-        /// Gets all child elements that are matching the specified name (attribute)
+        ///     Gets all child elements that are matching the specified name (attribute)
         /// </summary>
         /// <param name="parent"> Node acting as the starting point </param>
         /// <param name="name"> Name attribute to search for </param>
@@ -42,15 +42,15 @@ namespace epvpapi
 
 
         /// <summary>
-        /// Gets all descendent elements (unlimited levels) that are matching the specified name (attribute)
+        ///     Gets all descendent elements (unlimited levels) that are matching the specified name (attribute)
         /// </summary>
         /// <param name="parent"> Node acting as the starting point </param>
         /// <param name="name"> Name attribute to search for </param>
         /// <returns> <c>IEnumarable</c> of <c>HtmlNode</c>s that were found </returns>
         /// <remarks>
-        /// For XHTML use only
+        ///     For XHTML use only
         /// </remarks>
-        public static IEnumerable<HtmlNode> GetDescendentElementsByNameXHTML(this HtmlNode parent, string name)
+        public static IEnumerable<HtmlNode> GetDescendentElementsByNameXhtml(this HtmlNode parent, string name)
         {
             return
                 parent.Descendants()
@@ -60,18 +60,18 @@ namespace epvpapi
 
 
         /// <summary>
-        /// Gets all child elements of the specified tag name
+        ///     Gets all child elements of the specified tag name
         /// </summary>
         /// <param name="parent"> Node acting as the starting point </param>
         /// <param name="tagName"> Tag name to search for </param>
         /// <returns> <c>IEnumarable</c> of <c>HtmlNode</c>s that were found </returns>
         public static IEnumerable<HtmlNode> GetElementsByTagName(this HtmlNode parent, string tagName)
-                {
+        {
             return parent.ChildNodes.Where(node => node.Name == tagName);
         }
 
         /// <summary>
-        /// Gets all descendent elements (unlimited levels) of the specified tag name
+        ///     Gets all descendent elements (unlimited levels) of the specified tag name
         /// </summary>
         /// <param name="parent"> Node acting as the starting point </param>
         /// <param name="tagName"> Tag name to search for </param>
@@ -82,17 +82,17 @@ namespace epvpapi
         }
 
         // -> http://stackoverflow.com/questions/419019/split-list-into-sublists-with-linq
-        public static List<List<T>> Split<T>(this List<T> source, uint elementsPerSplit)
+        public static List<List<T>> Split<T>(this IEnumerable<T> source, uint elementsPerSplit)
         {
             return source
-                .Select((x, i) => new { Index = i, Value = x })
-                .GroupBy(x => x.Index / elementsPerSplit)
+                .Select((x, i) => new {Index = i, Value = x})
+                .GroupBy(x => x.Index/elementsPerSplit)
                 .Select(x => x.Select(v => v.Value).ToList())
                 .ToList();
         }
 
         /// <summary>
-        /// Strips every sort of line breaks from the string. Also removes leading and trailing whitespaces 
+        ///     Strips every sort of line breaks from the string. Also removes leading and trailing whitespaces
         /// </summary>
         /// <param name="target"> String being stripped </param>
         /// <returns> Stripped string </returns>
@@ -101,29 +101,31 @@ namespace epvpapi
             return Regex.Replace(target, @"(^ +)|(\r\n|\n|\r|\t)|( +)$", "");
         }
 
-        public static uint UNIXTimestamp(this DateTime dateTime)
+        public static uint UnixTimestamp(this DateTime dateTime)
         {
             return (uint) (DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
         }
 
-        public static string URLEscape(this string target)
+        public static string UrlEscape(this string target)
         {
-            return Regex.Replace(target, "([^a-zA-Z0-9]+)", "-").ToLower(); // by default, all characters are escaped in links by vBulletin itself
+            return Regex.Replace(target, "([^a-zA-Z0-9]+)", "-").ToLower();
+            // by default, all characters are escaped in links by vBulletin itself
         }
 
         /// <summary>
-        /// (Raw) compares 2 <c>DateTime objects</c> and indicates wether both objects represent the same time (Year, Month, Day, Hour and Minute are compared)
+        ///     (Raw) compares 2 <c>DateTime objects</c> and indicates wether both objects represent the same time (Year, Month,
+        ///     Day, Hour and Minute are compared)
         /// </summary>
         /// <param name="self"> <c>DateTime</c> being compared </param>
         /// <param name="other"> Other <c>DateTime</c> being compared </param>
         /// <returns> True if both objects represent the same time, false if not </returns>
         public static bool Compare(this DateTime self, DateTime other)
         {
-            return (   (other.Year == self.Year) 
-                    && (other.Month == self.Month) 
-                    && (other.Day == self.Month) 
-                    && (other.Hour == self.Hour) 
-                    && (other.Minute == self.Minute) );
+            return ((other.Year == self.Year)
+                    && (other.Month == self.Month)
+                    && (other.Day == self.Month)
+                    && (other.Hour == self.Hour)
+                    && (other.Minute == self.Minute));
         }
 
         public static DateTime ToElitepvpersDateTime(this string formattedTime)
@@ -143,20 +145,17 @@ namespace epvpapi
             formattedTime = formattedTime.Strip();
             if (formattedTime.Contains("Today"))
             {
-                int index = formattedTime.IndexOf("Today");
+                int index = formattedTime.IndexOf("Today", StringComparison.Ordinal);
                 formattedTime = formattedTime.Remove(index, 5);
                 formattedTime = formattedTime.Insert(index, DateTime.Now.Date.ToString("dd/MM/yyyy"));
             }
 
             var dateTime = new DateTime();
-            foreach(var format in commonFormats)
-            {
-                if (DateTime.TryParseExact(formattedTime, format, CultureInfo.InvariantCulture,
+            return
+                commonFormats.Any(format => DateTime.TryParseExact(formattedTime, format, CultureInfo.InvariantCulture,
                     DateTimeStyles.None, out dateTime))
-                    return dateTime;
-            }
-
-            return dateTime;
+                    ? dateTime
+                    : dateTime;
         }
 
         public static bool HasClass(this HtmlNode node, string className)

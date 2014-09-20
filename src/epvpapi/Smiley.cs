@@ -1,38 +1,19 @@
 ﻿namespace epvpapi
 {
     /// <summary>
-    /// Represents a chat smiley that can be used in messages
+    ///     Represents a chat smiley that can be used in messages
     /// </summary>
     public class Smiley
     {
         /// <summary>
-        /// Default root directory where smilies are stored
+        ///     Default root directory where smilies are stored
         /// </summary>
-        private static string _DefaultDirectory = "http://www.elitepvpers.com/forum/images/smilies/";
-        public static string DefaultDirectory
-        {
-            get { return _DefaultDirectory; }
-            set { _DefaultDirectory = value; }
-        }
-
-        /// <summary>
-        /// Path (URL) to the <c>Smiley</c>
-        /// </summary>
-        public string Path { get; set; }
-
-        /// <summary>
-        /// File name and extension
-        /// </summary>
-        public string File { get; set; }
-
-        /// <summary>
-        /// String that triggers the interpretation of text which interprets the text as smiley
-        /// </summary>
-        public string Interpretation { get; set; }
+        private static string _defaultDirectory = "http://www.elitepvpers.com/forum/images/smilies/";
 
         public Smiley(string file, string interpretation) :
             this(file, DefaultDirectory + file, interpretation)
-        { }
+        {
+        }
 
         public Smiley(string file, string path, string interpretation)
         {
@@ -40,6 +21,27 @@
             Path = path;
             Interpretation = interpretation;
         }
+
+        private static string DefaultDirectory
+        {
+            get { return _defaultDirectory; }
+            set { _defaultDirectory = value; }
+        }
+
+        /// <summary>
+        ///     Path (URL) to the <c>Smiley</c>
+        /// </summary>
+        private string Path { get; set; }
+
+        /// <summary>
+        ///     File name and extension
+        /// </summary>
+        private string File { get; set; }
+
+        /// <summary>
+        ///     String that triggers the interpretation of text which interprets the text as smiley
+        /// </summary>
+        private string Interpretation { get; set; }
 
         public static Smiley BigGrin
         {

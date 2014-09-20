@@ -2,47 +2,24 @@
 using System.Runtime.InteropServices;
 using System.Text;
 
-
 namespace epvpapi.Generation
 {
-    public class HardwareID
+    public class HardwareId
     {
-        [Flags()]
-        private enum DockInfo
-        {
-            DOCKINFO_DOCKED = 0x2,
-            DOCKINFO_UNDOCKED = 0x1,
-            DOCKINFO_USER_SUPPLIED = 0x4,
-            DOCKINFO_USER_DOCKED = 0x5,
-            DOCKINFO_USER_UNDOCKED = 0x6
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        private class HW_PROFILE_INFO
-        {
-            [MarshalAs(UnmanagedType.U4)]
-            public int dwDockInfo;
-
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 39)]
-            public string szHwProfileGuid;
-
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 80)]
-            public string szHwProfileName;
-        }
-
         [DllImport("advapi32.dll", SetLastError = true)]
         private static extern bool GetCurrentHwProfile(IntPtr lpHwProfileInfo);
 
         [DllImport("kernel32", CharSet = CharSet.Ansi, SetLastError = true, ExactSpelling = true)]
-        private static extern long GetVolumeInformationA(string PathName, StringBuilder VolumeNameBuffer, int VolumeNameSize, ref int VolumeSerialNumber, ref int MaximumComponentLength, ref int FileSystemFlags, StringBuilder FileSystemNameBuffer, int FileSystemNameSize);
+        private static extern long GetVolumeInformationA(string pathName, StringBuilder volumeNameBuffer,
+            int volumeNameSize, ref int volumeSerialNumber, ref int maximumComponentLength, ref int fileSystemFlags,
+            StringBuilder fileSystemNameBuffer, int fileSystemNameSize);
 
-        private static HW_PROFILE_INFO ProfileInfo()
+        private static HwProfileInfo ProfileInfo()
         {
-            HW_PROFILE_INFO profile = null;
             IntPtr profilePtr = IntPtr.Zero;
             try
             {
-                profile = new HW_PROFILE_INFO();
+                var profile = new HwProfileInfo();
                 profilePtr = Marshal.AllocHGlobal(Marshal.SizeOf(profile));
                 Marshal.StructureToPtr(profile, profilePtr, false);
 
@@ -50,11 +27,8 @@ namespace epvpapi.Generation
                 {
                     throw new Exception("Error cant get current hw profile!");
                 }
-                else
-                {
-                    Marshal.PtrToStructure(profilePtr, profile);
-                    return profile;
-                }
+                Marshal.PtrToStructure(profilePtr, profile);
+                return profile;
             }
             catch (Exception e)
             {
@@ -72,21 +46,42 @@ namespace epvpapi.Generation
         private static string GetVolumeSerial(string strDriveLetter)
         {
             int serNum = 0, maxCompLen = 0, VolFlags = 0;
-            StringBuilder VolLabel = new StringBuilder(256), FSName = new StringBuilder(256);
-            GetVolumeInformationA(strDriveLetter + ":\\", VolLabel, VolLabel.Capacity, ref serNum, ref maxCompLen, ref VolFlags, FSName, FSName.Capacity);
+            StringBuilder volLabel = new StringBuilder(256), fsName = new StringBuilder(256);
+            GetVolumeInformationA(strDriveLetter + ":\\", volLabel, volLabel.Capacity, ref serNum, ref maxCompLen,
+                ref VolFlags, fsName, fsName.Capacity);
             return Convert.ToString(serNum);
         }
 
         /// <summary>
-        /// Generates the computer's hardware id (HWID) based on elitepvpers algorithm
+        ///     Generates the computer's hardware id (HWID) based on elitepvpers algorithm
         /// </summary>
         /// <param name="salt"> Salt that will be added to the md5 generation </param>
         /// <returns> Returns the computer's hardware id (HWID) </returns>
         public static string Generate(string salt = "")
         {
-            var profileGuid = ProfileInfo().szHwProfileGuid.ToString();
-            var volumeSerial = GetVolumeSerial(Environment.SystemDirectory.Substring(0, 1));
-            return Cryptography.GetMD5(profileGuid + volumeSerial + salt);
+            string profileGuid = ProfileInfo().szHwProfileGuid;
+            string volumeSerial = GetVolumeSerial(Environment.SystemDirectory.Substring(0, 1));
+            return Cryptography.GetMd5(profileGuid + volumeSerial + salt);
+        }
+
+        [Flags]
+        private enum DockInfo
+        {
+            DockinfoDocked = 0x2,
+            DockinfoUndocked = 0x1,
+            DockinfoUserSupplied = 0x4,
+            DockinfoUserDocked = 0x5,
+            DockinfoUserUndocked = 0x6
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private class HwProfileInfo
+        {
+            [MarshalAs(UnmanagedType.U4)] public int dwDockInfo;
+
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 39)] public string szHwProfileGuid;
+
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 80)] public string szHwProfileName;
         }
     }
 }

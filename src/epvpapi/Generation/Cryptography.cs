@@ -4,11 +4,11 @@ using System.Text;
 
 namespace epvpapi.Generation
 {
-    public class Cryptography
+    public static class Cryptography
     {
-        public static string GetMD5(string str)
+        public static string GetMd5(string str)
         {
-            var bytes = Encoding.UTF8.GetBytes(str);
+            byte[] bytes = Encoding.UTF8.GetBytes(str);
             using (var md5 = new MD5CryptoServiceProvider())
                 bytes = md5.ComputeHash(bytes);
             return BitConverter.ToString(bytes).Replace("-", "").ToLower();

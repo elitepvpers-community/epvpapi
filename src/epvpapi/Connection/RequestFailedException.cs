@@ -6,15 +6,17 @@ namespace epvpapi.Connection
     public class RequestFailedException : Exception
     {
         public RequestFailedException()
-            : base()
-        { }
+        {
+        }
 
         public RequestFailedException(string message)
             : base(message)
-        { }
+        {
+        }
 
         public RequestFailedException(string message, Exception innerException)
             : base(message, innerException)
-        { }
+        {
+        }
     }
 }

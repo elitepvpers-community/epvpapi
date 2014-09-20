@@ -6,6 +6,7 @@ namespace epvpapi
     {
         public InvalidAuthenticationException(string message)
             : base(message)
-        { }
+        {
+        }
     }
 }
