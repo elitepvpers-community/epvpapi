@@ -163,5 +163,16 @@ namespace epvpapi
         {
             return node.Attributes.Any(attribute => attribute.Name == className);
         }
+
+        /// <summary>
+        /// Converts a string to an IConvertible (int, double, float, ..) object
+        /// </summary>
+        /// <typeparam name="T"> Type it will be converted to </typeparam>
+        /// <param name="value"> The given string </param>
+        /// <returns></returns>
+        public static T To<T>(this string value) where T : IConvertible
+        {
+            return (T)Convert.ChangeType(value, typeof(T));
+        }
     }
 }
