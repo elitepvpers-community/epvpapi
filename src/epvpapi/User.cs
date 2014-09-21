@@ -608,15 +608,15 @@ namespace epvpapi
                     if (legendCaption == "Total Posts")
                     {
                         var postsNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
-                        Target.Posts = (postsNode != null) ? (uint)Convert.ToDouble(postsNode.InnerText) : 0;
+                        Target.Posts = (postsNode != null) ? (uint)postsNode.InnerText.To<double>() : 0;
 
                         var postsPerDayNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[1]");
-                        Target.PostsPerDay = (postsPerDayNode != null) ? Convert.ToDouble(postsPerDayNode.InnerText) : 0;
+                        Target.PostsPerDay = (postsPerDayNode != null) ? postsPerDayNode.InnerText.To<double>() : 0;
                     }
                     else if (legendCaption == "Visitor Messages")
                     {
                         var visitorMessagesNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
-                        Target.VisitorMessages = (visitorMessagesNode != null) ? (uint)Convert.ToDouble(visitorMessagesNode.InnerText) : 0;
+                        Target.VisitorMessages = (visitorMessagesNode != null) ? (uint)visitorMessagesNode.InnerText.To<double>() : 0;
 
                         var lastVisitorMessageNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[1]");
                         Target.LastVisitorMessage = (lastVisitorMessageNode != null)
@@ -626,7 +626,7 @@ namespace epvpapi
                     else if (legendCaption == "Thanks Given")
                     {
                         var givenThanksNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
-                        Target.ThanksGiven = (givenThanksNode != null) ? (uint)Convert.ToDouble(givenThanksNode.InnerText) : 0;
+                        Target.ThanksGiven = (givenThanksNode != null) ? (uint)givenThanksNode.InnerText.To<double>() : 0;
 
                         // The received thanks count is stored within the span element and is trailed after the language dependent definition.
                         // Unlike other elements, the count is not seperated and therefore needs some regex in order to extract the count
@@ -635,7 +635,7 @@ namespace epvpapi
                         {
                             Match match = Regex.Match(thanksReceivedNode.InnerText, @"\S+\s*([0-9.]+)"); // language independent
                             if (match.Groups.Count > 1)
-                                Target.ThanksReceived = (uint)Convert.ToDouble(match.Groups[1].Value);
+                                Target.ThanksReceived = (uint)match.Groups[1].Value.To<double>();
                         }
                     }
                     else if (legendCaption == "General Information")
@@ -646,12 +646,12 @@ namespace epvpapi
                         else
                             recommendationsNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[1]");
 
-                        Target.Recommendations = (recommendationsNode != null) ? Convert.ToUInt32(recommendationsNode.InnerText) : 0;
+                        Target.Recommendations = (recommendationsNode != null) ? recommendationsNode.InnerText.To<uint>() : 0;
                     }
                     else if (legendCaption == "User Notes")
                     {
                         var userNotesNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
-                        Target.UserNotes = (userNotesNode != null) ? (uint)Convert.ToDouble(userNotesNode.InnerText) : 0;
+                        Target.UserNotes = (userNotesNode != null) ? (uint)userNotesNode.InnerText.To<double>() : 0;
 
                         var lastNoteDateNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[1]");
                         var lastNoteTimeNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/span[2]");
@@ -663,7 +663,7 @@ namespace epvpapi
                     {
                         var blogEntriesNode = statisticsGroup.SelectSingleNode("ul[1]/li[1]/text()[1]");
                         // skip the first 2 characters since the value always contains a leading ':' and whitespace 
-                        Target.Blog.Entries = new List<Blog.Entry>((blogEntriesNode != null) ? Convert.ToInt32(new string(blogEntriesNode.InnerText.Skip(2).ToArray())) : 0);
+                        Target.Blog.Entries = new List<Blog.Entry>((blogEntriesNode != null) ? new string(blogEntriesNode.InnerText.Skip(2).ToArray()).To<int>() : 0);
 
                         var lastEntryDateNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[2]");
                         string date = (lastEntryDateNode != null) ? lastEntryDateNode.InnerText.Strip() : "";
@@ -710,26 +710,26 @@ namespace epvpapi
                     else if (keyNode.InnerText.Contains("elite*gold"))
                     {
                         var eliteGoldValueNode = valueNode.SelectSingleNode("text()[1]");
-                        Target.EliteGold = (eliteGoldValueNode != null) ? Convert.ToInt32(eliteGoldValueNode.InnerText) : Target.EliteGold;
+                        Target.EliteGold = (eliteGoldValueNode != null) ? eliteGoldValueNode.InnerText.To<int>() : Target.EliteGold;
                     }
                     else if (keyNode.InnerText.Contains("The Black Market"))
                     {
                         var positiveRatingsNode = valueNode.SelectSingleNode("span[1]");
-                        Target.TBMProfile.Ratings.Positive = (positiveRatingsNode != null) ? Convert.ToUInt32(positiveRatingsNode.InnerText) : Target.TBMProfile.Ratings.Positive;
+                        Target.TBMProfile.Ratings.Positive = (positiveRatingsNode != null) ? positiveRatingsNode.InnerText.To<uint>() : Target.TBMProfile.Ratings.Positive;
 
                         var neutralRatingsNode = valueNode.SelectSingleNode("text()[1]");
-                        Target.TBMProfile.Ratings.Neutral = (neutralRatingsNode != null) ? Convert.ToUInt32(new string(neutralRatingsNode.InnerText.Skip(1).Take(1).ToArray())) : Target.TBMProfile.Ratings.Neutral;
+                        Target.TBMProfile.Ratings.Neutral = (neutralRatingsNode != null) ? new string(neutralRatingsNode.InnerText.Skip(1).Take(1).ToArray()).To<uint>() : Target.TBMProfile.Ratings.Neutral;
 
                         var negativeRatingsNode = valueNode.SelectSingleNode("span[2]");
-                        Target.TBMProfile.Ratings.Negative = (negativeRatingsNode != null) ? Convert.ToUInt32(negativeRatingsNode.InnerText) : Target.TBMProfile.Ratings.Negative;
+                        Target.TBMProfile.Ratings.Negative = (negativeRatingsNode != null) ? negativeRatingsNode.InnerText.To<uint>() : Target.TBMProfile.Ratings.Negative;
                     }
                     else if (keyNode.InnerText.Contains("Mediations"))
                     {
                         var positiveNode = valueNode.SelectSingleNode("span[1]");
-                        Target.TBMProfile.Mediations.Positive = (positiveNode != null) ? Convert.ToUInt32(positiveNode.InnerText) : 0;
+                        Target.TBMProfile.Mediations.Positive = (positiveNode != null) ? positiveNode.InnerText.To<uint>() : 0;
 
                         var neutralNode = valueNode.SelectSingleNode("text()[1]");
-                        Target.TBMProfile.Mediations.Neutral = (neutralNode != null) ? Convert.ToUInt32(neutralNode.InnerText.TrimStart('/')) : 0;
+                        Target.TBMProfile.Mediations.Neutral = (neutralNode != null) ? neutralNode.InnerText.TrimStart('/').To<uint>() : 0;
                     }
                 }
 
@@ -779,8 +779,8 @@ namespace epvpapi
         {
             var match = Regex.Match(url, @"(?:http://www.elitepvpers.com/(?:forum/)*)*(?:members|theblackmarket/profile)/([0-9]+)(?:-[a-zA-Z]+.html)*");
             if(match.Groups.Count < 2) throw new ParsingFailedException("User could not be exported from the given URL");
-            
-            return Convert.ToUInt32(match.Groups[1].Value);
+
+            return match.Groups[1].Value.To<uint>();
         }
 
         /// <summary>
@@ -806,7 +806,7 @@ namespace epvpapi
             return (rootNode != null)
                     ? (from userNode in rootNode.GetElementsByTagName("user")
                         where userNode.Attributes.Contains("userid")
-                        select new User(userNode.InnerText, Convert.ToUInt32(userNode.Attributes["userid"].Value))).ToList()
+                       select new User(userNode.InnerText, userNode.Attributes["userid"].Value.To<uint>())).ToList()
                     : new List<User>();
         }
     }

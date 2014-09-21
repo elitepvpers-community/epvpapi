@@ -53,7 +53,7 @@ namespace epvpapi
                             new KeyValuePair<string, string>("groupid", socialGroup.ID.ToString()),
                             new KeyValuePair<string, string>("discussionid", String.Empty),
                             new KeyValuePair<string, string>("sbutton", "Nachricht+speichern"),
-                            new KeyValuePair<string, string>("parseurl", Convert.ToInt32(settings.HasFlag(Message.Settings.ParseURL)).ToString()),
+                            new KeyValuePair<string, string>("parseurl", settings.HasFlag(Message.Settings.ParseURL) ? "1" : "0"),
                             new KeyValuePair<string, string>("parseame", "1"),
                         });
 

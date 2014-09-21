@@ -44,7 +44,7 @@ namespace epvpapi
 
             using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
-                byte[] binaryData = new byte[fs.Length];
+                var binaryData = new byte[fs.Length];
                 fs.Read(binaryData, 0, binaryData.Length);
                 fs.Close();
                 image.Data = binaryData;
@@ -61,7 +61,11 @@ namespace epvpapi
         /// <returns> <c>Image</c> object containing the just downloaded image </returns>
         public static Image FromWeb(Uri url, string imageFormat = ".jpeg")
         {
-            return new Image() { Data = new WebClient().DownloadData(url), Name = "Unnamed", Format = imageFormat };
+            return new Image() {
+                Data = new WebClient().DownloadData(url),
+                Name = "Unnamed",
+                Format = imageFormat
+            };
         }
 
         /// <summary>
@@ -71,7 +75,7 @@ namespace epvpapi
         /// <returns></returns>
         public static bool IsValid(string path)
         {
-            Regex regex = new Regex(".*\\.(png|PNG|jpg|JPG|jpeg|JPEG|gif|GIF|bmp|BMP)");
+            var regex = new Regex(".*\\.(png|PNG|jpg|JPG|jpeg|JPEG|gif|GIF|bmp|BMP)");
             return regex.IsMatch(path);
         }
     }

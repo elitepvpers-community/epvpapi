@@ -108,8 +108,8 @@ namespace epvpapi
                             new KeyValuePair<string, string>("poststarttime", "1389309192"),
                             new KeyValuePair<string, string>("loggedinuser", session.User.ID.ToString()),
                             new KeyValuePair<string, string>("sbutton", "Submit New Thread"),
-                            new KeyValuePair<string, string>("signature", Convert.ToInt32(settings.HasFlag(SectionPost.Settings.ShowSignature)).ToString()),
-                            new KeyValuePair<string, string>("parseurl", Convert.ToInt32(settings.HasFlag(SectionPost.Settings.ParseURL)).ToString()),
+                            new KeyValuePair<string, string>("signature", settings.HasFlag(SectionPost.Settings.ShowSignature) ? "1" : "0"),
+                            new KeyValuePair<string, string>("parseurl",  settings.HasFlag(SectionPost.Settings.ParseURL) ? "1" : "0"),
                             new KeyValuePair<string, string>("parseame", "1"),
                             new KeyValuePair<string, string>("vbseo_retrtitle", "1"),
                             new KeyValuePair<string, string>("vbseo_is_retrtitle", "1"),
@@ -292,7 +292,7 @@ namespace epvpapi
                     {
                         Match ratingMatch = new Regex(@",\s+([0-9](?:,|.)[0-9]{2})\s+\S+").Match(currentRatingNode.Attributes["alt"].Value);
                         if (ratingMatch.Groups.Count > 1)
-                            Rating = Convert.ToDouble(ratingMatch.Groups[1].Value);
+                            Rating = ratingMatch.Groups[1].Value.To<double>();
                     }
                 }
             }
@@ -312,7 +312,7 @@ namespace epvpapi
                 {
                     Match countMatch = new Regex(@"\S+\s{1}[0-9]+\s{1}\S+\s{1}([0-9]+)").Match(pageCountRootNode.InnerText);
                     if (countMatch.Groups.Count > 1)
-                        PageCount = Convert.ToUInt32(countMatch.Groups[1].Value);
+                        PageCount = countMatch.Groups[1].Value.To<uint>();
                 }
             }
         }
@@ -330,7 +330,7 @@ namespace epvpapi
                 {
                     var elitegoldNode = coreNode.SelectSingleNode("text()[2]");
                     Target.EliteGold = (elitegoldNode != null)
-                                            ? Convert.ToInt32(new String(elitegoldNode.InnerText.Skip(2).ToArray()))
+                                            ? new String(elitegoldNode.InnerText.Skip(2).ToArray()).To<int>()
                                             : 0;
 
                 }
@@ -338,26 +338,26 @@ namespace epvpapi
                 {
                     var tbmPositiveNode = coreNode.SelectSingleNode("span[1]");
                     Target.TBMProfile.Ratings.Positive = (tbmPositiveNode != null)
-                                                        ? Convert.ToUInt32(tbmPositiveNode.InnerText)
+                                                        ? tbmPositiveNode.InnerText.To<uint>()
                                                         : 0;
 
                     var tbmNeutralNode = coreNode.SelectSingleNode("text()[3]");
                     Target.TBMProfile.Ratings.Neutral = (tbmNeutralNode != null)
-                                                    ? Convert.ToUInt32(tbmNeutralNode.InnerText.TrimStart('/').TrimEnd('/'))
+                                                    ? tbmNeutralNode.InnerText.TrimStart('/').TrimEnd('/').To<uint>()
                                                         : 0;
 
                     var tbmNegativeNode = coreNode.SelectSingleNode("span[2]");
                     Target.TBMProfile.Ratings.Negative = (tbmNegativeNode != null)
-                                                        ? Convert.ToUInt32(tbmNegativeNode.InnerText)
+                                                        ? tbmNegativeNode.InnerText.To<uint>()
                                                         : 0;
                 }
                 else if (innerText.Contains("Mediations"))
                 {
                     var positiveNode = coreNode.SelectSingleNode("span[1]");
-                    Target.TBMProfile.Mediations.Positive = (positiveNode != null) ? Convert.ToUInt32(positiveNode.InnerText) : 0;
+                    Target.TBMProfile.Mediations.Positive = (positiveNode != null) ? positiveNode.InnerText.To<uint>() : 0;
 
                     var neutralNode = coreNode.SelectSingleNode("text()[2]");
-                    Target.TBMProfile.Mediations.Neutral = (neutralNode != null) ? Convert.ToUInt32(neutralNode.InnerText.TrimStart('/')) : 0;
+                    Target.TBMProfile.Mediations.Neutral = (neutralNode != null) ? neutralNode.InnerText.TrimStart('/').To<uint>() : 0;
                 }
                 else if (innerText.Contains("Join Date"))
                 {
@@ -369,7 +369,7 @@ namespace epvpapi
                         for (var j = 1; j <= 12; j++)
                         {
                             if (CultureInfo.InvariantCulture.DateTimeFormat.GetMonthName(j).Contains(match.Groups[1].Value))
-                                Target.JoinDate = new DateTime(Convert.ToInt32(match.Groups[2].Value), j, 1);
+                                Target.JoinDate = new DateTime(match.Groups[2].Value.To<int>(), j, 1);
                         }
                     }         
                 }
@@ -399,7 +399,7 @@ namespace epvpapi
                 if (postCreatorNode != null)
                 {
                     Target.ID = postCreatorNode.Attributes.Contains("href")
-                        ? Convert.ToUInt32(User.FromURL(postCreatorNode.Attributes["href"].Value))
+                        ? User.FromURL(postCreatorNode.Attributes["href"].Value)
                         : 0;
 
                     var userNameNode = postCreatorNode.SelectSingleNode("span[1]") ??
@@ -488,7 +488,7 @@ namespace epvpapi
                     {
                         var idMatch = new Regex("post_message_([0-9]+)").Match(messagePartNode.Id);
                         if (idMatch.Groups.Count > 1)
-                            fetchedPost.ID = Convert.ToUInt32(idMatch.Groups[1].Value);
+                            fetchedPost.ID = idMatch.Groups[1].Value.To<uint>();
 
                         fetchedPost.Content = String.Join(String.Empty, messagePartNode.GetElementsByTagName("#text").Select(node => node.InnerText));
                     }
@@ -525,7 +525,7 @@ namespace epvpapi
             var match = Regex.Match(url, @"http://www.elitepvpers.com/forum/\S+/(\d+)-\S+.html");
             if (match.Groups.Count < 2) throw new ParsingFailedException("User could not be exported from the given URL");
 
-            return Convert.ToUInt32(match.Groups[1].Value);
+            return match.Groups[1].Value.To<uint>();
         }
     }
 }

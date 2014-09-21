@@ -94,8 +94,8 @@ namespace epvpapi
                             new KeyValuePair<string, string>("groupname", name),
                             new KeyValuePair<string, string>("groupdescription", description),
                             new KeyValuePair<string, string>("grouptype", access.ToString()),
-                            new KeyValuePair<string, string>("options%5Benable_group_albums%5D", (Convert.ToInt32(settings.HasFlag(Options.EnableGroupAlbums)).ToString())),
-                            new KeyValuePair<string, string>("options%5Benable_group_messages%5D", (Convert.ToInt32(settings.HasFlag(Options.EnableGroupMessages)).ToString()))
+                            new KeyValuePair<string, string>("options%5Benable_group_albums%5D", settings.HasFlag(Options.EnableGroupAlbums) ? "1" : "0"),
+                            new KeyValuePair<string, string>("options%5Benable_group_messages%5D", settings.HasFlag(Options.EnableGroupMessages) ? "1" : "0")
                         });
             
             return new SocialGroup(0);
@@ -194,11 +194,11 @@ namespace epvpapi
                             new KeyValuePair<string, string>("socialgroupcategoryid", "1"),
                             new KeyValuePair<string, string>("groupdescription", description),
                             new KeyValuePair<string, string>("grouptype", access.ToString()),
-                            new KeyValuePair<string, string>("options[enable_group_albums]", Convert.ToInt32(settings.HasFlag(Options.EnableGroupAlbums)).ToString()),
-                            new KeyValuePair<string, string>("options[enable_group_messages]", Convert.ToInt32(settings.HasFlag(Options.EnableGroupMessages)).ToString()),
-                            new KeyValuePair<string, string>("options[owner_mod_queue]", Convert.ToInt32(settings.HasFlag(Options.ApproveGroupMessages)).ToString()),
-                            new KeyValuePair<string, string>("options[join_to_view]", Convert.ToInt32(settings.HasFlag(Options.JoinToView)).ToString()),
-                            new KeyValuePair<string, string>("options[only_owner_discussions]", Convert.ToInt32(settings.HasFlag(Options.OnlyOwnerDiscussions)).ToString()),
+                            new KeyValuePair<string, string>("options[enable_group_albums]", settings.HasFlag(Options.EnableGroupAlbums) ? "1" : "0"),
+                            new KeyValuePair<string, string>("options[enable_group_messages]", settings.HasFlag(Options.EnableGroupMessages) ? "1" : "0"),
+                            new KeyValuePair<string, string>("options[owner_mod_queue]", settings.HasFlag(Options.ApproveGroupMessages) ? "1" : "0"),
+                            new KeyValuePair<string, string>("options[join_to_view]", settings.HasFlag(Options.JoinToView) ? "1" : "0"),
+                            new KeyValuePair<string, string>("options[only_owner_discussions]", settings.HasFlag(Options.OnlyOwnerDiscussions) ? "1" : "0"),
 
                         });
 

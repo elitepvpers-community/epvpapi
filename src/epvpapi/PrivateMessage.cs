@@ -106,7 +106,7 @@ namespace epvpapi
             if (session.User.Posts <= 20 && !session.User.HasRank(User.Rank.Premium) && !session.User.HasRank(User.Rank.EliteGoldTrader))
                 throw new InsufficientAccessException("More than 20 posts or the premium / elite*gold trader badge is required for sending private messages without captchas");
 
-            string recipients = "";
+            var recipients = "";
             foreach(var recipient in Recipients)
             {
                 recipients += recipient.Name;

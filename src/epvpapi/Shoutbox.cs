@@ -251,7 +251,7 @@ namespace epvpapi
                 string userName = (userNameNode != null) ? userNameNode.InnerText : "";
 
                 var chatCountNode = node.SelectSingleNode("td[2]");
-                uint chatCount = (chatCountNode != null) ? Convert.ToUInt32(chatCountNode.InnerText) : 0;
+                uint chatCount = (chatCountNode != null) ? chatCountNode.InnerText.To<uint>() : 0;
 
                 TopChatter.Add(new PremiumUser(userName) { ShoutboxMessages = chatCount });
             }
@@ -260,13 +260,13 @@ namespace epvpapi
             if (additionalInfoNodes.Count != 3) return; // return on mismatch, no exception
 
             var totalMessagesValueNode = additionalInfoNodes.ElementAt(0).SelectSingleNode("td[2]");
-            MessageCount = (totalMessagesValueNode != null) ? Convert.ToUInt32(totalMessagesValueNode.InnerText) : 0;
+            MessageCount = (totalMessagesValueNode != null) ? totalMessagesValueNode.InnerText.To<uint>() : 0;
 
             var totalMessages24HoursValueNode = additionalInfoNodes.ElementAt(1).SelectSingleNode("td[2]");
-            MessageCountCurrentDay = (totalMessages24HoursValueNode != null) ? Convert.ToUInt32(totalMessages24HoursValueNode.InnerText) : 0;
+            MessageCountCurrentDay = (totalMessages24HoursValueNode != null) ? totalMessages24HoursValueNode.InnerText.To<uint>() : 0;
 
             var ownMessagesValueNode = additionalInfoNodes.ElementAt(2).SelectSingleNode("td[2]");
-            session.User.ShoutboxMessages = (ownMessagesValueNode != null) ? Convert.ToUInt32(ownMessagesValueNode.InnerText) : 0;
+            session.User.ShoutboxMessages = (ownMessagesValueNode != null) ? ownMessagesValueNode.InnerText.To<uint>() : 0;
         }
     }
 }

@@ -61,7 +61,7 @@ namespace epvpapi
             /// <param name="session"> Session that is used for sending the request </param>
             /// <param name="settings"> Additional options that can be set </param>
             public void Publish<T>(ProfileSession<T> session,
-                                   Settings settings = Settings.ParseURL | Settings.AllowComments) where T : User
+                Settings settings = Settings.ParseURL | Settings.AllowComments) where T : User
             {
                 Publish(session, DateTime.Now, settings);
             }
@@ -74,11 +74,11 @@ namespace epvpapi
             /// <param name="publishDate"> Date and time when the entry will go live </param>
             /// <param name="settings"> Additional options that can be set </param>
             public void Publish<T>(ProfileSession<T> session, DateTime publishDate,
-                                   Settings settings = Settings.ParseURL | Settings.AllowComments) where T : User
+                Settings settings = Settings.ParseURL | Settings.AllowComments) where T : User
             {
                 session.ThrowIfInvalid();
 
-                string tags = "";
+                var tags = "";
                 foreach(var tag in Tags)
                 {
                     tags += tag;

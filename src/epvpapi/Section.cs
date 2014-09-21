@@ -82,7 +82,7 @@ namespace epvpapi
                         if (firstLine != null)
                         {
                             var hitsNode = firstLine.SelectSingleNode("span[1]/strong[1]");
-                            announcement.Hits = (hitsNode != null) ? (uint)Convert.ToDouble(hitsNode.InnerText) : 0;
+                            announcement.Hits = (hitsNode != null) ? (uint)hitsNode.InnerText.To<double>() : 0;
 
                             var titleNode = firstLine.SelectSingleNode("a[1]");
                             announcement.Title = (titleNode != null) ? titleNode.InnerText : "";
@@ -146,10 +146,10 @@ namespace epvpapi
                 }
 
                 var repliesNode = coreNode.SelectSingleNode("td[5]/a[1]");
-                Target.ReplyCount = (repliesNode != null) ? (uint)Convert.ToDouble(repliesNode.InnerText) : 0;
+                Target.ReplyCount = (repliesNode != null) ? (uint)repliesNode.InnerText.To<double>() : 0;
 
                 var viewsNode = coreNode.SelectSingleNode("td[6]");
-                Target.ViewCount = (viewsNode != null) ? (uint)Convert.ToDouble(viewsNode.InnerText) : 0;
+                Target.ViewCount = (viewsNode != null) ? (uint)viewsNode.InnerText.To<double>() : 0;
             }
         }
 
