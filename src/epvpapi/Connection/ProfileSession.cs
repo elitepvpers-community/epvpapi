@@ -1,4 +1,5 @@
-﻿using epvpapi.TBM;
+﻿using System.Globalization;
+using epvpapi.TBM;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
@@ -66,7 +67,7 @@ namespace epvpapi.Connection
             /// <summary>
             /// Gets all private messages stored in the specified folder
             /// </summary>
-            /// <param name="firstPage"> Index of the first page to request </param>
+            /// <param name="startIndex"> Index of the first page to request </param>
             /// <param name="pageCount"> How many pages will be requested </param>
             /// <param name="folder"> 
             /// The folder where the private messages are stored. Either a pre-defined folder (such as <c>PrivateMessage.Folder.Received</c>
@@ -76,11 +77,11 @@ namespace epvpapi.Connection
             /// <remarks>
             /// Every page contains 100 messages - if available
             /// </remarks>
-            public List<PrivateMessage> GetPrivateMessages(uint firstPage, uint pageCount, PrivateMessage.Folder folder)
+            public List<PrivateMessage> GetPrivateMessages(uint startIndex, uint pageCount, PrivateMessage.Folder folder)
             {
                 var fetchedMessages = new List<PrivateMessage>();
 
-                for (var i = 0; i < pageCount; ++i)
+                for (var i = startIndex; i < (startIndex + pageCount); ++i)
                 {
                     // setting 'pp' to 100 will get you exactly 100 messages per page. This is the highest count that can be set.
                     var res = Session.Get("http://www.elitepvpers.com/forum/private.php?folderid=" + folder.ID + "&pp=100&sort=date&page=" + i);
@@ -93,26 +94,28 @@ namespace epvpapi.Connection
                     formRootNode = formRootNode.ParentNode;
                     if (formRootNode == null) continue;
 
-                    var tborderNode = formRootNode.SelectSingleNode("table[3]");
+                    var tborderNode = formRootNode.SelectSingleNode("table[2]");
                     if (tborderNode == null) continue;
 
-                    // In case there is no page selection
-                    if (tborderNode == null)
+                    // Get the amount of messages stored in the specified folder
+                    // Some people had issues with this, since their message count was shown within table[3] while on a testaccount, the count was shown within table[2]
+                    var messageCountNode = tborderNode.SelectSingleNode("thead[1]/tr[1]/td[1]/span[1]/label[1]/strong[1]");
+                    if (messageCountNode == null)
                     {
-                        tborderNode = formRootNode.SelectSingleNode("table[2]");
+                        tborderNode = formRootNode.SelectSingleNode("table[3]");
                         if (tborderNode == null) continue;
+                        messageCountNode = tborderNode.SelectSingleNode("thead[1]/tr[1]/td[1]/span[1]/label[1]/strong[1]");
                     }
 
-                    // Get the amount of messages stored in the specified folder
-                    // If the amount of messages is lower than the specified page count * 100, adjust the pageCount variable to fit
-                    // Otherwise, vBulletin will redirect you to the previous page if it can't find the page index causing duplicate messages
-                    var messageCountNode = tborderNode.SelectSingleNode("thead[1]/tr[1]/td[1]/span[1]/label[1]/strong[1]");
-                    if (messageCountNode == null) break;
-
-                    uint messageCount = Convert.ToUInt32(messageCountNode.InnerText);
+                    if (messageCountNode == null) continue;
+                    var messageCount = (uint) double.Parse(messageCountNode.InnerText, CultureInfo.InvariantCulture);
                     if (messageCount == 0) break;
-                    
-                    pageCount = (uint)Math.Ceiling((double)messageCount / 100);
+
+                    // If the requested page count is higher than the available pages, adjust the pageCount variable to fit the actual count
+                    // Otherwise, vBulletin will redirect you to the previous page if it can't find the page index causing duplicate messages
+                    var actualPageCount = (uint)Math.Ceiling((double)messageCount / 100);
+                    if (pageCount > actualPageCount)
+                        pageCount = actualPageCount;
 
                     var categoryNodes = new List<HtmlNode>(tborderNode.GetElementsByTagName("tbody").Where(node => node.Id != String.Empty));
                     foreach (var subNodes in categoryNodes.Select(categoryNode => categoryNode.GetElementsByTagName("tr")))
