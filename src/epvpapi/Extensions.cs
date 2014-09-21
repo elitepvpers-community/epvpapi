@@ -1,7 +1,7 @@
-﻿using System.Globalization;
-using HtmlAgilityPack;
+﻿using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -13,9 +13,8 @@ namespace epvpapi
         public static DateTime ToDateTime(this double unixTimeStamp)
         {
             // Unix timestamp is seconds past epoch
-            System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
-            dtDateTime = dtDateTime.AddSeconds(unixTimeStamp).ToLocalTime();
-            return dtDateTime;
+            var dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+            return dtDateTime.AddSeconds(unixTimeStamp).ToLocalTime();
         }
 
         /// <summary>
@@ -40,7 +39,6 @@ namespace epvpapi
             return parent.ChildNodes.Where(node => node.Name == name);
         }
 
-
         /// <summary>
         /// Gets all descendent elements (unlimited levels) that are matching the specified name (attribute)
         /// </summary>
@@ -52,12 +50,10 @@ namespace epvpapi
         /// </remarks>
         public static IEnumerable<HtmlNode> GetDescendentElementsByNameXHTML(this HtmlNode parent, string name)
         {
-            return
-                parent.Descendants()
+            return  parent.Descendants()
                     .Where(node => node.Attributes.Contains("name"))
                     .Where(node => node.Attributes["name"].Value == name);
         }
-
 
         /// <summary>
         /// Gets all child elements of the specified tag name
@@ -66,7 +62,7 @@ namespace epvpapi
         /// <param name="tagName"> Tag name to search for </param>
         /// <returns> <c>IEnumarable</c> of <c>HtmlNode</c>s that were found </returns>
         public static IEnumerable<HtmlNode> GetElementsByTagName(this HtmlNode parent, string tagName)
-                {
+        {
             return parent.ChildNodes.Where(node => node.Name == tagName);
         }
 
@@ -143,7 +139,7 @@ namespace epvpapi
             formattedTime = formattedTime.Strip();
             if (formattedTime.Contains("Today"))
             {
-                int index = formattedTime.IndexOf("Today");
+                var index = formattedTime.IndexOf("Today");
                 formattedTime = formattedTime.Remove(index, 5);
                 formattedTime = formattedTime.Insert(index, DateTime.Now.Date.ToString("dd/MM/yyyy"));
             }
@@ -172,7 +168,7 @@ namespace epvpapi
         /// <returns></returns>
         public static T To<T>(this string value) where T : IConvertible
         {
-            return (T)Convert.ChangeType(value, typeof(T));
+            return (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
         }
     }
 }
