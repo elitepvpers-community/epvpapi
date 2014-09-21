@@ -83,17 +83,25 @@ namespace epvpapi.Connection
                 for (var i = 0; i < pageCount; ++i)
                 {
                     // setting 'pp' to 100 will get you exactly 100 messages per page. This is the highest count that can be set.
-                    Response res = Session.Get("http://www.elitepvpers.com/forum/private.php?folderid=" + folder.ID + "&pp=100&sort=date&page=" + i);
+                    var res = Session.Get("http://www.elitepvpers.com/forum/private.php?folderid=" + folder.ID + "&pp=100&sort=date&page=" + i);
                     var document = new HtmlDocument();
                     document.LoadHtml(res.ToString());
 
                     var formRootNode = document.GetElementbyId("pmform");
                     if (formRootNode == null) continue;
-                    formRootNode = formRootNode.ParentNode;
 
+                    formRootNode = formRootNode.ParentNode;
                     if (formRootNode == null) continue;
-                    var tborderNode = formRootNode.SelectSingleNode("table[2]");
+
+                    var tborderNode = formRootNode.SelectSingleNode("table[3]");
                     if (tborderNode == null) continue;
+
+                    // In case there is no page selection
+                    if (tborderNode == null)
+                    {
+                        tborderNode = formRootNode.SelectSingleNode("table[2]");
+                        if (tborderNode == null) continue;
+                    }
 
                     // Get the amount of messages stored in the specified folder
                     // If the amount of messages is lower than the specified page count * 100, adjust the pageCount variable to fit
@@ -102,8 +110,7 @@ namespace epvpapi.Connection
                     if (messageCountNode == null) break;
 
                     uint messageCount = Convert.ToUInt32(messageCountNode.InnerText);
-                    if (messageCount == 0)
-                        break;
+                    if (messageCount == 0) break;
                     
                     pageCount = (uint)Math.Ceiling((double)messageCount / 100);
 
@@ -155,11 +162,11 @@ namespace epvpapi.Connection
                             }
 
                             var fetchedPrivateMessage = new PrivateMessage(pmID)
-                                                        {
-                                                            Title = title,
-                                                            Date = (date + " " + time).ToElitepvpersDateTime(),
-                                                            Unread = messageUnread
-                                                        };
+                                {
+                                    Title = title,
+                                    Date = (date + " " + time).ToElitepvpersDateTime(),
+                                    Unread = messageUnread
+                                };
 
                             // Messages that were send are labeled with the user that received the message. If messages were received, they were labeled with the sender
                             // so we need to know wether the folder stores received or sent messages
@@ -181,7 +188,6 @@ namespace epvpapi.Connection
 
                 return fetchedMessages;
             }
-
 
             /// <summary>
             /// Retrieves all <c>Treasure</c>s that have been bought and/or sold using the logged-in user account
@@ -269,7 +275,6 @@ namespace epvpapi.Connection
 
                 return listedTreasures;
             }
-
 
             /// <summary>
             /// Removes/disables the current Avatar of the <c>User</c>
