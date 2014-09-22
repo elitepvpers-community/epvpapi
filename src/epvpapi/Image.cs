@@ -34,7 +34,8 @@ namespace epvpapi
         /// <returns> <c>Image</c> object containing the actual image from the given path </returns>
         public static Image FromFileSystem(string path)
         {
-            if(!Image.IsValid(path)) throw new ArgumentException("Provided path is not a valid path to an image");
+            if(!Image.IsValid(path))
+                throw new ArgumentException("Provided path is not a valid path to an image");
 
             var image = new Image()
             {
@@ -42,11 +43,10 @@ namespace epvpapi
                 Format = Path.GetExtension(path)
             };
 
-            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+            using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
                 var binaryData = new byte[fs.Length];
                 fs.Read(binaryData, 0, binaryData.Length);
-                fs.Close();
                 image.Data = binaryData;
             }
 
@@ -75,8 +75,8 @@ namespace epvpapi
         /// <returns></returns>
         public static bool IsValid(string path)
         {
-            var regex = new Regex(".*\\.(png|PNG|jpg|JPG|jpeg|JPEG|gif|GIF|bmp|BMP)");
-            return regex.IsMatch(path);
+            var regex = new Regex(".*\\.(png|jpg|jpeg|gif|bmp)");
+            return regex.IsMatch(path.ToLower());
         }
     }
 }
