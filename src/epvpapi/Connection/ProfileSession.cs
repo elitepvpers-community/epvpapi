@@ -335,7 +335,6 @@ namespace epvpapi.Connection
 
         public ProfileSession(TUser user, string md5Password)
         {
-            Cookies = new CookieContainer();
             ConnectedProfile = new Profile(user, this);
             ConnectedProfile.Login(md5Password);
         }
@@ -349,7 +348,6 @@ namespace epvpapi.Connection
 
         public ProfileSession(Profile profile)
         {
-            Cookies = new CookieContainer();
             ConnectedProfile = profile;
         }      
 

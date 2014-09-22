@@ -809,5 +809,15 @@ namespace epvpapi
                        select new User(userNode.InnerText, userNode.Attributes["userid"].Value.To<uint>())).ToList()
                     : new List<User>();
         }
+
+        public static User GetUserByName(string name)
+        {
+            var session = new Session();
+            var results = epvpapi.User.Search(session, name)
+                .Where(x => x.Name == name)
+                .ToList();
+
+            return results.Count > 0 ? results[0] : null;
+        }
     }
 }

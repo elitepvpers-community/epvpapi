@@ -50,7 +50,9 @@ namespace epvpapi.Connection
         }
 
         public Session()
-        { }
+        {
+            Cookies = new CookieContainer();
+        }
 
 
         /// <summary>
