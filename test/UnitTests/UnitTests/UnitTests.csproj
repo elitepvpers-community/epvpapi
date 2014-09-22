@@ -57,8 +57,13 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Helper.cs" />
-    <Compile Include="PrivateMessagesTest.cs" />
+    <Compile Include="ITestValidatable.cs" />
+    <Compile Include="Tests\UploadTest.cs" />
+    <Compile Include="Tests\PrivateMessagesTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\identicon.png" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

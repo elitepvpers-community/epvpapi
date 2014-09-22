@@ -3,7 +3,7 @@ using epvpapi;
 using epvpapi.Connection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace UnitTests
+namespace UnitTests.Tests
 {
     [TestClass]
     public class PrivateMessagesTest
