@@ -340,15 +340,15 @@ namespace epvpapi.Connection
         }
 
         public ProfileSession(Profile profile, WebProxy proxy)
-            : this(profile)
         {
             Proxy = proxy;
             UseProxy = true;
+            ConnectedProfile = profile;
         }
 
-        public ProfileSession(Profile profile)
+        public ProfileSession(TUser user)
         {
-            ConnectedProfile = profile;
+            ConnectedProfile = new Profile(user, this);
         }      
 
         public override void Update()

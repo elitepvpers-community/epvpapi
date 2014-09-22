@@ -4,12 +4,17 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using epvpapi;
+using epvpapi.Connection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace UnitTests
 {
     public static class Helper
-    {    
+    {
+        public static ProfileSession<PremiumUser> TestSession;
+        public static Credentials TestCredentials;
+
         public static void AssertException(string msg, Exception exception)
         {
             Assert.Fail(msg + "\nException: " + exception.ToString());
@@ -22,7 +27,7 @@ namespace UnitTests
             public string MD5Hash { get; set; }
         }
 
-        public static Credentials LoadTestCredentials()
+        public static void LoadTestCredentials()
         {
             var credentials = new Credentials();
 
@@ -42,7 +47,7 @@ namespace UnitTests
                 }
             }
 
-            return credentials;
+            TestCredentials = credentials;
         }
     }
 }

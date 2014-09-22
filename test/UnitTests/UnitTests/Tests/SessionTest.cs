@@ -12,10 +12,10 @@ namespace UnitTests.Tests
         {
             try
             {
-                var testCredentials = Helper.LoadTestCredentials();
-                var session = new ProfileSession<PremiumUser>(new PremiumUser(testCredentials.Name, testCredentials.ID), testCredentials.MD5Hash);
-                Assert.AreEqual(true, session.Valid, "The session is invalid");
-                Assert.IsNotNull(session.SecurityToken, "The session's security token was not detected");
+                Helper.LoadTestCredentials();
+                Helper.TestSession = new ProfileSession<PremiumUser>(new PremiumUser(Helper.TestCredentials.Name, Helper.TestCredentials.ID), Helper.TestCredentials.MD5Hash);
+                Assert.AreEqual(true, Helper.TestSession.Valid, "The session is invalid");
+                Assert.IsNotNull(Helper.TestSession.SecurityToken, "The session's security token was not detected");
             }
             catch (InvalidAuthenticationException exc)
             {
