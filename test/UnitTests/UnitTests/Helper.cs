@@ -17,6 +17,12 @@ namespace UnitTests
             Assert.Fail(msg + "\nException: " + exception.ToString());
         }
 
+        public static void AssertEmptyString(string str, string msg)
+        {
+            if (String.IsNullOrEmpty(str))
+                Assert.Fail(msg);
+        }
+
         public struct Credentials
         {
             public uint ID { get; set; }
