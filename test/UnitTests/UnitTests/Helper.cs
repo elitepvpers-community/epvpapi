@@ -12,9 +12,6 @@ namespace UnitTests
 {
     public static class Helper
     {
-        public static ProfileSession<PremiumUser> TestSession;
-        public static Credentials TestCredentials;
-
         public static void AssertException(string msg, Exception exception)
         {
             Assert.Fail(msg + "\nException: " + exception.ToString());
@@ -27,7 +24,7 @@ namespace UnitTests
             public string MD5Hash { get; set; }
         }
 
-        public static void LoadTestCredentials()
+        public static Credentials LoadTestCredentials()
         {
             var credentials = new Credentials();
 
@@ -47,7 +44,7 @@ namespace UnitTests
                 }
             }
 
-            TestCredentials = credentials;
+            return credentials;
         }
     }
 }

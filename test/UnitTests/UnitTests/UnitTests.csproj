@@ -57,8 +57,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Helper.cs" />
-    <Compile Include="Tests\PrivateMessages.cs" />
-    <Compile Include="Tests\SessionTest.cs" />
+    <Compile Include="PrivateMessagesTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Choose>
