@@ -105,6 +105,7 @@
     <Compile Include="UniqueObject.cs" />
     <Compile Include="IUniqueWebObject.cs" />
     <Compile Include="User.cs" />
+    <Compile Include="VBContent.cs" />
     <Compile Include="VisitorMessage.cs" />
   </ItemGroup>
   <ItemGroup>
