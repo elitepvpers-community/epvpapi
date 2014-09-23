@@ -13,13 +13,8 @@ namespace UnitTests.Tests
         {
             try
             {
-                var testCredentials = Helper.LoadTestCredentials();
-                var testSession = new ProfileSession<PremiumUser>(new PremiumUser(testCredentials.Name, testCredentials.ID), testCredentials.MD5Hash);
-                Assert.AreEqual(true, testSession.Valid, "The session is invalid");
-                Helper.AssertEmptyString(testSession.SecurityToken, "The session's security token was not detected");
-
                 // parse only the first page
-                var messages = testSession.ConnectedProfile.GetPrivateMessages(1, 1, PrivateMessage.Folder.Received);
+                var messages = TestEnvironment.Session.ConnectedProfile.GetPrivateMessages(1, 1, PrivateMessage.Folder.Received);
 
                 if (messages.Count <= 0)
                     Assert.Fail("Messages could not be parsed or no private messages do exist");
@@ -36,7 +31,7 @@ namespace UnitTests.Tests
 
                     // update the private message and retrieve extra information
                     // since this function also updates the properties handled before, we'll check them again
-                    message.Update(testSession);
+                    message.Update(TestEnvironment.Session);
 
                     Assert.AreNotEqual(0, message.ID, "The ID of a private message was not set after updating");
                     if (new DateTime() == message.Date)
@@ -46,10 +41,6 @@ namespace UnitTests.Tests
                     Helper.AssertEmptyString(message.Sender.Name, "The name of a sender of a private message was not set after updating");
                     Helper.AssertEmptyString(message.Content, "The content of a private message was not set after updating");
                 }
-            }
-            catch (InvalidAuthenticationException exc)
-            {
-                Helper.AssertException("The user was not logged in", exc);
             }
             catch (RequestFailedException exc)
             {
