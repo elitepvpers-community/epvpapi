@@ -30,12 +30,18 @@ namespace epvpapi
 
         public SectionThread Thread { get; set; }
 
-        public SectionPost(string content = null, string title = null)
-            : this(0, new SectionThread(new Section(0, "")), content, title)
+        public SectionPost(List<VBContent> contents, string title = null)
+            : this(0, new SectionThread(new Section(0, "")), contents, title)
         {  }
 
-        public SectionPost(uint id, SectionThread thread, string content = null, string title = null)
-            : base(id, content, title)
+        public SectionPost(uint id, SectionThread thread, string title = null)
+            : this(id, thread, new List<VBContent>(), title)
+        {
+            Thread = thread;
+        }
+
+        public SectionPost(uint id, SectionThread thread, List<VBContent> contents, string title = null)
+            : base(id, contents, title)
         {
             Thread = thread;
         }

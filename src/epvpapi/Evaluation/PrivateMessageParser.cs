@@ -26,7 +26,7 @@ namespace epvpapi.Evaluation
                 // This is why just all descendent text nodes are retrieved.
                 var contentNodes = new List<HtmlNode>(coreNode.SelectSingleNode("div[2]").Descendants()
                                                                 .Where(node => node.Name == "#text" && node.InnerText.Strip() != ""));
-                contentNodes.ForEach(node => Target.Content += node.InnerText);
+                contentNodes.ForEach(node => Target.Contents.Add(new VBContent.PlainText(node.InnerText)));
             }
         }
 

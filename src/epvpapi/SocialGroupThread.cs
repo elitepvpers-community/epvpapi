@@ -42,7 +42,7 @@ namespace epvpapi
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("subject", startPost.Title),
-                            new KeyValuePair<string, string>("message", startPost.Content),
+                            new KeyValuePair<string, string>("message", startPost.Contents.ToString()),
                             new KeyValuePair<string, string>("wysiwyg", "0"),
                             new KeyValuePair<string, string>("s", String.Empty),
                             new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
@@ -102,7 +102,7 @@ namespace epvpapi
             session.Post("http://www.elitepvpers.com/forum/group.php?do=message",
                         new List<KeyValuePair<string, string>>()
                         {
-                            new KeyValuePair<string, string>("message", post.Content),
+                            new KeyValuePair<string, string>("message", post.Contents.ToString()),
                             new KeyValuePair<string, string>("wysiwyg", "0"),
                             new KeyValuePair<string, string>("s", String.Empty),
                             new KeyValuePair<string, string>("securitytoken", session.SecurityToken),

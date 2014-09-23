@@ -20,8 +20,8 @@ namespace epvpapi
             Recipient = new User();
         }
         
-        public VisitorMessage(User recipient, string content)
-            : base(content)
+        public VisitorMessage(User recipient, List<VBContent> contents)
+            : base(contents)
         {
             Recipient = recipient;
         }
@@ -60,7 +60,7 @@ namespace epvpapi
                             new KeyValuePair<string, string>("lastcomment", "1381528657"),
                             new KeyValuePair<string, string>("allow_ajax_qc", "1"),
                             new KeyValuePair<string, string>("fromconverse", String.Empty),
-                            new KeyValuePair<string, string>("message", Content),
+                            new KeyValuePair<string, string>("message", Contents.ToString()),
                         });
         }
 

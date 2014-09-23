@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace epvpapi
 {
@@ -19,10 +21,11 @@ namespace epvpapi
             ParseURL = 1,
         }
 
+
         /// <summary>
-        /// Content of the post
+        /// Contents of the post
         /// </summary>
-        public string Content { get; set; }
+        public List<VBContent> Contents { get; set; }
 
         /// <summary>
         /// Date and time when the message was created
@@ -34,15 +37,20 @@ namespace epvpapi
             : this(id, null)
         { }
 
-        public Message(string content)
+        public Message(List<VBContent> content)
             : this(0, content)
         { }
 
-        public Message(uint id, string content)
+        public Message(uint id, List<VBContent> contents)
             : base(id)
         {
-            Content = content;       
+            Contents = contents;       
             Date = new DateTime();
+        }
+
+        public override string ToString()
+        {
+            return String.Join(String.Empty, Contents.Select(content => content.Plain));
         }
     }
 }

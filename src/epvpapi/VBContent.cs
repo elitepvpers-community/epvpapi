@@ -22,26 +22,14 @@ namespace epvpapi
             Value = value;
         }
 
-        public class PlainTextContent : VBContent
+        public class PlainText : VBContent
         {
-            /// <summary>
-            /// Additional options that can be set when posting messages
-            /// </summary>
-            [Flags]
-            public enum Settings
-            {
-                /// <summary>
-                /// If set, all URLs in the message are going to be parsed
-                /// </summary>
-                ParseURL = 1,
-            }
-
             public override string Plain
             {
                 get { return (string)Value; }
             }
 
-            public PlainTextContent(string value) :
+            public PlainText(string value) :
                 base(null, value)
             { }
         }
