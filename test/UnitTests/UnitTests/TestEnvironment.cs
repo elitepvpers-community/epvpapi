@@ -12,11 +12,12 @@ namespace UnitTests
 {
     public static class TestEnvironment
     {
-        private struct Credentials
+        public struct Credentials
         {
             public uint ID { get; set; }
             public string Name { get; set; }
             public string MD5Hash { get; set; }
+            public string SecretWord { get; set; }
         }
 
         private static Credentials LoadTestCredentials()
@@ -30,11 +31,12 @@ namespace UnitTests
                 {
                     var fileContents = sr.ReadToEnd();
                     var splittedContents = fileContents.Split(':');
-                    if (splittedContents.Count() == 3)
+                    if (splittedContents.Count() == 4)
                     {
                         credentials.Name = splittedContents.First();
                         credentials.ID = Convert.ToUInt32(splittedContents[1]);
                         credentials.MD5Hash = splittedContents[2];
+                        credentials.SecretWord = splittedContents[3];
                     }
                 }
             }
@@ -57,12 +59,14 @@ namespace UnitTests
             }
         }
 
+        public static Credentials TestCredentials { get; set; }
+
         private static void Prepare()
         {
             try
             {
-                var testCredentials = LoadTestCredentials();
-                _Session = new ProfileSession<PremiumUser>(new PremiumUser(testCredentials.Name, testCredentials.ID), testCredentials.MD5Hash);
+                TestCredentials = LoadTestCredentials();
+                _Session = new ProfileSession<PremiumUser>(new PremiumUser(TestCredentials.Name, TestCredentials.ID), TestCredentials.MD5Hash);
                 Assert.AreEqual(true, _Session.Valid, "The session is invalid");
                 AssertExtender.EmptyString(_Session.SecurityToken, "The session's security token was not detected");
             }
