@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="AssertExtender.cs" />
     <Compile Include="TestEnvironment.cs" />
+    <Compile Include="Tests\SectionTest.cs" />
     <Compile Include="Tests\TheBlackMarketTest.cs" />
     <Compile Include="Tests\UploadTest.cs" />
     <Compile Include="Tests\PrivateMessagesTest.cs" />
