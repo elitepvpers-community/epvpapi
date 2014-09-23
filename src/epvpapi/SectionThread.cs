@@ -12,7 +12,7 @@ namespace epvpapi
     /// <summary>
     /// Represents a thread within a section
     /// </summary>
-    public class SectionThread : Thread, IReasonableDeletable, IDefaultUpdatable, IUniquePageableWebObject
+    public class SectionThread : Thread, IReasonableDeletable, IUpdatable, IUniquePageableWebObject
     {
         /// <summary>
         /// Section under which the <c>SectionThread</c> is listed

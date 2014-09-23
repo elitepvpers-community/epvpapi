@@ -2,7 +2,7 @@
 
 namespace epvpapi
 {
-    public interface ISpecializedUpdatable
+    public interface IProfileUpdatable
     {
         void Update<T>(ProfileSession<T> session) where T : User;
     }

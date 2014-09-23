@@ -2,7 +2,7 @@
 
 namespace epvpapi
 {
-    public interface IDefaultUpdatable
+    public interface IUpdatable
     {
         void Update(Session session);
     }

@@ -10,7 +10,7 @@ namespace epvpapi
     /// <summary>
     /// Represents a subforum
     /// </summary>
-    public class Section : UniqueObject, IDefaultUpdatable, IUniqueWebObject
+    public class Section : UniqueObject, IUpdatable, IUniqueWebObject
     {
         /// <summary>
         /// Name of the section

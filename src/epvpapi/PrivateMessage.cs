@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace epvpapi
 {
-    public class PrivateMessage : Post, IReportable, IDefaultUpdatable, IUniqueWebObject
+    public class PrivateMessage : Post, IReportable, IUpdatable, IUniqueWebObject
     {
         public class Folder
         {
