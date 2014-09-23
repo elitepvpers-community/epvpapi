@@ -32,6 +32,12 @@ namespace epvpapi.TBM
         /// </summary>
         public DateTime Time { get; set; }
 
+        [Flags]
+        public enum Query
+        {
+            Received = 0x01,
+            Sent = 0x02
+        }
 
         public Transaction(uint id)
             : base(id)
