@@ -27,6 +27,22 @@ namespace epvpapi
         /// </summary>
         public List<VBContent> Contents { get; set; }
 
+
+        public List<VBContent> PlainTexts
+        {
+            get { return new List<VBContent>(Contents.Where(content => content.Code.Equals("", StringComparison.InvariantCultureIgnoreCase))); }
+        }
+
+        public List<VBContent> Spoilers
+        {
+            get { return new List<VBContent>(Contents.Where(content => content.Code.Equals("spoiler", StringComparison.InvariantCultureIgnoreCase))); }
+        }
+
+        public List<VBContent> Quotes
+        {
+            get { return new List<VBContent>(Contents.Where(content => content.Code.Equals("quote", StringComparison.InvariantCultureIgnoreCase))); }
+        }
+
         /// <summary>
         /// Date and time when the message was created
         /// </summary>
@@ -46,7 +62,7 @@ namespace epvpapi
         {
             Contents = contents;       
             Date = new DateTime();
-        }
+        } 
 
         public override string ToString()
         {
