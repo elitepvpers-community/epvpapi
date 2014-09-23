@@ -34,7 +34,7 @@ namespace epvpapi
 
 
         public Message(uint id)
-            : this(id, null)
+            : this(id, new List<VBContent>())
         { }
 
         public Message(List<VBContent> content)

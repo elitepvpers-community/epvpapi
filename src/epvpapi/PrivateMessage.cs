@@ -72,7 +72,7 @@ namespace epvpapi
         public bool Unread { get; set; }
 
         public PrivateMessage(uint id)
-            : this(id, null, new List<User>())
+            : this(id, new List<VBContent>(), new List<User>())
         { }
 
         public PrivateMessage(User recipient, List<VBContent> contents, string title = null)
