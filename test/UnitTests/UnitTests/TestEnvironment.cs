@@ -64,19 +64,19 @@ namespace UnitTests
                 var testCredentials = LoadTestCredentials();
                 _Session = new ProfileSession<PremiumUser>(new PremiumUser(testCredentials.Name, testCredentials.ID), testCredentials.MD5Hash);
                 Assert.AreEqual(true, _Session.Valid, "The session is invalid");
-                Helper.AssertEmptyString(_Session.SecurityToken, "The session's security token was not detected");
+                AssertExtender.EmptyString(_Session.SecurityToken, "The session's security token was not detected");
             }
             catch (InvalidAuthenticationException exc)
             {
-                Helper.AssertException("The user was not logged in", exc);
+                AssertExtender.Exception("The user was not logged in", exc);
             }
             catch (RequestFailedException exc)
             {
-                Helper.AssertException("A HTTP request failed", exc);
+                AssertExtender.Exception("A HTTP request failed", exc);
             }
             catch (InvalidSessionException exc)
             {
-                Helper.AssertException("Session is invalid", exc);
+                AssertExtender.Exception("Session is invalid", exc);
             }
         }
     }

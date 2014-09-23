@@ -25,9 +25,9 @@ namespace UnitTests.Tests
                     Assert.AreNotEqual(0, message.ID, "The ID of a private message was not set");
                     if(new DateTime() == message.Date)
                         Assert.Fail("The date and time of a private message was not set");
-                    Helper.AssertEmptyString(message.Title, "The title of a private message was not set");
+                    AssertExtender.EmptyString(message.Title, "The title of a private message was not set");
                     Assert.AreNotEqual(0, message.Sender.ID);
-                    Helper.AssertEmptyString(message.Sender.Name, "The name of a sender of a private message was not set");
+                    AssertExtender.EmptyString(message.Sender.Name, "The name of a sender of a private message was not set");
 
                     // update the private message and retrieve extra information
                     // since this function also updates the properties handled before, we'll check them again
@@ -36,19 +36,19 @@ namespace UnitTests.Tests
                     Assert.AreNotEqual(0, message.ID, "The ID of a private message was not set after updating");
                     if (new DateTime() == message.Date)
                         Assert.Fail("The date and time of a private message was not set after updating");
-                    Helper.AssertEmptyString(message.Title, "The title of a private message was not set after updating");
+                    AssertExtender.EmptyString(message.Title, "The title of a private message was not set after updating");
                     Assert.AreNotEqual(0, message.Sender.ID);
-                    Helper.AssertEmptyString(message.Sender.Name, "The name of a sender of a private message was not set after updating");
-                    Helper.AssertEmptyString(message.Content, "The content of a private message was not set after updating");
+                    AssertExtender.EmptyString(message.Sender.Name, "The name of a sender of a private message was not set after updating");
+                    AssertExtender.EmptyString(message.Content, "The content of a private message was not set after updating");
                 }
             }
             catch (RequestFailedException exc)
             {
-                Helper.AssertException("A HTTP request failed", exc);
+                AssertExtender.Exception("A HTTP request failed", exc);
             }
             catch (InvalidSessionException exc)
             {
-                Helper.AssertException("Session is invalid", exc);
+                AssertExtender.Exception("Session is invalid", exc);
             }
         }
     }

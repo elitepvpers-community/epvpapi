@@ -25,24 +25,24 @@ namespace UnitTests.Tests
                     TestEnvironment.Session.ConnectedProfile.RemoveAvatar();
                     TestEnvironment.Session.User.Update(TestEnvironment.Session);
 
-                    Helper.AssertNonEmptyString(TestEnvironment.Session.User.AvatarURL, "The avatar of the logged-in user was not removed");
+                    AssertExtender.NonEmptyString(TestEnvironment.Session.User.AvatarURL, "The avatar of the logged-in user was not removed");
                 }
 
                 TestEnvironment.Session.ConnectedProfile.SetAvatar(schmittAvatar);
                 TestEnvironment.Session.User.Update(TestEnvironment.Session);
-                Helper.AssertEmptyString(TestEnvironment.Session.User.AvatarURL, "The test avatar from the web was not uploaded and set");
+                AssertExtender.EmptyString(TestEnvironment.Session.User.AvatarURL, "The test avatar from the web was not uploaded and set");
 
                 TestEnvironment.Session.ConnectedProfile.SetAvatar(gitAvatar);
                 TestEnvironment.Session.User.Update(TestEnvironment.Session);
-                Helper.AssertEmptyString(TestEnvironment.Session.User.AvatarURL, "The test avatar from the file system was not uploaded and set");
+                AssertExtender.EmptyString(TestEnvironment.Session.User.AvatarURL, "The test avatar from the file system was not uploaded and set");
             }
             catch (RequestFailedException exc)
             {
-                Helper.AssertException("A HTTP request failed", exc);
+                AssertExtender.Exception("A HTTP request failed", exc);
             }
             catch (InvalidSessionException exc)
             {
-                Helper.AssertException("Session is invalid", exc);
+                AssertExtender.Exception("Session is invalid", exc);
             }
         }
     }
