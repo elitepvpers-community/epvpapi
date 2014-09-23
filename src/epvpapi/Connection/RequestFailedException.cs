@@ -3,12 +3,8 @@
 namespace epvpapi.Connection
 {
     /// <summary> Exception thrown if a request could not be executed or if the server did not respond as expected </summary>
-    public class RequestFailedException : Exception
+    public class RequestFailedException : EpvpapiException
     {
-        public RequestFailedException()
-            : base()
-        { }
-
         public RequestFailedException(string message)
             : base(message)
         { }

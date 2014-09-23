@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="Blog.cs" />
     <Compile Include="Connection\ProfileSession.cs" />
+    <Compile Include="EpvpapiException.cs" />
     <Compile Include="Evaluation\PrivateMessageParser.cs" />
     <Compile Include="Evaluation\SectionThreadParser.cs" />
     <Compile Include="Evaluation\SectionParser.cs" />

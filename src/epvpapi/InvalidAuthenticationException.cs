@@ -2,7 +2,7 @@
 
 namespace epvpapi
 {
-    public class InvalidAuthenticationException : Exception
+    public class InvalidAuthenticationException : EpvpapiException
     {
         public InvalidAuthenticationException(string message)
             : base(message)

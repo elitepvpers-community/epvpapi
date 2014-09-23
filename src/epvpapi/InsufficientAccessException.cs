@@ -2,7 +2,7 @@
 
 namespace epvpapi
 {
-    public class InsufficientAccessException : Exception
+    public class InsufficientAccessException : EpvpapiException
     {
         public InsufficientAccessException(string message)
             : base(message)

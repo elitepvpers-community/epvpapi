@@ -2,7 +2,7 @@
 
 namespace epvpapi.Connection
 {
-    public class InvalidSessionException : Exception
+    public class InvalidSessionException : EpvpapiException
     {
         public InvalidSessionException(string message)
             : base(message)

@@ -2,7 +2,7 @@
 
 namespace epvpapi.Evaluation
 {
-    public class ParsingFailedException : Exception
+    public class ParsingFailedException : EpvpapiException
     {
         public ParsingFailedException(string msg):
             base(msg)
