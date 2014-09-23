@@ -57,6 +57,10 @@
   <ItemGroup>
     <Compile Include="Blog.cs" />
     <Compile Include="Connection\ProfileSession.cs" />
+    <Compile Include="Evaluation\PrivateMessageParser.cs" />
+    <Compile Include="Evaluation\SectionThreadParser.cs" />
+    <Compile Include="Evaluation\SectionParser.cs" />
+    <Compile Include="Evaluation\UserParser.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Evaluation\TargetableParser.cs" />
     <Compile Include="Generation\Cryptography.cs" />
