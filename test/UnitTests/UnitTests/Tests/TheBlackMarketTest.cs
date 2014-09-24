@@ -67,7 +67,7 @@ namespace UnitTests.Tests
             try
             {
                 TestEnvironment.Session.User.TBMProfile.SecretWord.Value = TestEnvironment.TestCredentials.SecretWord;
-                var transactions = TestEnvironment.Session.User.TBMProfile.Transactions(TestEnvironment.Session);
+                var transactions = TestEnvironment.Session.User.TBMProfile.GetTransactions(TestEnvironment.Session);
                 Assert.AreNotEqual(0, transactions.Count, "No transactions were found");
 
                 foreach (var transaction in transactions)
