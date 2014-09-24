@@ -17,17 +17,16 @@ namespace UnitTests.Tests
         {
             try
             {
+                var globalHistoryShouts = Shoutbox.Global.History(TestEnvironment.Session, 1, 1);
+                Assert.AreNotEqual(0, globalHistoryShouts.Count, "No shouts were pulled from the global channel history");
 
-            var globalHistoryShouts = Shoutbox.Global.History(TestEnvironment.Session, 1, 1);
-            Assert.AreNotEqual(0, globalHistoryShouts.Count, "No shouts were pulled from the global channel history");
-
-            // one page contains 15 shouts. If we're specifiying that we want to parse just one page, we shouldn't get more than 15 shouts
+                // one page contains 15 shouts. If we're specifiying that we want to parse just one page, we shouldn't get more than 15 shouts
                 if (globalHistoryShouts.Count > 15)
                     Assert.Fail("More than 15 shouts were parsed");
 
-            foreach (var shout in globalHistoryShouts)
-            {
-                    Assert.AreNotEqual(0, shout.Message.Length, "The message content of a shout was not set");
+                foreach (var shout in globalHistoryShouts)
+                {
+                    Assert.AreNotEqual(0, shout.Content.Length, "The message content of a shout was not set");
                     Assert.AreNotEqual(default(DateTime), shout.Date, "The date and time of a shout was not set");
                     Assert.AreNotEqual(0, shout.Sender.Name.Length, "The name of the shout sender was not set");
                     Assert.AreNotEqual(0, shout.Sender.ID, "The ID of the shout sender was not set");
