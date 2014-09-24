@@ -54,6 +54,7 @@
     <Compile Include="TestEnvironment.cs" />
     <Compile Include="Tests\SectionTest.cs" />
     <Compile Include="Tests\SectionThreadTest.cs" />
+    <Compile Include="Tests\ShoutboxTest.cs" />
     <Compile Include="Tests\TheBlackMarketTest.cs" />
     <Compile Include="Tests\UploadTest.cs" />
     <Compile Include="Tests\PrivateMessagesTest.cs" />
