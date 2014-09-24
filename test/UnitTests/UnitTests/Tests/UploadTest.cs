@@ -25,16 +25,16 @@ namespace UnitTests.Tests
                     TestEnvironment.Session.ConnectedProfile.RemoveAvatar();
                     TestEnvironment.Session.User.Update(TestEnvironment.Session);
 
-                    AssertExtender.NonEmptyString(TestEnvironment.Session.User.AvatarURL, "The avatar of the logged-in user was not removed");
+                    Assert.AreEqual(0, TestEnvironment.Session.User.AvatarURL.Length, "The avatar of the logged-in user was not removed");
                 }
 
                 TestEnvironment.Session.ConnectedProfile.SetAvatar(schmittAvatar);
                 TestEnvironment.Session.User.Update(TestEnvironment.Session);
-                AssertExtender.EmptyString(TestEnvironment.Session.User.AvatarURL, "The test avatar from the web was not uploaded and set");
+                Assert.AreNotEqual(0, TestEnvironment.Session.User.AvatarURL.Length, "The test avatar from the web was not uploaded and set");
 
                 TestEnvironment.Session.ConnectedProfile.SetAvatar(gitAvatar);
                 TestEnvironment.Session.User.Update(TestEnvironment.Session);
-                AssertExtender.EmptyString(TestEnvironment.Session.User.AvatarURL, "The test avatar from the file system was not uploaded and set");
+                Assert.AreNotEqual(0, TestEnvironment.Session.User.AvatarURL, "The test avatar from the file system was not uploaded and set");
             }
             catch (RequestFailedException exc)
             {

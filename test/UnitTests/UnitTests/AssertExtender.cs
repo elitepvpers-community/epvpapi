@@ -15,18 +15,6 @@ namespace UnitTests
         public static void Exception(string msg, Exception exception)
         {
             Assert.Fail(msg + "\nException: " + exception.ToString());
-        }
-
-        public static void EmptyString(string str, string msg)
-        {
-            if (String.IsNullOrEmpty(str))
-                Assert.Fail(msg);
-        }
-
-        public static void NonEmptyString(string str, string msg)
-        {
-            if (!String.IsNullOrEmpty(str))
-                Assert.Fail(msg);
-        }     
+        }    
     }
 }

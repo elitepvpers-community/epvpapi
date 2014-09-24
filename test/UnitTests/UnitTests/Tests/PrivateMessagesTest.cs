@@ -25,9 +25,9 @@ namespace UnitTests.Tests
                     Assert.AreNotEqual(0, message.ID, "The ID of a private message was not set");
                     if(new DateTime() == message.Date)
                         Assert.Fail("The date and time of a private message was not set");
-                    AssertExtender.EmptyString(message.Title, "The title of a private message was not set");
+                    Assert.AreNotEqual(0, message.Title.Length, "The title of a private message was not set");
                     Assert.AreNotEqual(0, message.Sender.ID);
-                    AssertExtender.EmptyString(message.Sender.Name, "The name of a sender of a private message was not set");
+                    Assert.AreNotEqual(0, message.Sender.Name.Length, "The name of a sender of a private message was not set");
 
                     // update the private message and retrieve extra information
                     // since this function also updates the properties handled before, we'll check them again
@@ -36,10 +36,10 @@ namespace UnitTests.Tests
                     Assert.AreNotEqual(0, message.ID, "The ID of a private message was not set after updating");
                     if (new DateTime() == message.Date)
                         Assert.Fail("The date and time of a private message was not set after updating");
-                    AssertExtender.EmptyString(message.Title, "The title of a private message was not set after updating");
+                    Assert.AreNotEqual(0, message.Title.Length, "The title of a private message was not set after updating");
                     Assert.AreNotEqual(0, message.Sender.ID);
-                    AssertExtender.EmptyString(message.Sender.Name, "The name of a sender of a private message was not set after updating");
-                    AssertExtender.EmptyString(message.Content, "The content of a private message was not set after updating");
+                    Assert.AreNotEqual(0, message.Sender.Name.Length, "The name of a sender of a private message was not set after updating");
+                    Assert.AreNotEqual(0, message.Content.Length, "The content of a private message was not set after updating");
                 }
             }
             catch (RequestFailedException exc)
