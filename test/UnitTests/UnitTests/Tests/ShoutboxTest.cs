@@ -23,10 +23,10 @@ namespace UnitTests.Tests
 
             foreach (var shout in globalHistoryShouts)
             {
-                Assert.AreNotEqual(0, shout.Message.Length);
-                Assert.AreNotEqual(default(DateTime), shout.Time);
-                Assert.AreNotEqual(0, shout.User.Name.Length);
-                Assert.AreNotEqual(0, shout.User.ID);
+                Assert.AreNotEqual(0, shout.Content.Length);
+                Assert.AreNotEqual(default(DateTime), shout.Date);
+                Assert.AreNotEqual(0, shout.Sender.Name.Length);
+                Assert.AreNotEqual(0, shout.Sender.ID);
             }
         }
     }

@@ -19,20 +19,21 @@ namespace epvpapi
         public class Channel
         {
             /// <summary>
-            /// A single shout send by an user
+            /// Single shout send by an user
             /// </summary>
-            public class Shout
+            public class Shout : Message
             {
-                public PremiumUser User { get; set; }
-                public string Message { get; set; }
-                public DateTime Time { get; set; }
+                public PremiumUser Sender { get; set; }
 
-                public Shout(PremiumUser user, string message, DateTime time)
+                public Shout(uint id, string message):
+                    base(message) 
                 {
-                    User = user;
-                    Message = message;
-                    Time = time;
+                    Sender = new PremiumUser();
                 }
+
+                public Shout(string message):
+                    this(0, message)
+                { }
             }
 
             public uint ID { get; set; }
@@ -122,7 +123,11 @@ namespace epvpapi
                         var messageNode = shoutboxNodeGroup.ElementAt(2).SelectSingleNode(@"span[1]");
                         string message = (messageNode != null) ? messageNode.InnerText : "";
 
-                        shouts.Add(new Shout(new PremiumUser(username, userID), message, time));
+                        shouts.Add(new Shout(message)
+                        {
+                            Sender = new PremiumUser(username, userID),
+                            Date = time
+                        });
                     }
                 }
                 catch (HtmlWebException exception)
@@ -181,7 +186,11 @@ namespace epvpapi
                         var textNode = messageNode.SelectSingleNode("td[4]/span[1]");
                         string message = (textNode != null) ? textNode.InnerText.Strip() : "";
 
-                        shoutList.Add(new Shout(new PremiumUser(userName, userProfileId), message, time));
+                        shoutList.Add(new Shout(message)
+                        {
+                            Sender = new PremiumUser(userName, userProfileId),
+                            Date = time
+                        });
                     }
                 }
 
