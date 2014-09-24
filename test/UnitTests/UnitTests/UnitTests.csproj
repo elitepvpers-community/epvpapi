@@ -38,7 +38,7 @@
     <Reference Include="epvpapi">
       <HintPath>..\..\..\src\epvpapi\bin\Debug\epvpapi.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
   </ItemGroup>
   <Choose>
@@ -53,6 +53,7 @@
     <Compile Include="AssertExtender.cs" />
     <Compile Include="TestEnvironment.cs" />
     <Compile Include="Tests\SectionTest.cs" />
+    <Compile Include="Tests\SectionThreadTest.cs" />
     <Compile Include="Tests\TheBlackMarketTest.cs" />
     <Compile Include="Tests\UploadTest.cs" />
     <Compile Include="Tests\PrivateMessagesTest.cs" />
