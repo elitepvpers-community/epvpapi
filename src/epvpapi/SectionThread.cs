@@ -395,7 +395,7 @@ namespace epvpapi
         public string GetUrl(uint pageIndex = 1)
         {
             return "http://www.elitepvpers.com/forum/" + Section.URLName + "/"
-                                                       + ID + "-" + InitialPost.Title.URLEscape()
+                                                       + ID + "-" + InitialPost.Title.UrlEscape()
                                                        + ((pageIndex > 1) ? "-" + pageIndex : "")
                                                        + ".html";
         }

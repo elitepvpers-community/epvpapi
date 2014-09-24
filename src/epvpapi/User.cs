@@ -427,7 +427,7 @@ namespace epvpapi
 
         public string GetUrl()
         {
-            return "http://www.elitepvpers.com/forum/members/" + ID + "-" + Name.URLEscape() + ".html";
+            return "http://www.elitepvpers.com/forum/members/" + ID + "-" + Name.UrlEscape() + ".html";
         } 
 
         /// <summary>

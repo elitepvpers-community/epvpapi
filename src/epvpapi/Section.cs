@@ -44,7 +44,7 @@ namespace epvpapi
 
             public string GetUrl()
             {
-                return "http://www.elitepvpers.com/forum/" + Section.URLName + "/announcement-" + Title.URLEscape() + ".html";
+                return "http://www.elitepvpers.com/forum/" + Section.URLName + "/announcement-" + Title.UrlEscape() + ".html";
             } 
 
         }

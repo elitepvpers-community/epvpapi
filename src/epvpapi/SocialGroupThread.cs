@@ -121,9 +121,9 @@ namespace epvpapi
         public string GetUrl()
         {
             return "http://www.elitepvpers.com/forum/groups/" + SocialGroup.ID
-                                                            + "-" + SocialGroup.Name.URLEscape()
+                                                            + "-" + SocialGroup.Name.UrlEscape()
                                                             + "-d" + ID + "-"
-                                                            + Posts.First().Title.URLEscape() + ".html";
+                                                            + Posts.First().Title.UrlEscape() + ".html";
         } 
     }
 }

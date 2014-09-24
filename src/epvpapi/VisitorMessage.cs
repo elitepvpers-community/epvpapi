@@ -66,7 +66,7 @@ namespace epvpapi
 
         public string GetUrl()
         {
-            return "http://www.elitepvpers.com/forum/members/" + Recipient.ID + "-" + Recipient.Name.URLEscape() + ".html#vmessage" + ID;
+            return "http://www.elitepvpers.com/forum/members/" + Recipient.ID + "-" + Recipient.Name.UrlEscape() + ".html#vmessage" + ID;
         } 
     }
 }

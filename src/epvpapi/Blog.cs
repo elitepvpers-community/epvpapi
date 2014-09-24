@@ -99,7 +99,7 @@ namespace epvpapi
                                 new KeyValuePair<string, string>("do", "updateblog"),
                                 new KeyValuePair<string, string>("b", String.Empty),
                                 new KeyValuePair<string, string>("posthash", String.Empty),
-                                new KeyValuePair<string, string>("poststarttime", DateTime.Now.UNIXTimestamp().ToString()),
+                                new KeyValuePair<string, string>("poststarttime", DateTime.Now.UnixTimestamp().ToString()),
                                 new KeyValuePair<string, string>("loggedinuser", session.User.ID.ToString()),
                                 new KeyValuePair<string, string>("u", String.Empty),
                                 new KeyValuePair<string, string>("taglist", tags),
@@ -121,7 +121,7 @@ namespace epvpapi
 
             public string GetUrl()
             {
-                return "http://www.elitepvpers.com/forum/blogs/" + Blog.Owner.ID + "-" + Blog.Owner.Name.URLEscape() + "/" + ID + "-" + Title.URLEscape() + ".html";
+                return "http://www.elitepvpers.com/forum/blogs/" + Blog.Owner.ID + "-" + Blog.Owner.Name.UrlEscape() + "/" + ID + "-" + Title.UrlEscape() + ".html";
             }
         }
 
@@ -138,7 +138,7 @@ namespace epvpapi
 
         public string GetUrl()
         {
-            return "http://www.elitepvpers.com/forum/blogs/" + Owner.ID + "-" + Owner.Name.URLEscape() + ".html";
+            return "http://www.elitepvpers.com/forum/blogs/" + Owner.ID + "-" + Owner.Name.UrlEscape() + ".html";
         }   
     }
 }

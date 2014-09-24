@@ -320,7 +320,7 @@ namespace epvpapi
 
         public string GetUrl()
         {
-            return "http://www.elitepvpers.com/forum/groups/" + ID + "-" + Name.URLEscape() + ".html";
+            return "http://www.elitepvpers.com/forum/groups/" + ID + "-" + Name.UrlEscape() + ".html";
         } 
 
     }

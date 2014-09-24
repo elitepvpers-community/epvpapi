@@ -42,7 +42,7 @@ namespace epvpapi
 
         public string GetUrl()
         {
-            return "http://www.elitepvpers.com/forum/joining-e-pvp/" + Thread.ID + "-" + Thread.InitialPost.Title.URLEscape() + ".html";
+            return "http://www.elitepvpers.com/forum/joining-e-pvp/" + Thread.ID + "-" + Thread.InitialPost.Title.UrlEscape() + ".html";
         } 
 
 

@@ -94,17 +94,18 @@ namespace epvpapi
         /// <returns> Stripped string </returns>
         public static string Strip(this string target)
         {
-            return Regex.Replace(target, @"(^ +)|(\r\n|\n|\r|\t)|( +)$", "");
+            return (target != null) ? Regex.Replace(target, @"(^ +)|(\r\n|\n|\r|\t)|( +)$", "") : null;
         }
 
-        public static uint UNIXTimestamp(this DateTime dateTime)
+        public static uint UnixTimestamp(this DateTime dateTime)
         {
             return (uint) (DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
         }
 
-        public static string URLEscape(this string target)
+        public static string UrlEscape(this string target)
         {
-            return Regex.Replace(target, "([^a-zA-Z0-9]+)", "-").ToLower(); // by default, all characters are escaped in links by vBulletin itself
+            // by default, all characters are escaped in links by vBulletin itself
+            return (target != null) ? Regex.Replace(target, "([^a-zA-Z0-9]+)", "-").ToLower() : null; 
         }
 
         /// <summary>
