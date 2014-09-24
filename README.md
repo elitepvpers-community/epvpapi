@@ -17,6 +17,18 @@ These pages provide explanations and samples on how to properly use the library.
 * [Threads](https://github.com/Mostey/epvpapi/wiki/Threads)
 * [The Black Market (Treasures, Transactions, ...)](https://github.com/Mostey/epvpapi/wiki/The-Black-Market-(Treasures,-Transactions,-...))
 
+
+Samples and Troubleshooting
+===
+If something does not work correctly, please refer to our unit tests first which are located in the `/test/UnitTests` directory of the repository. We aim to update them simultaneously as the library grows so they also act as samples you may use.
+
+In case you want to run the tests by yourself, create the text file `credentials.txt` in your `%LocalAppData%/epvpapi` folder and fill in your credentials in the following format:
+
+   `<UserName>:<UserID>:<MD5PasswordHash>:<TBMAPISecretWord>`
+   
+   **Example:** `Mostey:99999:FFFFFFFFFFFFFFFFFFFFFFFFFFF:mysecretword`
+   
+
 License
 ===
   
