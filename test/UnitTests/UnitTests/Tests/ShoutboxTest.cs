@@ -65,5 +65,34 @@ namespace UnitTests.Tests
                 AssertExtender.Exception("Session is invalid", exc);
             }  
         }
+
+        [TestMethod]
+        public void TestShouts()
+        {
+            try
+            {
+                var shouts = Shoutbox.Global.Shouts(TestEnvironment.Session);
+                Assert.AreNotEqual(0, shouts.Count, "No shouts were parsed");
+
+                if (shouts.Count > 15)
+                    Assert.Fail("More than 15 shouts were parsed");
+
+                foreach (var shout in shouts)
+                {
+                    Assert.AreNotEqual(0, shout.Message.Length, "The message content of a shout was not set");
+                    Assert.AreNotEqual(default(DateTime), shout.Time, "The date and time of a shout was not set");
+                    Assert.AreNotEqual(0, shout.User.Name.Length, "The name of the shout sender was not set");
+                    Assert.AreNotEqual(0, shout.User.ID, "The ID of the shout sender was not set");
+                }
+            }
+            catch (RequestFailedException exc)
+            {
+                AssertExtender.Exception("A HTTP request failed", exc);
+            }
+            catch (InvalidSessionException exc)
+            {
+                AssertExtender.Exception("Session is invalid", exc);
+            }
+        }
     }
 }
