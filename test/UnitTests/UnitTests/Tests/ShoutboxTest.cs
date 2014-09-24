@@ -53,7 +53,10 @@ namespace UnitTests.Tests
                     Assert.Fail("More than 10 top chatters were parsed");
 
                 foreach (var chatter in Shoutbox.TopChatter)
+                {
+                    Assert.AreNotEqual(0, chatter.ID, "The id of a top chatter was not set");
                     Assert.AreNotEqual(0, chatter.Name.Length, "The name of a top chatter was not set");
+                }
             }
             catch (RequestFailedException exc)
             {

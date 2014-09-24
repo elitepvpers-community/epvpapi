@@ -256,13 +256,17 @@ namespace epvpapi
             var topChatterNodes = chatStatsNodes.GetRange(0, 10); // always 10 nodes
             foreach (var node in topChatterNodes)
             {
-                var userNameNode = node.SelectSingleNode("td[1]/a[1]/span[1]");
-                string userName = (userNameNode != null) ? userNameNode.InnerText : "";
+                var userNode = node.SelectSingleNode("td[1]/a[1]");
+                if(userNode == null) continue;
+                var userID = userNode.Attributes.Contains("href") ? User.FromURL(userNode.Attributes["href"].Value) : 0;
+
+                var userNameNode = userNode.SelectSingleNode("span[1]") ?? userNode; // black user names do not have a span element
+                var userName = userNameNode.InnerText;
 
                 var chatCountNode = node.SelectSingleNode("td[2]");
-                uint chatCount = (chatCountNode != null) ? chatCountNode.InnerText.To<uint>() : 0;
+                var chatCount = (chatCountNode != null) ? chatCountNode.InnerText.To<uint>() : 0;
 
-                TopChatter.Add(new PremiumUser(userName) { ShoutboxMessages = chatCount });
+                TopChatter.Add(new PremiumUser(userName, userID) { ShoutboxMessages = chatCount });
             }
 
             var additionalInfoNodes = chatStatsNodes.GetRange(11, 3); // 11 because we omit the drawing "Additional information"
