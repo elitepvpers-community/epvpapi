@@ -142,7 +142,7 @@ namespace epvpapi
             /// <param name="updateShoutbox"> When set to true, additional shoutbox information will be updated on the fly. This does not cause any major
             /// resources to be used since the information can be parsed from the same <c>HtmlDocument</c> as the channel history </param>
             /// <returns> Shouts listed in the channel history that could be obtained and parsed </returns>
-            public List<Shout> History(ProfileSession<PremiumUser> session, uint pageCount = 10, uint firstPage = 1, bool updateShoutbox = true)
+            public List<Shout> History(ProfileSession<PremiumUser> session, uint pageCount = 1, uint firstPage = 1, bool updateShoutbox = true)
             {
                 session.ThrowIfInvalid();
 
