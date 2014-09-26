@@ -375,7 +375,7 @@ namespace epvpapi
                         if (idMatch.Groups.Count > 1)
                             fetchedPost.ID = idMatch.Groups[1].Value.To<uint>();
 
-                        fetchedPost.Content = new Content(new List<VBContentElement>(messagePartNode.GetElementsByTagName("#text").Select(node => new VBContentElement.PlainText(node.InnerText))));
+                        fetchedPost.Content = new Content(new List<Content.Element>(messagePartNode.GetElementsByTagName("#text").Select(node => new Content.Element.PlainText(node.InnerText))));
                     }
 
                     retrievedReplies.Add(fetchedPost);

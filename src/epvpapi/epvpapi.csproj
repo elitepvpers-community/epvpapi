@@ -62,7 +62,7 @@
     <Compile Include="Evaluation\SectionThreadParser.cs" />
     <Compile Include="Evaluation\SectionParser.cs" />
     <Compile Include="Evaluation\UserParser.cs" />
-    <Compile Include="Evaluation\MessageContentParser.cs" />
+    <Compile Include="Evaluation\ContentParser.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Evaluation\TargetableParser.cs" />
     <Compile Include="Generation\Cryptography.cs" />
@@ -108,7 +108,6 @@
     <Compile Include="UniqueObject.cs" />
     <Compile Include="IUniqueWebObject.cs" />
     <Compile Include="User.cs" />
-    <Compile Include="VBContentElement.cs" />
     <Compile Include="VisitorMessage.cs" />
   </ItemGroup>
   <ItemGroup>

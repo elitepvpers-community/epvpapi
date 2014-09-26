@@ -7,9 +7,9 @@ using HtmlAgilityPack;
 
 namespace epvpapi.Evaluation
 {
-    public class MessageContentParser : TargetableParser<List<VBContentElement>>, INodeParser
+    public class ContentParser : TargetableParser<List<Content.Element>>, INodeParser
     {
-        public MessageContentParser(List<VBContentElement> target)
+        public ContentParser(List<Content.Element> target)
             : base(target)
         { }
 
@@ -22,14 +22,21 @@ namespace epvpapi.Evaluation
 
             foreach (var quoteNode in quoteNodes)
             {
-                var quote = new VBContentElement.Quote();
-                new MessageContentParser(quote.Content.Elements).Execute(quoteNode.SelectSingleNode("div[2]"));
+                var quoteContentNode = quoteNode.SelectSingleNode("div[2]");
+                if (quoteContentNode == null) continue;
+
+                var quote = new Content.Element.Quote();
+                new ContentParser(quote.Content.Elements).Execute(quoteContentNode);
+
+                var quoteAuthorNode = quoteNode.SelectSingleNode("div[1]/strong[1]");
+                quote.Author.Name = (quoteAuthorNode != null) ? quoteAuthorNode.InnerText : "";
+
                 Target.Add(quote);
             }
 
             // get all images within the private message
             var imageNodes = new List<HtmlNode>(coreNode.GetElementsByTagName("img").Where(imgNode => imgNode.Attributes.Contains("src")));
-            imageNodes.ForEach(imageNode => Target.Add(new VBContentElement.Image(imageNode.Attributes["src"].Value)));
+            imageNodes.ForEach(imageNode => Target.Add(new Content.Element.Image(imageNode.Attributes["src"].Value)));
 
             // get only the plain text contents. Since every html tag provides a text node, we need to check whether the text nodes are already covered
             // as another elment
@@ -40,7 +47,7 @@ namespace epvpapi.Evaluation
                                                         return (strippedText != "" && Target.All(content => content.Value != strippedText));
                                                     }));
 
-            plainTextNodes.ForEach(plainTextNode => Target.Add(new VBContentElement.PlainText(plainTextNode.InnerText)));
+            plainTextNodes.ForEach(plainTextNode => Target.Add(new Content.Element.PlainText(plainTextNode.InnerText)));
         }
 
        
