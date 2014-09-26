@@ -10,14 +10,14 @@ namespace epvpapi
     public class VBContent
     {
         public string Code { get; set; }
-        public object Value { get; set; }
+        public virtual string Value { get; set; }
 
         public virtual string Plain
         {
             get { return String.Format("[{0}]{1}[/{0}]", Code, Value); }
         }
 
-        public VBContent(string code = null, object value = null)
+        public VBContent(string code = null, string value = null)
         {
             Code = code;
             Value = value;
@@ -57,6 +57,26 @@ namespace epvpapi
         {
             public Image(string value):
                 base("img", value)
+            { }
+        }
+
+        public class Quote : VBContent
+        {
+            public Message Message { get; set; }
+
+            public override string Value
+            {
+                get { return Message.ToString(); }
+            }
+
+            public Quote(Message message) :
+                base("quote")
+            {
+                Message = message; 
+            }
+
+            public Quote():
+                this(new Message())
             { }
         }
     }

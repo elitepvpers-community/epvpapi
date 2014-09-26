@@ -7,7 +7,7 @@ namespace epvpapi
     /// <summary>
     /// Base class for messages within the forum
     /// </summary>
-    public abstract class Message : UniqueObject
+    public class Message : UniqueObject
     {
         /// <summary>
         /// Additional options that can be set when posting messages
@@ -53,7 +53,7 @@ namespace epvpapi
         public DateTime Date { get; set; }
 
 
-        public Message(uint id)
+        public Message(uint id = 0)
             : this(id, new List<VBContent>())
         { }
 

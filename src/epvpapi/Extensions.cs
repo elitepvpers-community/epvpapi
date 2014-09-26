@@ -77,6 +77,30 @@ namespace epvpapi
             return parent.Descendants().Where(node => node.Name == tagName);
         }
 
+        /// <summary>
+        /// Gets all child elements of the specified class name
+        /// </summary>
+        /// <param name="parent"> Node acting as the starting point </param>
+        /// <param name="className"> class name to search for </param>
+        /// <returns> <c>IEnumarable</c> of <c>HtmlNode</c>s that were found </returns>
+        public static IEnumerable<HtmlNode> GetElementsByClassName(this HtmlNode parent, string className)
+        {
+            return parent.ChildNodes.Where(node => node.Attributes
+                                                   .Any(attribute => attribute.Name == "class" && attribute.Value == className));
+        }
+
+        /// <summary>
+        /// Gets all descendent elements (unlimited levels) of the specified class name
+        /// </summary>
+        /// <param name="parent"> Node acting as the starting point </param>
+        /// <param name="className"> class name to search for </param>
+        /// <returns> <c>IEnumarable</c> of <c>HtmlNode</c>s that were found </returns>
+        public static IEnumerable<HtmlNode> GetDescendentElementsByClassName(this HtmlNode parent, string className)
+        {
+            return parent.Descendants().Where(node => node.Attributes
+                                                      .Any(attribute => attribute.Name == "class" && attribute.Value == className));
+        }
+
         // -> http://stackoverflow.com/questions/419019/split-list-into-sublists-with-linq
         public static List<List<T>> Split<T>(this List<T> source, uint elementsPerSplit)
         {

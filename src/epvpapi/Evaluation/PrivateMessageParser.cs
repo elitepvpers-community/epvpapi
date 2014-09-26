@@ -27,21 +27,7 @@ namespace epvpapi.Evaluation
                 var contentNode = coreNode.SelectSingleNode("div[2]");
                 if (contentNode == null) return;
 
-                // get all images within the private message
-                var imageNodes = new List<HtmlNode>(contentNode.GetElementsByTagName("img").Where(imgNode => imgNode.Attributes.Contains("src")));
-
-                // get only the plain text contents. Since every html tag provides a text node, we need to check whether the text nodes are already covered
-                // as another elment
-                var plainTextNodes = new List<HtmlNode>(contentNode.GetElementsByTagName("#text")
-                                                        .Where(textNode =>
-                                                        {
-                                                            var strippedText = textNode.InnerText.Strip();
-                                                            return (strippedText != ""
-                                                                    && imageNodes.Any(imageNode => imageNode.Attributes["src"].Value != strippedText));
-                                                        }));
-
-                imageNodes.ForEach(imageNode => Target.Contents.Add(new VBContent.Image(imageNode.Attributes["src"].Value)));
-                plainTextNodes.ForEach(plainTextNode => Target.Contents.Add(new VBContent.PlainText(plainTextNode.InnerText)));
+                new MessageContentParser(Target.Contents).Execute(contentNode);
             }
         }
 
