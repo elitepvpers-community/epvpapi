@@ -35,6 +35,22 @@ namespace epvpapi.Evaluation
                 Target.Add(quote);
             }
 
+            new List<HtmlNode> (coreNode
+                                .GetElementsByTagName("b"))
+                                .ForEach(boldTextNode => Target.Add(new Content.Element.BoldText(boldTextNode.InnerText)));
+
+            new List<HtmlNode>(coreNode
+                                .GetElementsByTagName("i"))
+                                .ForEach(italicTextNode => Target.Add(new Content.Element.ItalicText(italicTextNode.InnerText)));
+
+            new List<HtmlNode>(coreNode
+                                .GetElementsByTagName("u"))
+                                .ForEach(underlinedTextNode => Target.Add(new Content.Element.UnderlinedText(underlinedTextNode.InnerText)));
+
+            new List<HtmlNode>(coreNode
+                                .GetElementsByTagName("strike"))
+                                .ForEach(struckThroughTextNode => Target.Add(new Content.Element.StruckThrough(struckThroughTextNode.InnerText)));
+
             // get all images within the specified core node and extract the url in the src attribute (image link)
             new List<HtmlNode> (coreNode
                                 .GetElementsByTagName("img")

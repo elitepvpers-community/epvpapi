@@ -49,6 +49,34 @@ namespace epvpapi
                 { }
             }
 
+            public class ItalicText : Element
+            {
+                public ItalicText(string value) :
+                    base("I", value)
+                { }
+            }
+
+            public class UnderlinedText : Element
+            {
+                public UnderlinedText(string value) :
+                    base("U", value)
+                { }
+            }
+
+            public class BoldText : Element
+            {
+                public BoldText(string value) :
+                    base("B", value)
+                { }
+            }
+
+            public class StruckThrough : Element
+            {
+                public StruckThrough(string value):
+                    base("STRIKE", value)
+                { }
+            }
+
             public class Spoiler : Element
             {
                 public Spoiler(string value) :
