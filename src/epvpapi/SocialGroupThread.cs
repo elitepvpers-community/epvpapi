@@ -34,7 +34,7 @@ namespace epvpapi
         /// <param name="settings"> Additional options that can be set </param>
         /// <returns> Freshly created <c>SocialGroupThread</c></returns>
         public static SocialGroupThread Create(ProfileSession<User> session, SocialGroup socialGroup, SocialGroupPost startPost,
-                                               Message.Settings settings = Message.Settings.ParseURL)
+                                               Message.Settings settings = Message.Settings.ParseUrl)
         {
             session.ThrowIfInvalid();
 
@@ -42,7 +42,7 @@ namespace epvpapi
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("subject", startPost.Title),
-                            new KeyValuePair<string, string>("message", startPost.Contents.ToString()),
+                            new KeyValuePair<string, string>("message", startPost.Content.ToString()),
                             new KeyValuePair<string, string>("wysiwyg", "0"),
                             new KeyValuePair<string, string>("s", String.Empty),
                             new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
@@ -53,7 +53,7 @@ namespace epvpapi
                             new KeyValuePair<string, string>("groupid", socialGroup.ID.ToString()),
                             new KeyValuePair<string, string>("discussionid", String.Empty),
                             new KeyValuePair<string, string>("sbutton", "Nachricht+speichern"),
-                            new KeyValuePair<string, string>("parseurl", settings.HasFlag(Message.Settings.ParseURL) ? "1" : "0"),
+                            new KeyValuePair<string, string>("parseurl", settings.HasFlag(Message.Settings.ParseUrl) ? "1" : "0"),
                             new KeyValuePair<string, string>("parseame", "1"),
                         });
 
@@ -95,14 +95,14 @@ namespace epvpapi
         /// <param name="session"> Session that is used for sending the request </param>
         /// <param name="settings"> Additional options that can be set </param>
         /// <param name="post"> Reply to post </param>
-        public void Reply(ProfileSession<User> session, SocialGroupPost post, Message.Settings settings = Message.Settings.ParseURL)
+        public void Reply(ProfileSession<User> session, SocialGroupPost post, Message.Settings settings = Message.Settings.ParseUrl)
         {
             session.ThrowIfInvalid();
 
             session.Post("http://www.elitepvpers.com/forum/group.php?do=message",
                         new List<KeyValuePair<string, string>>()
                         {
-                            new KeyValuePair<string, string>("message", post.Contents.ToString()),
+                            new KeyValuePair<string, string>("message", post.Content.ToString()),
                             new KeyValuePair<string, string>("wysiwyg", "0"),
                             new KeyValuePair<string, string>("s", String.Empty),
                             new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
@@ -113,7 +113,7 @@ namespace epvpapi
                             new KeyValuePair<string, string>("groupid", SocialGroup.ID.ToString()),
                             new KeyValuePair<string, string>("discussionid", ID.ToString()),
                             new KeyValuePair<string, string>("sbutton", "Post+Message"),
-                            new KeyValuePair<string, string>("parseurl", (settings & SocialGroupPost.Settings.ParseURL).ToString()),
+                            new KeyValuePair<string, string>("parseurl", (settings & SocialGroupPost.Settings.ParseUrl).ToString()),
                             new KeyValuePair<string, string>("parseame", "1"),
                         });
         }

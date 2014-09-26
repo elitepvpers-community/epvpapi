@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace epvpapi
 {
-    /// <summary>
-    /// Base class for messages within the forum
-    /// </summary>
-    public class Message : UniqueObject
+    public class Message : UniqueRecord
     {
         /// <summary>
         /// Additional options that can be set when posting messages
@@ -18,66 +17,32 @@ namespace epvpapi
             /// <summary>
             /// If set, all URLs in the message are going to be parsed
             /// </summary>
-            ParseURL = 1,
+            ParseUrl = 1,
         }
+
+        public User Sender { get; set; }
 
         /// <summary>
-        /// Contents of the post
+        /// Recipient of the message
         /// </summary>
-        public List<VBContent> Contents { get; set; }
+        public User Receiver { get; set; }
 
-        public List<VBContent> PlainTexts
-        {
-            get { return Filter(""); }
-        }
-
-        public List<VBContent> Spoilers
-        {
-            get { return Filter("spoiler"); }
-        }
-
-        public List<VBContent> Quotes
-        {
-            get { return Filter("quote"); }
-        }
-
-        public List<VBContent> Images
-        {
-            get { return Filter("img"); }
-        }
-
-
-        /// <summary>
-        /// Date and time when the message was created
-        /// </summary>
-        public DateTime Date { get; set; }
-
+        public Content Content { get; set; }
 
         public Message(uint id = 0)
-            : this(id, new List<VBContent>())
+            : this(id, new Content())
         { }
-
-        public Message(List<VBContent> content)
+        
+        public Message(Content content)
             : this(0, content)
         { }
 
-        public Message(uint id, List<VBContent> contents)
+        public Message(uint id, Content content)
             : base(id)
         {
-            Contents = contents;       
-            Date = new DateTime();
-        }
-
-        public List<VBContent> Filter(string code)
-        {
-            return new List<VBContent>(Contents.Where(content => (content.Code == null)
-                                                                 ? false 
-                                                                 : content.Code.Equals(code, StringComparison.InvariantCultureIgnoreCase)));
-        }
-
-        public override string ToString()
-        {
-            return String.Join(String.Empty, Contents.Select(content => content.Plain));
+            Content = content;
+            Sender = new User();
+            Receiver = new User();
         }
     }
 }

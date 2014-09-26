@@ -27,7 +27,7 @@ namespace epvpapi.Evaluation
                 var contentNode = coreNode.SelectSingleNode("div[2]");
                 if (contentNode == null) return;
 
-                new MessageContentParser(Target.Contents).Execute(contentNode);
+                new MessageContentParser(Target.Content.Elements).Execute(contentNode);
             }
         }
 

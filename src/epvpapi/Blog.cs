@@ -40,18 +40,18 @@ namespace epvpapi
             public List<string> Tags { get; set; }
             public Blog Blog { get; set; }
 
-            public Entry(uint id, List<VBContent> contents, string title = null)
-                : base(id, contents, title)
+            public Entry(uint id, Content content, string title = null)
+                : base(id, content, title)
             {
                 Tags = new List<string>();
             }
 
-            public Entry(List<VBContent> contents, string title = null)
-                : this(0, contents, title)
+            public Entry(Content content, string title = null)
+                : this(0, content, title)
             { }
 
             public Entry(uint id)
-                : this(id, null)
+                : this(id, new Content())
             { }
 
             /// <summary>
@@ -92,7 +92,7 @@ namespace epvpapi
                             new List<KeyValuePair<string, string>>()
                             {
                                 new KeyValuePair<string, string>("title", Title),
-                                new KeyValuePair<string, string>("message", Contents.ToString()),
+                                new KeyValuePair<string, string>("message", Content.ToString()),
                                 new KeyValuePair<string, string>("wysiwyg", "0"),
                                 new KeyValuePair<string, string>("s", String.Empty),
                                 new KeyValuePair<string, string>("securitytoken", session.SecurityToken),

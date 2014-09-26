@@ -7,9 +7,9 @@ using HtmlAgilityPack;
 
 namespace epvpapi.Evaluation
 {
-    public class MessageContentParser : TargetableParser<List<VBContent>>, INodeParser
+    public class MessageContentParser : TargetableParser<List<VBContentElement>>, INodeParser
     {
-        public MessageContentParser(List<VBContent> target)
+        public MessageContentParser(List<VBContentElement> target)
             : base(target)
         { }
 
@@ -22,14 +22,14 @@ namespace epvpapi.Evaluation
 
             foreach (var quoteNode in quoteNodes)
             {
-                var quote = new VBContent.Quote();
-                new MessageContentParser(quote.Message.Contents).Execute(quoteNode.SelectSingleNode("div[2]"));
+                var quote = new VBContentElement.Quote();
+                new MessageContentParser(quote.Content.Elements).Execute(quoteNode.SelectSingleNode("div[2]"));
                 Target.Add(quote);
             }
 
             // get all images within the private message
             var imageNodes = new List<HtmlNode>(coreNode.GetElementsByTagName("img").Where(imgNode => imgNode.Attributes.Contains("src")));
-            imageNodes.ForEach(imageNode => Target.Add(new VBContent.Image(imageNode.Attributes["src"].Value)));
+            imageNodes.ForEach(imageNode => Target.Add(new VBContentElement.Image(imageNode.Attributes["src"].Value)));
 
             // get only the plain text contents. Since every html tag provides a text node, we need to check whether the text nodes are already covered
             // as another elment
@@ -40,7 +40,7 @@ namespace epvpapi.Evaluation
                                                         return (strippedText != "" && Target.All(content => content.Value != strippedText));
                                                     }));
 
-            plainTextNodes.ForEach(plainTextNode => Target.Add(new VBContent.PlainText(plainTextNode.InnerText)));
+            plainTextNodes.ForEach(plainTextNode => Target.Add(new VBContentElement.PlainText(plainTextNode.InnerText)));
         }
 
        

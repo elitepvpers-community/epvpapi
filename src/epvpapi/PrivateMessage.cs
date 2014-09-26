@@ -72,19 +72,19 @@ namespace epvpapi
         public bool Unread { get; set; }
 
         public PrivateMessage(uint id)
-            : this(id, new List<VBContent>(), new List<User>())
+            : this(id, new Content(), new List<User>())
         { }
 
-        public PrivateMessage(User recipient, List<VBContent> contents, string title = null)
-            : this(0, contents, new List<User>() { recipient }, title)
+        public PrivateMessage(User recipient, Content content, string title = null)
+            : this(0, content, new List<User>() { recipient }, title)
         {  }
 
-        public PrivateMessage(List<User> recipients, List<VBContent> contents, string title = null)
-            : this(0, contents, recipients, title)
+        public PrivateMessage(List<User> recipients, Content content, string title = null)
+            : this(0, content, recipients, title)
         { }
 
-        public PrivateMessage(uint id, List<VBContent> contents, List<User> recipients, string title = null)
-            : base(id, contents, title)
+        public PrivateMessage(uint id, Content content, List<User> recipients, string title = null)
+            : base(id, content, title)
         {
             Recipients = recipients;
         }
@@ -120,7 +120,7 @@ namespace epvpapi
                              new KeyValuePair<string, string>("recipients", recipients),
                              new KeyValuePair<string, string>("bccrecipients", String.Empty),
                              new KeyValuePair<string, string>("title", Title ?? "-"),
-                             new KeyValuePair<string, string>("message", Contents.ToString()),
+                             new KeyValuePair<string, string>("message", Content.ToString()),
                              new KeyValuePair<string, string>("wysiwyg", "0"),
                              new KeyValuePair<string, string>("iconid", "0"),
                              new KeyValuePair<string, string>("s", String.Empty),

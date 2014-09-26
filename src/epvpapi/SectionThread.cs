@@ -96,7 +96,7 @@ namespace epvpapi
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("subject", startPost.Title),
-                            new KeyValuePair<string, string>("message", startPost.Contents.ToString()),
+                            new KeyValuePair<string, string>("message", startPost.Content.ToString()),
                             new KeyValuePair<string, string>("wysiwyg", "0"),
                             new KeyValuePair<string, string>("taglist", String.Empty),
                             new KeyValuePair<string, string>("iconid", "0"),
@@ -232,7 +232,7 @@ namespace epvpapi
                          new List<KeyValuePair<string, string>>() 
                          { 
                              new KeyValuePair<string, string>("title", post.Title),
-                             new KeyValuePair<string, string>("message", post.Contents.ToString()),
+                             new KeyValuePair<string, string>("message", post.Content.ToString()),
                              new KeyValuePair<string, string>("wysiwyg", "0"),
                              new KeyValuePair<string, string>("iconid", post.Icon.ToString()),
                              new KeyValuePair<string, string>("s", String.Empty),
@@ -375,7 +375,7 @@ namespace epvpapi
                         if (idMatch.Groups.Count > 1)
                             fetchedPost.ID = idMatch.Groups[1].Value.To<uint>();
 
-                        fetchedPost.Contents = new List<VBContent>(messagePartNode.GetElementsByTagName("#text").Select(node => new VBContent.PlainText(node.InnerText)));
+                        fetchedPost.Content = new Content(new List<VBContentElement>(messagePartNode.GetElementsByTagName("#text").Select(node => new VBContentElement.PlainText(node.InnerText))));
                     }
 
                     retrievedReplies.Add(fetchedPost);
