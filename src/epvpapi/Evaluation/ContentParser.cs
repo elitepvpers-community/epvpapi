@@ -32,7 +32,7 @@ namespace epvpapi.Evaluation
                 new ContentParser(childNodes).Execute(quoteContentNode);
                 Target.Add(new Content.Element.Quote()
                 {
-                    Childs = childNodes,
+                    Childs = new List<Content.Element>(childNodes.Where(node => quoteNode.InnerText != node.Value)),
                     Author = (quoteAuthorNode != null) ? new User(quoteAuthorNode.InnerText) : new User()
                 });
 
@@ -44,7 +44,7 @@ namespace epvpapi.Evaluation
                 new ContentParser(childNodes).Execute(boldTextNode);
                 Target.Add(new Content.Element.BoldText(boldTextNode.InnerText)
                 {
-                    Childs = childNodes
+                    Childs = new List<Content.Element>(childNodes.Where(node => boldTextNode.InnerText != node.Value))
                 });
             }
 
@@ -55,7 +55,7 @@ namespace epvpapi.Evaluation
                 new ContentParser(childNodes).Execute(italicTextNode);
                 Target.Add(new Content.Element.ItalicText(italicTextNode.InnerText)
                 {
-                    Childs = childNodes
+                    Childs = new List<Content.Element>(childNodes.Where(node => italicTextNode.InnerText != node.Value))
                 });
             }
 
@@ -65,7 +65,7 @@ namespace epvpapi.Evaluation
                 new ContentParser(childNodes).Execute(underlinedTextNode);
                 Target.Add(new Content.Element.UnderlinedText(underlinedTextNode.InnerText)
                 {
-                    Childs = childNodes
+                    Childs = new List<Content.Element>(childNodes.Where(node => underlinedTextNode.InnerText != node.Value))
                 });
             }
 
@@ -75,7 +75,7 @@ namespace epvpapi.Evaluation
                 new ContentParser(childNodes).Execute(struckThroughTextNode);
                 Target.Add(new Content.Element.StruckThrough(struckThroughTextNode.InnerText)
                 {
-                    Childs = childNodes
+                    Childs = new List<Content.Element>(childNodes.Where(node => struckThroughTextNode.InnerText != node.Value))
                 });
             }
 
@@ -87,7 +87,7 @@ namespace epvpapi.Evaluation
                 new ContentParser(childNodes).Execute(imageNode);
                 Target.Add(new Content.Element.Image(imageNode.Attributes["src"].Value)
                 {
-                    Childs = childNodes
+                    Childs = new List<Content.Element>(childNodes.Where(node => imageNode.InnerText != node.Value))
                 });
             }
 
@@ -97,9 +97,9 @@ namespace epvpapi.Evaluation
             {
                 var childNodes = new List<Content.Element>();
                 new ContentParser(childNodes).Execute(linkNode);
-                Target.Add(new Content.Element.Link(linkNode.Attributes["href"].Value)
+                Target.Add(new Content.Element.Link(linkNode.Attributes["href"].Value.Strip())
                 {
-                    Childs = childNodes
+                    Childs = new List<Content.Element>(childNodes.Where(node => linkNode.InnerText != node.Value))
                 });
             }
 
@@ -112,18 +112,13 @@ namespace epvpapi.Evaluation
                 new ContentParser(childNodes).Execute(spoilerNode);
                 Target.Add(new Content.Element.Spoiler(spoilerNode.InnerText)
                 {
-                    Childs = childNodes
+                    Childs = new List<Content.Element>(childNodes.Where(node => spoilerNode.InnerText != node.Value))
                 });
             }
 
             // get only the plain text contents. Since every html tag provides a text node, we need to check whether the text nodes are already covered
             // as another elment
-            foreach (var plainTextNode in coreNode.GetElementsByTagName("#text")
-                                        .Where(textNode =>
-                                        {
-                                            var strippedText = textNode.InnerText.Strip();
-                                            return (strippedText != "" && Target.All(content => content.Value != strippedText));
-                                        }))
+            foreach (var plainTextNode in coreNode.GetElementsByTagName("#text").Where(textNode => textNode.InnerText.Strip() != ""))
             {
                 var childNodes = new List<Content.Element>();
                 new ContentParser(childNodes).Execute(plainTextNode);

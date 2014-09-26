@@ -13,7 +13,7 @@ namespace epvpapi
         public class Element
         {
             public string Code { get; set; }
-            public virtual string Value { get; set; }
+            public string Value { get; set; }
             public List<Element> Childs { get; set; } 
 
             public virtual string Plain
@@ -37,6 +37,19 @@ namespace epvpapi
 
                 contentElement = new Element(match.Groups[1].Value, match.Groups[2].Value);
                 return true;
+            }
+
+            public List<T> Filter<T>(string code) where T : Element
+            {
+                var concatenatedList = new List<T>();
+                foreach (var child in Childs)
+                {
+                    if (child.Code.Equals(code, StringComparison.InvariantCultureIgnoreCase))
+                        concatenatedList.Add(child as T);
+                    concatenatedList.AddRange(child.Filter<T>(code));
+                }
+
+                return concatenatedList;
             }
 
             public class PlainText : Element
@@ -126,24 +139,49 @@ namespace epvpapi
         /// </summary>
         public List<Element> Elements { get; set; }
 
-        public List<Element> PlainTexts
+        public List<Element.PlainText> PlainTexts
         {
-            get { return Filter(""); }
+            get { return Filter<Element.PlainText>(""); }
         }
 
-        public List<Element> Spoilers
+        public List<Element.Spoiler> Spoilers
         {
-            get { return Filter("spoiler"); }
+            get { return Filter<Element.Spoiler>("spoiler"); }
         }
 
-        public List<Element> Quotes
+        public List<Element.Quote> Quotes
         {
-            get { return Filter("quote"); }
+            get { return Filter<Element.Quote>("quote"); }
         }
 
-        public List<Element> Images
+        public List<Element.Image> Images
         {
-            get { return Filter("img"); }
+            get { return Filter<Element.Image>("img"); }
+        }
+
+        public List<Element.Link> Links
+        {
+            get { return Filter<Element.Link>("url"); } 
+        }
+
+        public List<Element.BoldText> BoldText
+        {
+            get { return Filter<Element.BoldText>("B"); }
+        }
+
+        public List<Element.ItalicText> ItalicText
+        {
+            get { return Filter<Element.ItalicText>("I"); }
+        }
+
+        public List<Element.UnderlinedText> UnderlinedText
+        {
+            get { return Filter<Element.UnderlinedText>("U"); }
+        }
+
+        public List<Element.StruckThrough> StruckThrough
+        {
+            get { return Filter<Element.StruckThrough>("STRIKE"); }
         }
 
         public Content(List<Element> elements)
@@ -159,11 +197,13 @@ namespace epvpapi
             this(new List<Element>())
         { }
 
-        public List<Element> Filter(string code)
+        public List<T> Filter<T>(string code) where T : Element
         {
-            return new List<Element>(Elements.Where(element => (element.Code == null)
-                                                                         ? false
-                                                                         : element.Code.Equals(code, StringComparison.InvariantCultureIgnoreCase)));
+            var concatenatedList = new List<T>();
+            foreach(var element in Elements)
+                concatenatedList.AddRange(element.Filter<T>(code));
+
+            return concatenatedList;
         }
 
         public override string ToString()
