@@ -14,16 +14,18 @@ namespace epvpapi
         {
             public string Code { get; set; }
             public virtual string Value { get; set; }
+            public List<Element> Childs { get; set; } 
 
             public virtual string Plain
             {
-                get { return String.Format("[{0}]{1}[/{0}]", Code, Value); }
+                get { return String.Format("[{0}]{1}{2}[/{0}]", Code, Value, String.Join(String.Empty, Childs.Select(childContent => childContent.Plain))); }
             }
 
             public Element(string code = null, string value = null)
             {
                 Code = code;
                 Value = value;
+                Childs = new List<Element>();
             }
 
             public static bool TryParse(string input, out Element contentElement)
@@ -101,31 +103,20 @@ namespace epvpapi
             public class Quote : Element
             {
                 public User Author { get; set; }
-                public Content Content { get; set; }
-
-                public override string Value
-                {
-                    get { return Content.ToString(); }
-                }
 
                 public override string Plain
                 {
-                    get { return String.Format("[{0}={1}]{2}[/{0}]", Code, Author.Name, Value); }
+                    get { return String.Format("[{0}={1}]{2}{3}[/{0}]", Code, Author.Name, Value, String.Join(String.Empty, Childs.Select(childContent => childContent.Plain))); }
                 }
 
-                public Quote(Content content):
-                    this(content, new User())
-                { }
-
-                public Quote(Content content, User author):
+                public Quote(User author):
                     base("quote")
                 {
-                    Content = content;
                     Author = author;
                 }
 
                 public Quote() :
-                    this(new Content())
+                    this(new User())
                 { }
             }
         }
