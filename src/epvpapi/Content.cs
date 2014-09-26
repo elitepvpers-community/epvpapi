@@ -53,16 +53,14 @@ namespace epvpapi
             {
                 public Spoiler(string value) :
                     base("spoiler", value)
-                {
-                }
+                { }
             }
 
             public class Image : Element
             {
                 public Image(string value) :
                     base("img", value)
-                {
-                }
+                { }
             }
 
             public class Link : Element
