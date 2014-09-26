@@ -42,7 +42,7 @@ namespace epvpapi
             }
 
             public PlainText(string value) :
-                base(null, value)
+                base("", value)
             { }
         }
 

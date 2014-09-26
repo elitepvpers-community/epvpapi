@@ -21,27 +21,31 @@ namespace epvpapi
             ParseURL = 1,
         }
 
-
         /// <summary>
         /// Contents of the post
         /// </summary>
         public List<VBContent> Contents { get; set; }
 
-
         public List<VBContent> PlainTexts
         {
-            get { return new List<VBContent>(Contents.Where(content => content.Code.Equals("", StringComparison.InvariantCultureIgnoreCase))); }
+            get { return Filter(""); }
         }
 
         public List<VBContent> Spoilers
         {
-            get { return new List<VBContent>(Contents.Where(content => content.Code.Equals("spoiler", StringComparison.InvariantCultureIgnoreCase))); }
+            get { return Filter("spoiler"); }
         }
 
         public List<VBContent> Quotes
         {
-            get { return new List<VBContent>(Contents.Where(content => content.Code.Equals("quote", StringComparison.InvariantCultureIgnoreCase))); }
+            get { return Filter("quote"); }
         }
+
+        public List<VBContent> Images
+        {
+            get { return Filter("img"); }
+        }
+
 
         /// <summary>
         /// Date and time when the message was created
@@ -62,7 +66,14 @@ namespace epvpapi
         {
             Contents = contents;       
             Date = new DateTime();
-        } 
+        }
+
+        public List<VBContent> Filter(string code)
+        {
+            return new List<VBContent>(Contents.Where(content => (content.Code == null)
+                                                                 ? false 
+                                                                 : content.Code.Equals(code, StringComparison.InvariantCultureIgnoreCase)));
+        }
 
         public override string ToString()
         {
