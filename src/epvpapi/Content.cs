@@ -46,8 +46,7 @@ namespace epvpapi
 
                 public PlainText(string value) :
                     base("", value)
-                {
-                }
+                { }
             }
 
             public class Spoiler : Element
@@ -66,6 +65,13 @@ namespace epvpapi
                 }
             }
 
+            public class Link : Element
+            {
+                public Link(string value):
+                    base("url", value)
+                { }
+            }
+
             public class Quote : Element
             {
                 public User Author { get; set; }
@@ -74,6 +80,11 @@ namespace epvpapi
                 public override string Value
                 {
                     get { return Content.ToString(); }
+                }
+
+                public override string Plain
+                {
+                    get { return String.Format("[{0}={1}]{2}[/{0}]", Code, Author.Name, Value); }
                 }
 
                 public Quote(Content content):
@@ -122,6 +133,10 @@ namespace epvpapi
         {
             Elements = elements;       
         }
+
+        public Content(string plainStringContent):
+            this(new List<Element>() { new Element.PlainText(plainStringContent)} )
+        { }
 
         public Content() :
             this(new List<Element>())
