@@ -52,5 +52,12 @@ namespace epvpapi
                 base("spoiler", value)
             { }
         }
+
+        public class Image : VBContent
+        {
+            public Image(string value):
+                base("img", value)
+            { }
+        }
     }
 }

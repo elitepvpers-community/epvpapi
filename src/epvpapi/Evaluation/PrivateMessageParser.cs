@@ -22,11 +22,26 @@ namespace epvpapi.Evaluation
                 var titleNode = coreNode.SelectSingleNode("div[1]/strong[1]");
                 Target.Title = (titleNode != null) ? titleNode.InnerText : "";
 
-                // The actual message content is stored within several nodes. There may be different tags (such as <a> for links, linebreaks...)
-                // This is why just all descendent text nodes are retrieved.
-                var contentNodes = new List<HtmlNode>(coreNode.SelectSingleNode("div[2]").Descendants()
-                                                                .Where(node => node.Name == "#text" && node.InnerText.Strip() != ""));
-                contentNodes.ForEach(node => Target.Contents.Add(new VBContent.PlainText(node.InnerText)));
+                // The actual message content is stored within the following div's child nodes. 
+                // There may be different tags (such as <a> for links, linebreaks...) which require extra parsing
+                var contentNode = coreNode.SelectSingleNode("div[2]");
+                if (contentNode == null) return;
+
+                // get all images within the private message
+                var imageNodes = new List<HtmlNode>(contentNode.GetElementsByTagName("img").Where(imgNode => imgNode.Attributes.Contains("src")));
+
+                // get only the plain text contents. Since every html tag provides a text node, we need to check whether the text nodes are already covered
+                // as another elment
+                var plainTextNodes = new List<HtmlNode>(contentNode.GetElementsByTagName("#text")
+                                                        .Where(textNode =>
+                                                        {
+                                                            var strippedText = textNode.InnerText.Strip();
+                                                            return (strippedText != ""
+                                                                    && imageNodes.Any(imageNode => imageNode.Attributes["src"].Value != strippedText));
+                                                        }));
+
+                imageNodes.ForEach(imageNode => Target.Contents.Add(new VBContent.Image(imageNode.Attributes["src"].Value)));
+                plainTextNodes.ForEach(plainTextNode => Target.Contents.Add(new VBContent.PlainText(plainTextNode.InnerText)));
             }
         }
 
