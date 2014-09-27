@@ -94,6 +94,7 @@ namespace epvpapi.Evaluation
             Target.AddRange(ParseText<Content.Element.LeftAlignedText>(coreNode.ChildNodes.GetElementsByClassName("align-left")));
             Target.AddRange(ParseText<Content.Element.RightAlignedText>(coreNode.ChildNodes.GetElementsByClassName("align-right")));
             Target.AddRange(ParseText<Content.Element.JustifiedText>(coreNode.ChildNodes.GetElementsByClassName("align-justify")));
+            Target.AddRange(ParseText<Content.Element.IndentedText>(coreNode.ChildNodes.GetElementsByTagName("blockquote")));
             // get all spoilers within the specified core node and extract the text in the spoiler
             Target.AddRange(ParseText<Content.Element.Spoiler>(coreNode.ChildNodes.GetElementsByClassName("spoiler-coll")
                                                               .Select(spoilerBaseNode => spoilerBaseNode

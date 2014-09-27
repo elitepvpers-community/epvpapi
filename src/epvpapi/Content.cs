@@ -201,6 +201,17 @@ namespace epvpapi
                 { }
             }
 
+            public class IndentedText : Element
+            {
+                public IndentedText() :
+                    this("")
+                { }
+
+                public IndentedText(string value) :
+                    base("INDENT", value)
+                { }
+            }
+
             public class Quote : Element
             {
                 public User Author { get; set; }
