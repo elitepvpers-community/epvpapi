@@ -59,6 +59,11 @@ namespace epvpapi
                     get { return (string) Value; }
                 }
 
+                public PlainText() :
+                    this("")
+                { }
+
+
                 public PlainText(string value) :
                     base("", value)
                 { }
@@ -66,6 +71,10 @@ namespace epvpapi
 
             public class ItalicText : Element
             {
+                public ItalicText() :
+                    this("")
+                { }
+
                 public ItalicText(string value) :
                     base("I", value)
                 { }
@@ -73,6 +82,10 @@ namespace epvpapi
 
             public class UnderlinedText : Element
             {
+                public UnderlinedText() :
+                    this("")
+                { }
+
                 public UnderlinedText(string value) :
                     base("U", value)
                 { }
@@ -80,6 +93,10 @@ namespace epvpapi
 
             public class BoldText : Element
             {
+                public BoldText() :
+                    this("")
+                { }
+
                 public BoldText(string value) :
                     base("B", value)
                 { }
@@ -87,13 +104,21 @@ namespace epvpapi
 
             public class StruckThroughText : Element
             {
-                public StruckThroughText(string value):
+                public StruckThroughText() :
+                    this("")
+                { }
+
+                public StruckThroughText(string value) :
                     base("STRIKE", value)
                 { }
             }
 
             public class CenteredText : Element
             {
+                public CenteredText() :
+                    this("")
+                { }
+
                 public CenteredText(string value) :
                     base("CENTER", value)
                 { }
@@ -101,6 +126,10 @@ namespace epvpapi
 
             public class LeftAlignedText : Element
             {
+                public LeftAlignedText() :
+                    this("")
+                { }
+
                 public LeftAlignedText(string value) :
                     base("LEFT", value)
                 { }
@@ -108,6 +137,10 @@ namespace epvpapi
 
             public class RightAlignedText : Element
             {
+                public RightAlignedText() :
+                    this("")
+                { }
+
                 public RightAlignedText(string value) :
                     base("RIGHT", value)
                 { }
@@ -115,6 +148,10 @@ namespace epvpapi
 
             public class JustifiedText : Element
             {
+                public JustifiedText() :
+                    this("")
+                { }
+
                 public JustifiedText(string value) :
                     base("JUSTIFY", value)
                 { }
@@ -122,6 +159,10 @@ namespace epvpapi
 
             public class Spoiler : Element
             {
+                public Spoiler() :
+                    this("")
+                { }
+
                 public Spoiler(string value) :
                     base("spoiler", value)
                 { }
@@ -129,6 +170,10 @@ namespace epvpapi
 
             public class Image : Element
             {
+                public Image() :
+                    this("")
+                { }
+
                 public Image(string value) :
                     base("img", value)
                 { }
@@ -136,7 +181,11 @@ namespace epvpapi
 
             public class Link : Element
             {
-                public Link(string value):
+                public Link() :
+                    this("")
+                { }
+
+                public Link(string value) :
                     base("url", value)
                 { }
             }
@@ -229,8 +278,12 @@ namespace epvpapi
         public List<T> Filter<T>(string code) where T : Element
         {
             var concatenatedList = new List<T>();
-            foreach(var element in Elements)
+            foreach (var element in Elements)
+            {
+                if (element.Code.Equals(code, StringComparison.InvariantCultureIgnoreCase))
+                    concatenatedList.Add(element as T);
                 concatenatedList.AddRange(element.Filter<T>(code));
+            }
 
             return concatenatedList;
         }
