@@ -159,6 +159,8 @@ namespace epvpapi
 
             public class Spoiler : Element
             {
+                public string Title { get; set; }
+
                 public Spoiler() :
                     this("")
                 { }

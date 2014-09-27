@@ -84,8 +84,24 @@ namespace epvpapi.Evaluation
                                                                        .GetElementsByAttribute("dir",
                                                                        "ltr")));
             }
-                    
-                                                                    
+
+            
+            // get all spoilers within the specified core node and extract the text in the spoiler
+            foreach (var spoilerNode in coreNode.ChildNodes.GetElementsByClassName("spoiler-coll"))
+            {
+                var spoilerContentNode = spoilerNode.SelectSingleNode("div[2]");     
+                var spoilerTextNode = spoilerNode.SelectSingleNode("div[1]/span[1]/a[1]/span[2]");
+                if (spoilerContentNode == null || spoilerTextNode == null) continue;   
+
+                foreach (var parsedSpoilerElement in ParseText<Content.Element.Spoiler>(spoilerContentNode))
+                {
+                    parsedSpoilerElement.Title = spoilerTextNode.InnerText;
+                    Target.Add(parsedSpoilerElement);
+                }
+                
+            }
+
+
             Target.AddRange(ParseText<Content.Element.BoldText>(coreNode.ChildNodes.GetElementsByTagName("b")));
             Target.AddRange(ParseText<Content.Element.ItalicText>(coreNode.ChildNodes.GetElementsByTagName("i")));
             Target.AddRange(ParseText<Content.Element.UnderlinedText>(coreNode.ChildNodes.GetElementsByTagName("u")));
@@ -95,10 +111,6 @@ namespace epvpapi.Evaluation
             Target.AddRange(ParseText<Content.Element.RightAlignedText>(coreNode.ChildNodes.GetElementsByClassName("align-right")));
             Target.AddRange(ParseText<Content.Element.JustifiedText>(coreNode.ChildNodes.GetElementsByClassName("align-justify")));
             Target.AddRange(ParseText<Content.Element.IndentedText>(coreNode.ChildNodes.GetElementsByTagName("blockquote")));
-            // get all spoilers within the specified core node and extract the text in the spoiler
-            Target.AddRange(ParseText<Content.Element.Spoiler>(coreNode.ChildNodes.GetElementsByClassName("spoiler-coll")
-                                                              .Select(spoilerBaseNode => spoilerBaseNode
-                                                                      .SelectSingleNode("div[2]"))));
             Target.AddRange(ParseText<Content.Element.PlainText>(coreNode.ChildNodes.GetElementsByTagName("#text").Where(textNode => textNode.InnerText.Strip() != "")));
             // get all images within the specified core node and extract the url in the src attribute (image link)
             Target.AddRange(ParseAttribute<Content.Element.Image>(coreNode.ChildNodes.GetElementsByTagName("img"), "src"));
