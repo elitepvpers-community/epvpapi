@@ -85,10 +85,38 @@ namespace epvpapi
                 { }
             }
 
-            public class StruckThrough : Element
+            public class StruckThroughText : Element
             {
-                public StruckThrough(string value):
+                public StruckThroughText(string value):
                     base("STRIKE", value)
+                { }
+            }
+
+            public class CenteredText : Element
+            {
+                public CenteredText(string value) :
+                    base("CENTER", value)
+                { }
+            }
+
+            public class LeftAlignedText : Element
+            {
+                public LeftAlignedText(string value) :
+                    base("LEFT", value)
+                { }
+            }
+
+            public class RightAlignedText : Element
+            {
+                public RightAlignedText(string value) :
+                    base("RIGHT", value)
+                { }
+            }
+
+            public class JustifiedText : Element
+            {
+                public JustifiedText(string value) :
+                    base("JUSTIFY", value)
                 { }
             }
 
@@ -112,6 +140,7 @@ namespace epvpapi
                     base("url", value)
                 { }
             }
+
 
             public class Quote : Element
             {
@@ -179,9 +208,9 @@ namespace epvpapi
             get { return Filter<Element.UnderlinedText>("U"); }
         }
 
-        public List<Element.StruckThrough> StruckThrough
+        public List<Element.StruckThroughText> StruckThrough
         {
-            get { return Filter<Element.StruckThrough>("STRIKE"); }
+            get { return Filter<Element.StruckThroughText>("STRIKE"); }
         }
 
         public Content(List<Element> elements)

@@ -73,9 +73,49 @@ namespace epvpapi.Evaluation
             {
                 var childNodes = new List<Content.Element>();
                 new ContentParser(childNodes).Execute(struckThroughTextNode);
-                Target.Add(new Content.Element.StruckThrough(struckThroughTextNode.InnerText)
+                Target.Add(new Content.Element.StruckThroughText(struckThroughTextNode.InnerText)
                 {
                     Childs = new List<Content.Element>(childNodes.Where(node => struckThroughTextNode.InnerText != node.Value))
+                });
+            }
+
+            foreach (var centeredTextNode in coreNode.GetElementsByClassName("align-center"))
+            {
+                var childNodes = new List<Content.Element>();
+                new ContentParser(childNodes).Execute(centeredTextNode);
+                Target.Add(new Content.Element.CenteredText(centeredTextNode.InnerText)
+                {
+                    Childs = new List<Content.Element>(childNodes.Where(node => centeredTextNode.InnerText != node.Value))
+                });
+            }
+
+            foreach (var leftAlignedTextNode in coreNode.GetElementsByClassName("align-left"))
+            {
+                var childNodes = new List<Content.Element>();
+                new ContentParser(childNodes).Execute(leftAlignedTextNode);
+                Target.Add(new Content.Element.LeftAlignedText(leftAlignedTextNode.InnerText)
+                {
+                    Childs = new List<Content.Element>(childNodes.Where(node => leftAlignedTextNode.InnerText != node.Value))
+                });
+            }
+
+            foreach (var rightAlignedTextNode in coreNode.GetElementsByClassName("align-right"))
+            {
+                var childNodes = new List<Content.Element>();
+                new ContentParser(childNodes).Execute(rightAlignedTextNode);
+                Target.Add(new Content.Element.RightAlignedText(rightAlignedTextNode.InnerText)
+                {
+                    Childs = new List<Content.Element>(childNodes.Where(node => rightAlignedTextNode.InnerText != node.Value))
+                });
+            }
+
+            foreach (var justifiedTextNode in coreNode.GetElementsByClassName("align-justify"))
+            {
+                var childNodes = new List<Content.Element>();
+                new ContentParser(childNodes).Execute(justifiedTextNode);
+                Target.Add(new Content.Element.JustifiedText(justifiedTextNode.InnerText)
+                {
+                    Childs = new List<Content.Element>(childNodes.Where(node => justifiedTextNode.InnerText != node.Value))
                 });
             }
 
