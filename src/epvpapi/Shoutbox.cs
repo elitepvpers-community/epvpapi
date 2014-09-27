@@ -24,15 +24,19 @@ namespace epvpapi
             public class Shout
             {
                 public PremiumUser User { get; set; }
-                public string Message { get; set; }
+                public Content Content { get; set; }
                 public DateTime Time { get; set; }
 
-                public Shout(PremiumUser user, string message, DateTime time)
+                public Shout(PremiumUser user, Content content, DateTime time)
                 {
                     User = user;
-                    Message = message;
+                    Content = content;
                     Time = time;
                 }
+
+                public Shout():
+                    this(new PremiumUser(), new Content(), new DateTime())
+                { }
             }
 
             public uint ID { get; set; }
@@ -102,6 +106,7 @@ namespace epvpapi
                     foreach(var shoutboxNodeGroup in shoutboxNodeGroups)
                     {
                         if (shoutboxNodeGroup.Count != 3) continue; // every node group needs to have exactly 3 nodes in order to be valid
+                        var parsedShout = new Shout();
 
                         var time = new DateTime();
                         var timeNode = shoutboxNodeGroup.ElementAt(0).SelectSingleNode(@"span[1]/span[1]");
@@ -113,16 +118,18 @@ namespace epvpapi
                             DateTime.TryParse(matchedTime, out time);
                         }
 
+                        parsedShout.Time = time;
+
                         var userNameNode = shoutboxNodeGroup.ElementAt(1).SelectSingleNode(@"span[1]/a[1]/span[1]");
-                        string username = (userNameNode != null) ? userNameNode.InnerText : "";
+                        parsedShout.User.Name = (userNameNode != null) ? userNameNode.InnerText : "";
 
                         var userLinkNode = shoutboxNodeGroup.ElementAt(1).SelectSingleNode(@"span[1]/a[1]");
-                        uint userID = (userLinkNode != null) ? userLinkNode.Attributes.Contains("href") ? User.FromURL(userLinkNode.Attributes["href"].Value) : 0 : 0;
+                        parsedShout.User.ID = (userLinkNode != null) ? userLinkNode.Attributes.Contains("href") ? User.FromURL(userLinkNode.Attributes["href"].Value) : 0 : 0;
 
                         var messageNode = shoutboxNodeGroup.ElementAt(2).SelectSingleNode(@"span[1]");
-                        string message = (messageNode != null) ? messageNode.InnerText : "";
+                        new ContentParser(parsedShout.Content.Elements).Execute(messageNode);
 
-                        shouts.Add(new Shout(new PremiumUser(username, userID), message, time));
+                        shouts.Add(parsedShout);
                     }
                 }
                 catch (HtmlWebException exception)
@@ -163,6 +170,8 @@ namespace epvpapi
 
                     foreach(var messageNode in messageNodes)
                     {
+                        var parsedShout = new Shout();
+
                         var subNodes = new List<HtmlNode>(messageNode.ChildNodes.GetElementsByTagName("td"));
                         if (subNodes.Count != 4) continue; // every message node got exactly 4 subnodes where action, date, user and message are stored
 
@@ -171,17 +180,19 @@ namespace epvpapi
                         if (dateNode != null)
                             DateTime.TryParse(dateNode.InnerText, out time);
 
+                        parsedShout.Time = time;
+
                         var userNode = messageNode.SelectSingleNode("td[3]/span[1]/a[1]");
                         if(userNode == null) continue;
  
                         var userNameNode = userNode.SelectSingleNode("span[1]");
-                        string userName = (userNameNode != null) ? userNameNode.InnerText : "";
-                        uint userProfileId = PremiumUser.FromURL(userNode.Attributes["href"].Value);
+                        parsedShout.User.Name = (userNameNode != null) ? userNameNode.InnerText : "";
+                        parsedShout.User.ID = PremiumUser.FromURL(userNode.Attributes["href"].Value);
 
                         var textNode = messageNode.SelectSingleNode("td[4]/span[1]");
-                        string message = (textNode != null) ? textNode.InnerText.Strip() : "";
+                        new ContentParser(parsedShout.Content.Elements).Execute(textNode);
 
-                        shoutList.Add(new Shout(new PremiumUser(userName, userProfileId), message, time));
+                        shoutList.Add(parsedShout);
                     }
                 }
 

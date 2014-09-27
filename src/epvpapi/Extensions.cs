@@ -92,7 +92,7 @@ namespace epvpapi
         /// <returns> Stripped string </returns>
         public static string Strip(this string target)
         {
-            return Regex.Replace(target, @"(^ +)|(\r\n|\n|\r|\t)|( +)$", "");
+            return Regex.Replace(target, @"(^ +)|(\r\n|\n|\r|\t) *|( +)$", "");
         }
 
         public static uint UNIXTimestamp(this DateTime dateTime)

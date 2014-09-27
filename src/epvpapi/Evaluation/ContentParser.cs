@@ -23,7 +23,7 @@ namespace epvpapi.Evaluation
                 new ContentParser(childNodes).Execute(node);
                 var parsedElement = new T()
                 {
-                    Value = node.InnerText,
+                    Value = node.InnerText.Strip(),
                     Childs = new List<Content.Element>(childNodes.Where(childNode => node.InnerText != childNode.Value))
                 };
 
@@ -56,6 +56,8 @@ namespace epvpapi.Evaluation
 
         public void Execute(HtmlNode coreNode)
         {
+            if (coreNode == null) return;
+
             // get all first layer child-quotes.
             var quoteNodes = new List<HtmlNode>(coreNode.ChildNodes
                                                 .GetElementsByClassName("bbcode-quote")
@@ -115,7 +117,7 @@ namespace epvpapi.Evaluation
             // get all images within the specified core node and extract the url in the src attribute (image link)
             Target.AddRange(ParseAttribute<Content.Element.Image>(coreNode.ChildNodes.GetElementsByTagName("img"), "src"));
             // get all links within the specified core node and extract the url in the href attribute
-            Target.AddRange(ParseAttribute<Content.Element.Image>(coreNode.ChildNodes.GetElementsByTagName("a"), "href"));
+            Target.AddRange(ParseAttribute<Content.Element.Link>(coreNode.ChildNodes.GetElementsByTagName("a"), "href"));
         }   
     }
 }
