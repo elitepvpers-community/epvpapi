@@ -22,7 +22,7 @@ namespace epvpapi.Evaluation
                 if (coreNode != null)
                 {
                     coreNode = coreNode.SelectSingleNode("tbody");
-                    var sectionNodes = new List<HtmlNode>(coreNode.GetElementsByTagName("tr"));
+                    var sectionNodes = new List<HtmlNode>(coreNode.ChildNodes.GetElementsByTagName("tr"));
 
                     foreach (var announcementNode in sectionNodes.Take(sectionNodes.Count - 1)) // ignore the last node since that is no actual announcement
                     {

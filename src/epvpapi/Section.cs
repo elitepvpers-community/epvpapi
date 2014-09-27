@@ -94,8 +94,8 @@ namespace epvpapi
 
                 var threadFrameNode = doc.GetElementbyId("threadbits_forum_" + ID);
                 if (threadFrameNode == null) continue;
-                
-                var threadNodes = new List<HtmlNode>(threadFrameNode.GetElementsByTagName("tr"));
+
+                var threadNodes = new List<HtmlNode>(threadFrameNode.ChildNodes.GetElementsByTagName("tr"));
                 var normalThreadsBeginNode = threadNodes.Find(node => ((node.SelectSingleNode("td[1]") != null) ? node.SelectSingleNode("td[1]").InnerText : "") == "Normal Threads");
                 var stickyThreadsBeginNode = threadNodes.Find(node => ((node.SelectSingleNode("td[1]/strong[1]") != null) ? node.SelectSingleNode("td[1]/strong[1]").InnerText : "") == "Sticky Threads");
                 var normalThreadNodes = new List<HtmlNode>();

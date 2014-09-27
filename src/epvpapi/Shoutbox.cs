@@ -157,13 +157,13 @@ namespace epvpapi
                     var messagesRootNode = doc.DocumentNode.SelectSingleNode("/html[1]/body[1]/table[2]/tr[2]/td[1]/table[1]/tr[5]/td[1]/table[1]/tr[2]/td[1]/div[1]/div[1]/div[1]/table[1]/tr[1]/td[3]/table[1]");
                     if (messagesRootNode == null) throw new ParsingFailedException("Parsing channel history failed, root node is invalid or was not found");
 
-                    var messageNodes = new List<HtmlNode>(messagesRootNode.GetElementsByTagName("tr"));
+                    var messageNodes = new List<HtmlNode>(messagesRootNode.ChildNodes.GetElementsByTagName("tr"));
                     if (messageNodes.Count < 1) throw new ParsingFailedException("Parsing channel history failed, message nodes could not be retrieved");
                     messageNodes.RemoveAt(0); // remove the table header
 
                     foreach(var messageNode in messageNodes)
                     {
-                        var subNodes = new List<HtmlNode>(messageNode.GetElementsByTagName("td"));
+                        var subNodes = new List<HtmlNode>(messageNode.ChildNodes.GetElementsByTagName("td"));
                         if (subNodes.Count != 4) continue; // every message node got exactly 4 subnodes where action, date, user and message are stored
 
                         var dateNode = messageNode.SelectSingleNode("td[2]/span[1]");

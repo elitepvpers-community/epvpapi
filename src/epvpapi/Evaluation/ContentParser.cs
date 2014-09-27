@@ -57,7 +57,7 @@ namespace epvpapi.Evaluation
         public void Execute(HtmlNode coreNode)
         {
             // get all first layer child-quotes.
-            var quoteNodes = new List<HtmlNode>(coreNode
+            var quoteNodes = new List<HtmlNode>(coreNode.ChildNodes
                                                 .GetElementsByClassName("bbcode-quote")
                                                 .Select(baseNode => baseNode.SelectSingleNode("table[1]/tr[1]/td[1]")));
 
@@ -77,23 +77,32 @@ namespace epvpapi.Evaluation
                 }
             }
 
-            Target.AddRange(ParseText<Content.Element.BoldText>(coreNode.GetElementsByTagName("b")));
-            Target.AddRange(ParseText<Content.Element.ItalicText>(coreNode.GetElementsByTagName("i")));
-            Target.AddRange(ParseText<Content.Element.UnderlinedText>(coreNode.GetElementsByTagName("u")));
-            Target.AddRange(ParseText<Content.Element.StruckThroughText>(coreNode.GetElementsByTagName("strike")));
-            Target.AddRange(ParseText<Content.Element.CenteredText>(coreNode.GetElementsByClassName("align-center")));
-            Target.AddRange(ParseText<Content.Element.LeftAlignedText>(coreNode.GetElementsByClassName("align-left")));
-            Target.AddRange(ParseText<Content.Element.RightAlignedText>(coreNode.GetElementsByClassName("align-right")));
-            Target.AddRange(ParseText<Content.Element.JustifiedText>(coreNode.GetElementsByClassName("align-justify")));
+            // every code node got the specified style attributes
+            foreach (var codeNode in coreNode.ChildNodes.GetElementsByAttribute("style", "margin:20px; margin-top:5px"))
+            {
+                Target.AddRange(ParseText<Content.Element.GenericCode>(codeNode.ChildNodes
+                                                                       .GetElementsByAttribute("dir",
+                                                                       "ltr")));
+            }
+                    
+                                                                    
+            Target.AddRange(ParseText<Content.Element.BoldText>(coreNode.ChildNodes.GetElementsByTagName("b")));
+            Target.AddRange(ParseText<Content.Element.ItalicText>(coreNode.ChildNodes.GetElementsByTagName("i")));
+            Target.AddRange(ParseText<Content.Element.UnderlinedText>(coreNode.ChildNodes.GetElementsByTagName("u")));
+            Target.AddRange(ParseText<Content.Element.StruckThroughText>(coreNode.ChildNodes.GetElementsByTagName("strike")));
+            Target.AddRange(ParseText<Content.Element.CenteredText>(coreNode.ChildNodes.GetElementsByClassName("align-center")));
+            Target.AddRange(ParseText<Content.Element.LeftAlignedText>(coreNode.ChildNodes.GetElementsByClassName("align-left")));
+            Target.AddRange(ParseText<Content.Element.RightAlignedText>(coreNode.ChildNodes.GetElementsByClassName("align-right")));
+            Target.AddRange(ParseText<Content.Element.JustifiedText>(coreNode.ChildNodes.GetElementsByClassName("align-justify")));
             // get all spoilers within the specified core node and extract the text in the spoiler
-            Target.AddRange(ParseText<Content.Element.Spoiler>(coreNode.GetElementsByClassName("spoiler-coll")
+            Target.AddRange(ParseText<Content.Element.Spoiler>(coreNode.ChildNodes.GetElementsByClassName("spoiler-coll")
                                                               .Select(spoilerBaseNode => spoilerBaseNode
                                                                       .SelectSingleNode("div[2]"))));
-            Target.AddRange(ParseText<Content.Element.PlainText>(coreNode.GetElementsByTagName("#text").Where(textNode => textNode.InnerText.Strip() != "")));
+            Target.AddRange(ParseText<Content.Element.PlainText>(coreNode.ChildNodes.GetElementsByTagName("#text").Where(textNode => textNode.InnerText.Strip() != "")));
             // get all images within the specified core node and extract the url in the src attribute (image link)
-            Target.AddRange(ParseAttribute<Content.Element.Image>(coreNode.GetElementsByTagName("img"), "src"));
+            Target.AddRange(ParseAttribute<Content.Element.Image>(coreNode.ChildNodes.GetElementsByTagName("img"), "src"));
             // get all links within the specified core node and extract the url in the href attribute
-            Target.AddRange(ParseAttribute<Content.Element.Image>(coreNode.GetElementsByTagName("a"), "href"));
+            Target.AddRange(ParseAttribute<Content.Element.Image>(coreNode.ChildNodes.GetElementsByTagName("a"), "href"));
         }   
     }
 }

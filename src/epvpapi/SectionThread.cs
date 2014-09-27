@@ -277,7 +277,7 @@ namespace epvpapi
             var postsRootNode = htmlDocument.GetElementbyId("posts");
             if (postsRootNode == null) return;
 
-            Closed = htmlDocument.DocumentNode.GetDescendentElementsByName("img")
+            Closed = htmlDocument.DocumentNode.Descendants().GetElementsByName("img")
                     .Any(node => node.Attributes.Contains("src")
                                 ? node.Attributes["src"].Value.Contains("threadclosed.gif")
                                 : false);
@@ -300,7 +300,7 @@ namespace epvpapi
             var tagsRootNode = htmlDocument.GetElementbyId("tag_list_cell");
             if (tagsRootNode != null)
             {
-                foreach (var tagNode in tagsRootNode.GetElementsByTagName("a"))
+                foreach (var tagNode in tagsRootNode.ChildNodes.GetElementsByTagName("a"))
                     Tags.Add(tagNode.InnerText);
             }
 
@@ -343,7 +343,7 @@ namespace epvpapi
                 var postsRootNode = htmlDocument.GetElementbyId("posts");
                 if (postsRootNode == null) continue;
 
-                foreach (var postContainerNode in postsRootNode.GetElementsByTagName("div"))
+                foreach (var postContainerNode in postsRootNode.ChildNodes.GetElementsByTagName("div"))
                 {
                     var fetchedPost = new SectionPost(0, this);
                     var dateTimeNode = postContainerNode.SelectSingleNode("div[1]/div[1]/div[1]/table[1]/tr[1]/td[1]/text()[3]");
@@ -375,7 +375,7 @@ namespace epvpapi
                         if (idMatch.Groups.Count > 1)
                             fetchedPost.ID = idMatch.Groups[1].Value.To<uint>();
 
-                        fetchedPost.Content = new Content(new List<Content.Element>(messagePartNode.GetElementsByTagName("#text").Select(node => new Content.Element.PlainText(node.InnerText))));
+                        fetchedPost.Content = new Content(new List<Content.Element>(messagePartNode.ChildNodes.GetElementsByTagName("#text").Select(node => new Content.Element.PlainText(node.InnerText))));
                     }
 
                     retrievedReplies.Add(fetchedPost);

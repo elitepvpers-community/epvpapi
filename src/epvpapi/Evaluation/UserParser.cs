@@ -21,7 +21,7 @@ namespace epvpapi.Evaluation
                 // Fetch the user title badges. User which do not belong to any group or do not have got any badges will be lacking of the 'rank' element in their profile page
                 if (coreNode == null) return;
 
-                var rankNodes = new List<HtmlNode>(coreNode.GetElementsByTagName("img")); // every rank badge got his very own 'img' element
+                var rankNodes = new List<HtmlNode>(coreNode.ChildNodes.GetElementsByTagName("img")); // every rank badge got his very own 'img' element
 
                 foreach (var node in rankNodes)
                 {
@@ -74,8 +74,8 @@ namespace epvpapi.Evaluation
                 var profilefieldlistNode = coreNode.SelectSingleNode("div[1]/ul[1]/li[1]/dl[1]");
                 if (profilefieldlistNode == null) return;
 
-                var fieldNodes = new List<HtmlNode>(profilefieldlistNode.GetElementsByTagName("dt"));
-                var valueNodes = new List<HtmlNode>(profilefieldlistNode.GetElementsByTagName("dd"));
+                var fieldNodes = new List<HtmlNode>(profilefieldlistNode.ChildNodes.GetElementsByTagName("dt"));
+                var valueNodes = new List<HtmlNode>(profilefieldlistNode.ChildNodes.GetElementsByTagName("dd"));
 
                 if (fieldNodes.Count == valueNodes.Count)
                 {
@@ -113,7 +113,7 @@ namespace epvpapi.Evaluation
                 if (coreNode == null) return;
 
                 Target.LastVisitors = new List<User>();
-                foreach (var visitorNode in coreNode.GetElementsByTagName("li"))
+                foreach (var visitorNode in coreNode.ChildNodes.GetElementsByTagName("li"))
                 {
                     var profileLinkNode = visitorNode.SelectSingleNode("a[1]");
                     if (profileLinkNode == null) continue;
@@ -220,7 +220,7 @@ namespace epvpapi.Evaluation
                 coreNode = coreNode.SelectSingleNode("div[1]");
 
                 // Loop through the fields since vBulletin sorts them dynamically according to rank and certain user settings
-                foreach (var statisticsGroup in coreNode.GetElementsByTagName("fieldset"))
+                foreach (var statisticsGroup in coreNode.ChildNodes.GetElementsByTagName("fieldset"))
                 {
                     string legendCaption = statisticsGroup.SelectSingleNode("legend[1]").InnerText;
 
@@ -312,8 +312,8 @@ namespace epvpapi.Evaluation
                 var fieldsRootNode = coreNode.SelectSingleNode("td[1]/dl[1]");
                 if (fieldsRootNode == null) return;
 
-                var miniStatsNodes = new List<HtmlNode>(fieldsRootNode.GetElementsByTagName("dt"));
-                var miniStatsValueNodes = new List<HtmlNode>(fieldsRootNode.GetElementsByTagName("dd"));
+                var miniStatsNodes = new List<HtmlNode>(fieldsRootNode.ChildNodes.GetElementsByTagName("dt"));
+                var miniStatsValueNodes = new List<HtmlNode>(fieldsRootNode.ChildNodes.GetElementsByTagName("dd"));
 
                 if (miniStatsNodes.Count != miniStatsValueNodes.Count) return;
 

@@ -158,7 +158,7 @@ namespace epvpapi.TBM
             var treasureInfoNode = rootFormNode.SelectSingleNode("div[1]/div[3]/table[1]/tr[1]/td[1]/table[1]");
             if (treasureInfoNode != null)
             {
-                foreach (var treasureAttributeNode in treasureInfoNode.GetElementsByTagName("tr"))
+                foreach (var treasureAttributeNode in treasureInfoNode.ChildNodes.GetElementsByTagName("tr"))
                 {
                     var keyNode = treasureAttributeNode.SelectSingleNode("td[1]");
                     var valueNode = treasureAttributeNode.SelectSingleNode("td[2]");

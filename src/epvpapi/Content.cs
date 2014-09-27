@@ -190,6 +190,16 @@ namespace epvpapi
                 { }
             }
 
+            public class GenericCode : Element
+            {
+                public GenericCode() :
+                    this("")
+                { }
+
+                public GenericCode(string value) :
+                    base("CODE", value)
+                { }
+            }
 
             public class Quote : Element
             {
