@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace epvpapi
 {
-    /// <summary>
-    /// Base class for messages within the forum
-    /// </summary>
-    public abstract class Message : UniqueObject
+    public class Message : UniqueRecord
     {
         /// <summary>
         /// Additional options that can be set when posting messages
@@ -16,32 +17,26 @@ namespace epvpapi
             /// <summary>
             /// If set, all URLs in the message are going to be parsed
             /// </summary>
-            ParseURL = 1,
+            ParseUrl = 1,
         }
 
-        /// <summary>
-        /// Content of the post
-        /// </summary>
-        public string Content { get; set; }
+        public User Sender { get; set; }
 
-        /// <summary>
-        /// Date and time when the message was created
-        /// </summary>
-        public DateTime Date { get; set; }
+        public Content Content { get; set; }
 
-        public Message(uint id)
-            : this(id, null)
+        public Message(uint id = 0)
+            : this(id, new Content())
         { }
 
-        public Message(string content)
+        public Message(Content content)
             : this(0, content)
         { }
 
-        public Message(uint id, string content)
+        public Message(uint id, Content content)
             : base(id)
         {
             Content = content;       
-            Date = new DateTime();
+            Sender = new User();
         }
     }
 }

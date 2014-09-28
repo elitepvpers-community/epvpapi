@@ -22,11 +22,12 @@ namespace epvpapi.Evaluation
                 var titleNode = coreNode.SelectSingleNode("div[1]/strong[1]");
                 Target.Title = (titleNode != null) ? titleNode.InnerText : "";
 
-                // The actual message content is stored within several nodes. There may be different tags (such as <a> for links, linebreaks...)
-                // This is why just all descendent text nodes are retrieved.
-                var contentNodes = new List<HtmlNode>(coreNode.SelectSingleNode("div[2]").Descendants()
-                                                                .Where(node => node.Name == "#text" && node.InnerText.Strip() != ""));
-                contentNodes.ForEach(node => Target.Content += node.InnerText);
+                // The actual message content is stored within the following div's child nodes. 
+                // There may be different tags (such as <a> for links, linebreaks...) which require extra parsing
+                var contentNode = coreNode.SelectSingleNode("div[2]");
+                if (contentNode == null) return;
+
+                new Evaluation.ContentParser(Target.Content.Elements).Execute(contentNode);
             }
         }
 

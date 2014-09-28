@@ -11,12 +11,12 @@ namespace epvpapi
         /// </summary>
         public SocialGroupThread Thread { get; set; }
 
-        public SocialGroupPost(uint id, string content = null)
+        public SocialGroupPost(uint id, Content content)
             : base(id, content)
         { }
 
         public SocialGroupPost(uint id, SocialGroupThread thread)
-            : this(id) 
+            : this(id, new Content()) 
         {
             Thread = thread;
         }

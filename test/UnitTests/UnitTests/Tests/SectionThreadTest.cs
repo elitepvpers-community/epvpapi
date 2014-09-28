@@ -16,7 +16,7 @@ namespace UnitTests.Tests
         public void TestReplies()
         {
             // http://www.elitepvpers.com/forum/main/619408-shoutbox-rules-regeln.html
-            var testThread = new SectionThread(619408, Section.Main);
+            var testThread = new SectionThread(1329965, Section.Main);
 
             try
             {
@@ -26,10 +26,10 @@ namespace UnitTests.Tests
                 foreach (var reply in replies)
                 {
                     Assert.AreNotEqual(0, reply.ID, "The ID of a reply was not set");
-                    Assert.AreNotEqual(0, reply.Content.Length, "The content of a reply was not set");
+                    Assert.AreNotEqual(0, reply.Content.ToString().Length, "The content of a reply was not set");
                     Assert.AreNotEqual(default(DateTime), reply.Date, "The date and time of a reply was not set");
                     Assert.AreNotEqual(0, reply.Sender.ID, "The ID of a reply sender was not set");
-                    Assert.AreNotEqual(0, reply.Sender.Name.Length, "The name of a reply was not set");
+                    Assert.AreNotEqual(0, reply.Sender.Name.Length, "The name of a reply sender was not set");
                     Assert.AreNotEqual(0, reply.Sender.Title.Length, "The user title of a reply sender was not set");
                     Assert.AreNotEqual(default(DateTime), reply.Sender.JoinDate,
                         "The join date of a reply sender was not set");

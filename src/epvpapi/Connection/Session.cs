@@ -127,7 +127,7 @@ namespace epvpapi.Connection
 
         /// <summary> Performs a HTTP POST request </summary>
         /// <param name="url"> Location where to post the data </param>
-        /// <param name="content"> Content to post </param>
+        /// <param name="content"> Contents to post </param>
         /// <param name="referer"> Location of the referer </param>
         /// <returns> <c>Response</c> associated to the Request sent </returns>
         public Response Post(string url, List<KeyValuePair<string, string>> content)
@@ -175,7 +175,7 @@ namespace epvpapi.Connection
         /// Performs a Multipart POST request
         /// </summary>
         /// <param name="url"> Location where to post the data </param>
-        /// <param name="content"> Content to post </param>
+        /// <param name="content"> Contents to post </param>
         /// <returns> <c>Response</c> associated to the Request sent </returns>
         public Response PostMultipartFormData(Uri url, MultipartFormDataContent content)
         {

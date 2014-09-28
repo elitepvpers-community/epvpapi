@@ -96,7 +96,7 @@ namespace epvpapi
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("subject", startPost.Title),
-                            new KeyValuePair<string, string>("message", startPost.Content),
+                            new KeyValuePair<string, string>("message", startPost.Content.ToString()),
                             new KeyValuePair<string, string>("wysiwyg", "0"),
                             new KeyValuePair<string, string>("taglist", String.Empty),
                             new KeyValuePair<string, string>("iconid", "0"),
@@ -230,7 +230,7 @@ namespace epvpapi
                          new List<KeyValuePair<string, string>>() 
                          { 
                              new KeyValuePair<string, string>("title", post.Title),
-                             new KeyValuePair<string, string>("message", post.Content),
+                             new KeyValuePair<string, string>("message", post.Content.ToString()),
                              new KeyValuePair<string, string>("wysiwyg", "0"),
                              new KeyValuePair<string, string>("iconid", post.Icon.ToString()),
                              new KeyValuePair<string, string>("s", String.Empty),
@@ -275,7 +275,7 @@ namespace epvpapi
             var postsRootNode = htmlDocument.GetElementbyId("posts");
             if (postsRootNode == null) return;
 
-            Closed = htmlDocument.DocumentNode.GetDescendentElementsByName("img")
+            Closed = htmlDocument.DocumentNode.Descendants().GetElementsByName("img")
                     .Any(node => node.Attributes.Contains("src")
                                 ? node.Attributes["src"].Value.Contains("threadclosed.gif")
                                 : false);
@@ -298,7 +298,7 @@ namespace epvpapi
             var tagsRootNode = htmlDocument.GetElementbyId("tag_list_cell");
             if (tagsRootNode != null)
             {
-                foreach (var tagNode in tagsRootNode.GetElementsByTagName("a"))
+                foreach (var tagNode in tagsRootNode.ChildNodes.GetElementsByTagName("a"))
                     Tags.Add(tagNode.InnerText);
             }
 
@@ -340,7 +340,7 @@ namespace epvpapi
                 var postsRootNode = htmlDocument.GetElementbyId("posts");
                 if (postsRootNode == null) continue;
 
-                foreach (var postContainerNode in postsRootNode.GetElementsByTagName("div"))
+                foreach (var postContainerNode in postsRootNode.ChildNodes.GetElementsByTagName("div"))
                 {
                     var fetchedPost = new SectionPost(0, this);
                     var dateTimeNode = postContainerNode.SelectSingleNode("div[1]/div[1]/div[1]/table[1]/tr[1]/td[1]/text()[3]");
@@ -372,7 +372,7 @@ namespace epvpapi
                         if (idMatch.Groups.Count > 1)
                             fetchedPost.ID = idMatch.Groups[1].Value.To<uint>();
 
-                        fetchedPost.Content = String.Join(String.Empty, messagePartNode.GetElementsByTagName("#text").Select(node => node.InnerText));
+                        new ContentParser(fetchedPost.Content.Elements).Execute(messagePartNode);
                     }
 
                     retrievedReplies.Add(fetchedPost);
