@@ -30,11 +30,17 @@ namespace epvpapi
 
         public SectionThread Thread { get; set; }
 
-        public SectionPost(string content = null, string title = null)
+        public SectionPost(Content content, string title = null)
             : this(0, new SectionThread(new Section(0, "")), content, title)
         {  }
 
-        public SectionPost(uint id, SectionThread thread, string content = null, string title = null)
+        public SectionPost(uint id, SectionThread thread, string title = null)
+            : this(id, thread, new Content(), title)
+        {
+            Thread = thread;
+        }
+
+        public SectionPost(uint id, SectionThread thread, Content content, string title = null)
             : base(id, content, title)
         {
             Thread = thread;

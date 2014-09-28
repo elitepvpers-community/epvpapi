@@ -62,6 +62,7 @@
     <Compile Include="Evaluation\SectionThreadParser.cs" />
     <Compile Include="Evaluation\SectionParser.cs" />
     <Compile Include="Evaluation\UserParser.cs" />
+    <Compile Include="Evaluation\ContentParser.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Evaluation\TargetableParser.cs" />
     <Compile Include="Generation\Cryptography.cs" />
@@ -77,8 +78,9 @@
     <Compile Include="InvalidAuthenticationException.cs" />
     <Compile Include="IReportable.cs" />
     <Compile Include="IProfileUpdatable.cs" />
-    <Compile Include="Message.cs" />
+    <Compile Include="Content.cs" />
     <Compile Include="Evaluation\ParsingFailedException.cs" />
+    <Compile Include="Message.cs" />
     <Compile Include="Post.cs" />
     <Compile Include="PremiumUser.cs" />
     <Compile Include="PrivateMessage.cs" />
@@ -102,6 +104,8 @@
     <Compile Include="TBM\Treasure.cs" />
     <Compile Include="Thread.cs" />
     <Compile Include="IUniquePageableWebObject.cs" />
+    <Compile Include="UnicastMessage.cs" />
+    <Compile Include="UniqueRecord.cs" />
     <Compile Include="UniqueObject.cs" />
     <Compile Include="IUniqueWebObject.cs" />
     <Compile Include="User.cs" />

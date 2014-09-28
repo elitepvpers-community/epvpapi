@@ -17,16 +17,6 @@ namespace epvpapi
             return dtDateTime.AddSeconds(unixTimeStamp).ToLocalTime();
         }
 
-        /// <summary>
-        /// Gets all descendent elements (unlimited levels) that are matching the specified name (attribute)
-        /// </summary>
-        /// <param name="parent"> Node acting as the starting point </param>
-        /// <param name="name"> Name attribute to search for </param>
-        /// <returns> <c>IEnumarable</c> of <c>HtmlNode</c>s that were found </returns>
-        public static IEnumerable<HtmlNode> GetDescendentElementsByName(this HtmlNode parent, string name)
-        {
-            return parent.Descendants().Where(node => node.Name == name);
-        }
 
         /// <summary>
         /// Gets all child elements that are matching the specified name (attribute)
@@ -34,9 +24,9 @@ namespace epvpapi
         /// <param name="parent"> Node acting as the starting point </param>
         /// <param name="name"> Name attribute to search for </param>
         /// <returns> <c>IEnumarable</c> of <c>HtmlNode</c>s that were found </returns>
-        public static IEnumerable<HtmlNode> GetElementsByName(this HtmlNode parent, string name)
+        public static IEnumerable<HtmlNode> GetElementsByName(this IEnumerable<HtmlNode> parent, string name)
         {
-            return parent.ChildNodes.Where(node => node.Name == name);
+            return parent.Where(node => node.Name == name);
         }
 
         /// <summary>
@@ -48,9 +38,9 @@ namespace epvpapi
         /// <remarks>
         /// For XHTML use only
         /// </remarks>
-        public static IEnumerable<HtmlNode> GetDescendentElementsByNameXHTML(this HtmlNode parent, string name)
+        public static IEnumerable<HtmlNode> GetElementsByNameXHtml(this IEnumerable<HtmlNode> parent, string name)
         {
-            return  parent.Descendants()
+            return  parent
                     .Where(node => node.Attributes.Contains("name"))
                     .Where(node => node.Attributes["name"].Value == name);
         }
@@ -61,21 +51,29 @@ namespace epvpapi
         /// <param name="parent"> Node acting as the starting point </param>
         /// <param name="tagName"> Tag name to search for </param>
         /// <returns> <c>IEnumarable</c> of <c>HtmlNode</c>s that were found </returns>
-        public static IEnumerable<HtmlNode> GetElementsByTagName(this HtmlNode parent, string tagName)
+        public static IEnumerable<HtmlNode> GetElementsByTagName(this IEnumerable<HtmlNode> parent, string tagName)
         {
-            return parent.ChildNodes.Where(node => node.Name == tagName);
+            return parent.Where(node => node.Name == tagName);
+        }
+
+        public static IEnumerable<HtmlNode> GetElementsByAttribute(this IEnumerable<HtmlNode> parent, string attributeName,
+                                                                    string attributeValue)
+        {
+            return parent.Where(node => (node.Attributes.Contains(attributeName) ? node.Attributes[attributeName].Value == attributeValue : false));
         }
 
         /// <summary>
-        /// Gets all descendent elements (unlimited levels) of the specified tag name
+        /// Gets all child elements of the specified class name
         /// </summary>
         /// <param name="parent"> Node acting as the starting point </param>
-        /// <param name="tagName"> Tag name to search for </param>
+        /// <param name="className"> class name to search for </param>
         /// <returns> <c>IEnumarable</c> of <c>HtmlNode</c>s that were found </returns>
-        public static IEnumerable<HtmlNode> GetDescendentElementsByTagName(this HtmlNode parent, string tagName)
+        public static IEnumerable<HtmlNode> GetElementsByClassName(this IEnumerable<HtmlNode> parent, string className)
         {
-            return parent.Descendants().Where(node => node.Name == tagName);
+            return parent.Where(node => node.Attributes
+                                                   .Any(attribute => attribute.Name == "class" && attribute.Value == className));
         }
+
 
         // -> http://stackoverflow.com/questions/419019/split-list-into-sublists-with-linq
         public static List<List<T>> Split<T>(this List<T> source, uint elementsPerSplit)
@@ -94,7 +92,7 @@ namespace epvpapi
         /// <returns> Stripped string </returns>
         public static string Strip(this string target)
         {
-            return (target != null) ? Regex.Replace(target, @"(^ +)|(\r\n|\n|\r|\t)|( +)$", "") : null;
+            return Regex.Replace(target, @"(^ +)|(\r\n|\n|\r|\t) *|( +)$", "");
         }
 
         /// <summary>

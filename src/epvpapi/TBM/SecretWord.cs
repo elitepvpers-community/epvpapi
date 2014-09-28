@@ -30,7 +30,7 @@ namespace epvpapi.TBM
             var doc = new HtmlDocument();
             doc.LoadHtml(res.ToString());
 
-            return new SecretWord(doc.DocumentNode.GetDescendentElementsByNameXHTML("secretword").FirstOrDefault().Attributes["value"].Value);
+            return new SecretWord(doc.DocumentNode.Descendants().GetElementsByNameXHtml("secretword").FirstOrDefault().Attributes["value"].Value);
         }
 
         /// <summary>

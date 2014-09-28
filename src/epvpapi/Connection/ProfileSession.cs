@@ -117,8 +117,8 @@ namespace epvpapi.Connection
                     if (pageCount > actualPageCount)
                         pageCount = actualPageCount;
 
-                    var categoryNodes = new List<HtmlNode>(tborderNode.GetElementsByTagName("tbody").Where(node => node.Id != String.Empty));
-                    foreach (var subNodes in categoryNodes.Select(categoryNode => categoryNode.GetElementsByTagName("tr")))
+                    var categoryNodes = new List<HtmlNode>(tborderNode.ChildNodes.GetElementsByTagName("tbody").Where(node => node.Id != String.Empty));
+                    foreach (var subNodes in categoryNodes.Select(categoryNode => categoryNode.ChildNodes.GetElementsByTagName("tr")))
                     {
                         foreach (var subNode in subNodes)
                         {
@@ -222,7 +222,7 @@ namespace epvpapi.Connection
                     if (tableNode == null) continue;
 
                     // skip the first <tr> element since that is the table header
-                    foreach (var treasureListingNode in tableNode.GetElementsByTagName("tr").Skip(1))
+                    foreach (var treasureListingNode in tableNode.ChildNodes.GetElementsByTagName("tr").Skip(1))
                     {
                         var idNode = treasureListingNode.SelectSingleNode("td[1]");
                         var titleNode = treasureListingNode.SelectSingleNode("td[2]");

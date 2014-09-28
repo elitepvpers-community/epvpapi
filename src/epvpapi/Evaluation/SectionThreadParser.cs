@@ -116,7 +116,7 @@ namespace epvpapi.Evaluation
                     var additionalStatsNode = coreNode.SelectSingleNode("div[6]"); // node that contains posts, thanks, elite*gold, the join date...                    
                     if (additionalStatsNode != null)
                     {
-                        var statsNodes = additionalStatsNode.GetElementsByTagName("div");
+                        var statsNodes = additionalStatsNode.ChildNodes.GetElementsByTagName("div");
                         if (statsNodes != null)
                         {
                             // Loop through the nodes and check for their descriptors since the 

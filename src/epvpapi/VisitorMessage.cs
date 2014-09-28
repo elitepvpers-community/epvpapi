@@ -7,27 +7,22 @@ namespace epvpapi
     /// <summary>
     /// Represents a message on the profile of an <c>User</c>
     /// </summary>
-    public class VisitorMessage : Message, IUniqueWebObject
+    public class VisitorMessage : UnicastMessage, IUniqueWebObject
     {
-        /// <summary>
-        /// Recipient of the message
-        /// </summary>
-        public User Recipient { get; set; }
-
-        public VisitorMessage(uint id)
-            : base(id)
-        {
-            Recipient = new User();
-        }
+        public VisitorMessage(uint id = 0)
+            : this(id, new User(), new Content())
+        { }
         
-        public VisitorMessage(User recipient, string content)
-            : base(content)
-        {
-            Recipient = recipient;
-        }
+        public VisitorMessage(Content content)
+            : this(new User(), content)
+        { }
 
-        public VisitorMessage()
-            : this(new User(), null)
+        public VisitorMessage(User receiver, Content content)
+            : this(0, receiver, content)
+        { }
+
+        public VisitorMessage(uint id, User receiver, Content content)
+            : base(id, receiver, content)
         { }
 
         /// <summary>
@@ -38,9 +33,9 @@ namespace epvpapi
         /// <remarks>
         /// The ID of the recipient has to be given in order to send the message
         /// </remarks>
-        public void Send(Session session, Message.Settings settings = Message.Settings.ParseURL)
+        public void Send(Session session, Message.Settings settings = Message.Settings.ParseUrl)
         {
-            if (Recipient.ID == 0) throw new ArgumentException("Recipient ID must not be empty");
+            if (Receiver.ID == 0) throw new ArgumentException("Receiver ID must not be empty");
             session.ThrowIfInvalid();
 
             session.Post("http://www.elitepvpers.com/forum/visitormessage.php?do=message",
@@ -52,20 +47,20 @@ namespace epvpapi
                             new KeyValuePair<string, string>("fromquickcomment", "1"),
                             new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
                             new KeyValuePair<string, string>("do", "message"),
-                            new KeyValuePair<string, string>("u", Recipient.ID.ToString()),
+                            new KeyValuePair<string, string>("u", Receiver.ID.ToString()),
                             new KeyValuePair<string, string>("u2", String.Empty),
                             new KeyValuePair<string, string>("loggedinuser", String.Empty),
-                            new KeyValuePair<string, string>("parseurl", (settings & Settings.ParseURL).ToString()),
+                            new KeyValuePair<string, string>("parseurl", (settings & Message.Settings.ParseUrl).ToString()),
                             new KeyValuePair<string, string>("lastcomment", "1381528657"),
                             new KeyValuePair<string, string>("allow_ajax_qc", "1"),
                             new KeyValuePair<string, string>("fromconverse", String.Empty),
-                            new KeyValuePair<string, string>("message", Content),
+                            new KeyValuePair<string, string>("message", Content.Elements.ToString()),
                         });
         }
 
         public string GetUrl()
         {
-            return "http://www.elitepvpers.com/forum/members/" + Recipient.ID + "-" + Recipient.Name.UrlEscape() + ".html#vmessage" + ID;
+            return "http://www.elitepvpers.com/forum/members/" + Receiver.ID + "-" + Receiver.Name.UrlEscape() + ".html#vmessage" + ID;
         } 
     }
 }
