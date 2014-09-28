@@ -94,7 +94,7 @@ namespace epvpapi
         /// <returns> Stripped string </returns>
         public static string Strip(this string target)
         {
-            return Regex.Replace(target, @"(^ +)|(\r\n|\n|\r|\t)|( +)$", "");
+            return (target != null) ? Regex.Replace(target, @"(^ +)|(\r\n|\n|\r|\t)|( +)$", "") : null;
         }
 
         /// <summary>
@@ -113,7 +113,8 @@ namespace epvpapi
         /// <returns> The escaped url string </returns>
         public static string UrlEscape(this string target)
         {
-            return Regex.Replace(target, "([^a-zA-Z0-9]+)", "-").ToLower(); // by default, all characters are escaped in links by vBulletin itself
+            // by default, all characters are escaped in links by vBulletin itself
+            return (target != null) ? Regex.Replace(target, "([^a-zA-Z0-9]+)", "-").ToLower() : null;
         }
 
         /// <summary>
