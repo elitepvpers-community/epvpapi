@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using epvpapi.TBM;
@@ -12,34 +14,36 @@ using HtmlAgilityPack;
 namespace epvpapi.Connection
 {
     /// <summary>
-    /// Represents a simple websession
+    /// Represents a web session
     /// </summary>
     public class Session<TUser> where TUser : User
     {
         /// <summary>
-        /// Cookies used in the <c>Session</c>
+        /// Container containing the cookies used in the current session
         /// </summary>
-        public CookieContainer Cookies { get; protected set; }
+        public CookieContainer Cookies { get; private set; }
 
         /// <summary>
-        /// Represents an unique ID identifiying the <c>Session</c> which has to be transmitted during nearly all requests
+        /// Represents an unique ID identifiying the session which is frequently getting updated on each request
+        /// Besides that, the security token needs to be provided for most of the forum actions.
+        /// Although the token updates frequently, the initial security token is sufficient to be accepted by elitepvpers
         /// </summary>
-        public string SecurityToken { get; protected set; }
+        public string SecurityToken { get; private set; }
 
         /// <summary>
-        /// <c>WebProxy</c> for using the Library when behind a Proxy
+        /// Proxy for issuing requests when behind a proxy
         /// </summary>
         public WebProxy Proxy { get; set; }
 
         /// <summary>
-        /// If true, the proxy will be used for all requests
+        /// If set to true, the proxy will be used for all requests
         /// </summary>
         public bool UseProxy { get; set; }
 
 
         /// <summary>
-        /// Looks up the Cookies and tries to figure out wether the session cookie 
-        /// is set in order to return if the <c>Session</c> is valid and ready to use
+        /// Searches the local cookie container for the session cookie.
+        /// Determines whether the session is valid or not, i.e. if the session cookie has been set
         /// </summary>
         public bool Valid
         {
@@ -54,13 +58,20 @@ namespace epvpapi.Connection
         }
 
         /// <summary>
-        /// Represents a Profile for modeling the logged-in user.
-        /// Used for accessing functions and properties that are only available for the logged-in user itself
+        /// Represents the logged-in user that is able to access functions and properties that are only available for logged-in users
         /// </summary>
         public class Profile
         {
+            /// <summary>
+            /// The user object representing information that are publicly available for everyone
+            /// </summary>
             public TUser User { get; set; }
-            public Session<TUser> Session { get; set; }
+
+            /// <summary>
+            /// Session used for sending the requests
+            /// </summary>
+            public Session<TUser> Session { get; private set; }
+
 
             public Profile(TUser user, Session<TUser> session)
             {
@@ -72,6 +83,9 @@ namespace epvpapi.Connection
             /// Logs in the user
             /// </summary>
             /// <param name="md5Password"> Hashed (MD5) password of the session user </param>
+            /// <remarks>
+            /// In order for this function to work, either the real username or the e-mail address has to be set in the <c>User</c> property
+            /// </remarks>
             public void Login(string md5Password)
             {
                 var res = Session.Post("http://www.elitepvpers.com/forum/login.php?do=login&langid=1",
@@ -90,35 +104,61 @@ namespace epvpapi.Connection
             }
 
             /// <summary>
-            /// Gets all private messages stored in the specified folder
+            /// Gets the current Secret word
+            /// </summary>
+            /// <returns> Current Secret word as string </returns>
+            public string GetSecretWord()
+            {
+                Session.ThrowIfInvalid();
+
+                var res = Session.Get("http://www.elitepvpers.com/theblackmarket/api/secretword/");
+                var doc = new HtmlDocument();
+                doc.LoadHtml(res.ToString());
+
+                return doc.DocumentNode.Descendants().GetElementsByNameXHtml("secretword").FirstOrDefault().Attributes["value"].Value;
+            }
+
+            /// <summary>
+            /// Sets the Secret word
+            /// </summary>
+            public void SetSecretWord(string newSecretWord)
+            {
+                Session.ThrowIfInvalid();
+
+                Session.Post("http://www.elitepvpers.com/theblackmarket/api/secretword/",
+                            new List<KeyValuePair<string, string>>()
+                            {
+                                new KeyValuePair<string, string>("secretword", newSecretWord)
+                            });
+            }
+
+
+            /// <summary>
+            /// Gets all private messages that are stored in the specified folder
             /// </summary>
             /// <param name="folder"> 
-            /// The folder where the private messages are stored. Either a pre-defined folder (such as <c>PrivateMessage.Folder.Received</c>
-            /// or <c>PrivateMessage.Folder.Sent</c>) can be used or you can specify your own folder you've created by transmitting the folder ID 
+            /// The folder to retrieve messages from. Either a pre-defined folder (such as <c>PrivateMessage.Folder.Received</c>
+            /// or <c>PrivateMessage.Folder.Sent</c>) can be used or you can specify your own folder you've created by passing
+            /// in the id of the folder
             /// </param>
             /// <returns> All private messages that could be retrieved </returns>
-            /// <remarks>
-            /// Every page contains 100 messages - if available
-            /// </remarks>
             public List<PrivateMessage> GetPrivateMessages(PrivateMessage.Folder folder)
             {
                 return GetPrivateMessages(1, 1, folder);
             }
 
             /// <summary>
-            /// Gets all private messages stored in the specified folder
+            /// Gets all private messages that are stored in the specified folder within the speicifed boundaries
             /// </summary>
-            /// <param name="startIndex"> Index of the first page to request </param>
-            /// <param name="pageCount"> How many pages will be requested </param>
+            /// <param name="pageCount"> Amount of pages to retrieve, one page may contain up to 100 messages </param>
+            /// <param name="startIndex"> Index of the first page to request (1 for the first page, 2 for the second, ...) </param>
             /// <param name="folder"> 
-            /// The folder where the private messages are stored. Either a pre-defined folder (such as <c>PrivateMessage.Folder.Received</c>
-            /// or <c>PrivateMessage.Folder.Sent</c>) can be used or you can specify your own folder you've created by transmitting the folder ID 
+            /// The folder to retrieve messages from. Either a pre-defined folder (such as <c>PrivateMessage.Folder.Received</c>
+            /// or <c>PrivateMessage.Folder.Sent</c>) can be used or you can specify your own folder you've created by passing
+            /// in the id of the folder
             /// </param>
             /// <returns> All private messages that could be retrieved </returns>
-            /// <remarks>
-            /// Every page contains 100 messages - if available
-            /// </remarks>
-            public List<PrivateMessage> GetPrivateMessages(uint startIndex, uint pageCount, PrivateMessage.Folder folder)
+            public List<PrivateMessage> GetPrivateMessages(uint pageCount, uint startIndex, PrivateMessage.Folder folder)
             {
                 var fetchedMessages = new List<PrivateMessage>();
 
@@ -239,9 +279,9 @@ namespace epvpapi.Connection
             /// <param name="queryStatus">
             /// Type of <c>Treasure</c> to query. Either <c>Treasure.Query.SoldListed</c> 
             /// for querying treasures that have been sold/listed or <c>Treasure.Query.Bought</c> 
-            /// for treasure that have been bought </param>
+            /// for treasures that were bought </param>
             /// <param name="pageCount"> Amount of pages to retrieve, one page may contain up to 15 treasures </param>
-            /// <param name="startIndex"> Index indcating the page to start from </param>
+            /// <param name="startIndex"> Index of the first page to request (1 for the first page, 2 for the second, ...) </param>
             /// <returns> List of all <c>Treasure</c>s that could be retrieved </returns>
             public List<Treasure> GetTreasures(Treasure.Query queryStatus = Treasure.Query.SoldListed, uint pageCount = 1, uint startIndex = 1)
             {
@@ -321,7 +361,7 @@ namespace epvpapi.Connection
             }
 
             /// <summary>
-            /// Removes/disables the current Avatar of the <c>User</c>
+            /// Removes/disables the current Avatar
             /// </summary>
             public void RemoveAvatar()
             {
@@ -329,7 +369,7 @@ namespace epvpapi.Connection
             }
 
             /// <summary>
-            /// Sets the Avatar of the <c>User</c>
+            /// Sets the Avatar
             /// </summary>
             /// <param name="image"> <c>Image</c> to set as new avatar </param>
             public void SetAvatar(Image image)
@@ -338,7 +378,7 @@ namespace epvpapi.Connection
             }
 
             /// <summary>
-            /// Sets the Avatar of the <c>User</c>
+            /// Sets the Avatar
             /// </summary>
             /// <param name="image"> <c>Image</c> to set as new avatar </param>
             /// <param name="changeType"> 0 for uploading a new avatar, -1 for deleting the old one without uploading a new one </param>
@@ -361,7 +401,7 @@ namespace epvpapi.Connection
         }
 
         /// <summary>
-        /// Profile representing the connected <c>User</c>
+        /// Profile representing the logged-in user being bound to the session
         /// </summary>
         public Profile ConnectedProfile { get; private set; }
 
@@ -399,11 +439,9 @@ namespace epvpapi.Connection
             ConnectedProfile = new Profile(user, this);
             Cookies = new CookieContainer();
         }   
-
-        
-
+    
         /// <summary>
-        /// Logs out the session user and destroys the session
+        /// Logs out the logged-in user and destroys the session
         /// </summary>
         public void Destroy()
         {
@@ -411,7 +449,6 @@ namespace epvpapi.Connection
             Get("http://www.elitepvpers.com/forum/login.php?do=logout&logouthash=" + SecurityToken);
         }
    
-
         /// <summary>
         /// Updates required session information such as the SecurityToken
         /// </summary>
@@ -446,7 +483,7 @@ namespace epvpapi.Connection
         /// <summary>
         /// Small wrapper function for throwing an exception if the session is invalid
         /// </summary>
-        public void ThrowIfInvalid()
+        internal void ThrowIfInvalid()
         {
             if (!Valid) throw new InvalidSessionException("Session is not valid, Cookies: " + Cookies.Count +
                                                           " | Security Token: " + SecurityToken +
@@ -456,12 +493,12 @@ namespace epvpapi.Connection
 
         /// <summary> Performs a HTTP GET request </summary>
         /// <param name="url"> Location to request </param>
-        /// <returns> <c>Response</c> associated to the Request sent </returns>
-        public Response Get(Uri url)
+        /// <returns> Server <c>Response</c> to the sent request </returns>
+        internal Response Get(Uri url)
         {
             try
             {
-                var handler = new HttpClientHandler()
+                var handler = new HttpClientHandler
                 {
                     UseCookies = true,
                     CookieContainer = Cookies
@@ -489,8 +526,8 @@ namespace epvpapi.Connection
 
         /// <summary> Performs a HTTP GET request </summary>
         /// <param name="url"> Location to request </param>
-        /// <returns> <c>Response</c> associated to the Request sent </returns>
-        public Response Get(string url)
+        /// <returns> Server <c>Response</c> to the sent request </returns>
+        internal Response Get(string url)
         {
             return Get(new Uri(url));
         }
@@ -499,8 +536,8 @@ namespace epvpapi.Connection
         /// <summary> Performs a HTTP POST request </summary>
         /// <param name="url"> Location where to post the data </param>
         /// <param name="content"> Contents to post </param>
-        /// <returns> <c>Response</c> associated to the Request sent </returns>
-        public Response Post(string url, IEnumerable<KeyValuePair<string, string>> content)
+        /// <returns> Server <c>Response</c> to the sent request </returns>
+        internal Response Post(string url, IEnumerable<KeyValuePair<string, string>> content)
         {
             try
             {
@@ -523,7 +560,8 @@ namespace epvpapi.Connection
                 client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
                 client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip,deflate,sdch");
                 client.DefaultRequestHeaders.Add("Accept-Language", "de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4");
-                client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36");
+                client.DefaultRequestHeaders.Add("User-Agent", "epvpapi - .NET Library v." 
+                                                 + FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion);
 
                 var encodedContent = new FormUrlEncodedContent(content);
                 encodedContent.Headers.ContentType.MediaType = "application/x-www-form-urlencoded";
@@ -546,8 +584,8 @@ namespace epvpapi.Connection
         /// </summary>
         /// <param name="url"> Location where to post the data </param>
         /// <param name="content"> Contents to post </param>
-        /// <returns> <c>Response</c> associated to the Request sent </returns>
-        public Response PostMultipartFormData(Uri url, MultipartFormDataContent content)
+        /// <returns> Server <c>Response</c> to the sent request  </returns>
+        internal Response PostMultipartFormData(Uri url, MultipartFormDataContent content)
         {
             var handler = new HttpClientHandler()
             {

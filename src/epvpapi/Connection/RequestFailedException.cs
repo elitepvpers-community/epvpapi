@@ -2,7 +2,7 @@
 
 namespace epvpapi.Connection
 {
-    /// <summary> Exception thrown if a request could not be executed or if the server did not respond as expected </summary>
+    /// <summary> Exception that is thrown if a request could not be sent or if the server did not respond as expected </summary>
     public class RequestFailedException : EpvpapiException
     {
         public RequestFailedException(string message)

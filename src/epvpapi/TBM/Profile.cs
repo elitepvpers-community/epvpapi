@@ -10,14 +10,17 @@ namespace epvpapi.TBM
     {
         public Ratings Ratings { get; protected set; }
         public Mediations Mediations { get; protected set; }
-        public SecretWord SecretWord { get; set; }
+
+        /// <summary>
+        /// Represents the Secret word required for the official TBM API in order to query Transactions
+        /// </summary>
+        public string SecretWord { get; set; }
 
         public Profile(uint id = 0):
             base(id)
         {
             Ratings = new Ratings();
             Mediations = new Mediations();
-            SecretWord = new SecretWord();
         }
 
         /// <summary>
@@ -40,7 +43,7 @@ namespace epvpapi.TBM
                 typeParameter = "sent";
 
             var res = session.Get("http://www.elitepvpers.com/theblackmarket/api/transactions.php?u=" + session.User.ID +
-                                    "&type=" + typeParameter + "&secretword=" + SecretWord.Value);
+                                    "&type=" + typeParameter + "&secretword=" + SecretWord);
             var responseContent = res.ToString();
             if(String.IsNullOrEmpty(responseContent)) throw new InvalidAuthenticationException("The provided Secret Word was invalid");
 
