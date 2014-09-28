@@ -26,7 +26,7 @@ namespace UnitTests.Tests
 
                 foreach (var shout in globalHistoryShouts)
                 {
-                    Assert.AreNotEqual(0, shout.Content.Length, "The message content of a shout was not set");
+                    Assert.AreNotEqual(0, shout.Content.ToString().Length, "The message content of a shout was not set");
                     Assert.AreNotEqual(default(DateTime), shout.Date, "The date and time of a shout was not set");
                     Assert.AreNotEqual(0, shout.Sender.Name.Length, "The name of the shout sender was not set");
                     Assert.AreNotEqual(0, shout.Sender.ID, "The ID of the shout sender was not set");
@@ -81,7 +81,7 @@ namespace UnitTests.Tests
 
                 foreach (var shout in shouts)
                 {
-                    Assert.AreNotEqual(0, shout.Content.Length, "The message content of a shout was not set");
+                    Assert.AreNotEqual(0, shout.Content.ToString().Length, "The message content of a shout was not set");
                     Assert.AreNotEqual(default(DateTime), shout.Date, "The date and time of a shout was not set");
                     Assert.AreNotEqual(0, shout.Sender.Name.Length, "The name of the shout sender was not set");
                     Assert.AreNotEqual(0, shout.Sender.ID, "The ID of the shout sender was not set");

@@ -39,7 +39,7 @@ namespace UnitTests.Tests
                     Assert.AreNotEqual(0, message.Title.Length, "The title of a private message was not set after updating");
                     Assert.AreNotEqual(0, message.Sender.ID);
                     Assert.AreNotEqual(0, message.Sender.Name.Length, "The name of a sender of a private message was not set after updating");
-                    Assert.AreNotEqual(0, message.Content.Length, "The content of a private message was not set after updating");
+                    Assert.AreNotEqual(0, message.Content.ToString().Length, "The content of a private message was not set after updating");
                 }
             }
             catch (RequestFailedException exc)

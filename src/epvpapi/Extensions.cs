@@ -112,7 +112,8 @@ namespace epvpapi
         public static string UrlEscape(this string target)
         {
             // by default, all characters are escaped in links by vBulletin itself
-            return (target != null) ? Regex.Replace(target, "([^a-zA-Z0-9]+)", "-").ToLower() : null;
+            // the escaped string is rarely needed for unique addressing. it's just some type of placeholder that will be inserted in the address bar
+            return (target != null) ? Regex.Replace(target, "([^a-zA-Z0-9]+)", "-").ToLower() : "-"; // return '-' by default to prevent the 403 not found errors.
         }
 
         /// <summary>
