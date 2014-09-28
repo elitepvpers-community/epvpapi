@@ -171,7 +171,7 @@ namespace epvpapi
             /// <param name="url"> URL to parse </param>
             /// <param name="group"> <c>Rank</c> object where the parsed result will be stored </param>
             /// <returns> true on success, false on failure </returns>
-            public static bool FromURL(string url, out Rank group)
+            public static bool FromUrl(string url, out Rank group)
             {
                 group = new Rank();
                 Match match = Regex.Match(url, @"http://cdn.elitepvpers.org/forum/images/teamicons/relaunch/(\S+)");
@@ -358,7 +358,7 @@ namespace epvpapi
         /// <summary>
         /// Holds the URL to the avatar the user has set
         /// </summary>
-        public string AvatarURL { get; set; }
+        public string AvatarUrl { get; set; }
 
         public User(uint id = 0)
             : this(null, id)
@@ -444,7 +444,7 @@ namespace epvpapi
         /// </summary>
         /// <param name="url"> URL being parsed </param>
         /// <returns> Retrieved profile ID </returns>
-        public static uint FromURL(string url)
+        public static uint FromUrl(string url)
         {
             var match = Regex.Match(url, @"(?:http://www.elitepvpers.com/(?:forum/)*)*(?:members|theblackmarket/profile)/([0-9]+)(?:-[a-zA-Z]+.html)*");
             if(match.Groups.Count < 2) throw new ParsingFailedException("User could not be exported from the given URL");

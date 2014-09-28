@@ -50,7 +50,7 @@ namespace epvpapi.Evaluation
                             announcement.Sender.Title = secondLine.SelectSingleNode("span[2]/text()[2]").InnerText.Strip();
                             announcement.Sender.Title = announcement.Sender.Title.Remove(0, 1); // remove the brackets
                             announcement.Sender.Title = announcement.Sender.Title.Remove(announcement.Sender.Title.Length - 1, 1); // remove the brackets
-                            announcement.Sender.ID = creatorNode.Attributes.Contains("href") ? User.FromURL(creatorNode.Attributes["href"].Value) : 0;
+                            announcement.Sender.ID = creatorNode.Attributes.Contains("href") ? User.FromUrl(creatorNode.Attributes["href"].Value) : 0;
                         }
 
                         Target.Announcements.Add(announcement);
@@ -93,7 +93,7 @@ namespace epvpapi.Evaluation
                     if (!creatorNode.Attributes.Contains("onclick"))
                         creatorNode = coreNode.SelectSingleNode("td[3]/div[2]/span[2]");
 
-                    Target.Creator = new User(creatorNode.InnerText, creatorNode.Attributes.Contains("onclick") ? User.FromURL(creatorNode.Attributes["onclick"].Value) : 0);
+                    Target.Creator = new User(creatorNode.InnerText, creatorNode.Attributes.Contains("onclick") ? User.FromUrl(creatorNode.Attributes["onclick"].Value) : 0);
                 }
 
                 var repliesNode = coreNode.SelectSingleNode("td[5]/a[1]");

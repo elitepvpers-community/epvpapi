@@ -90,7 +90,7 @@ namespace epvpapi.Connection
         {
             try
             {
-                HttpClientHandler Handler = new HttpClientHandler()
+                var handler = new HttpClientHandler()
                 {
                     UseCookies = true,
                     CookieContainer = Cookies
@@ -98,13 +98,13 @@ namespace epvpapi.Connection
 
                 if(UseProxy)
                 {
-                    Handler.UseProxy = true;
-                    Handler.Proxy = Proxy;
+                    handler.UseProxy = true;
+                    handler.Proxy = Proxy;
                 }
 
-                HttpClient Client = new HttpClient(Handler);
+                var client = new HttpClient(handler);
                 
-                Task<HttpResponseMessage> response = Client.GetAsync(url);
+                Task<HttpResponseMessage> response = client.GetAsync(url);
                 if (!response.Result.IsSuccessStatusCode && response.Result.StatusCode != HttpStatusCode.SeeOther)
                     throw new RequestFailedException("Request failed, Server returned " + response.Result.StatusCode);
 
@@ -128,15 +128,14 @@ namespace epvpapi.Connection
         /// <summary> Performs a HTTP POST request </summary>
         /// <param name="url"> Location where to post the data </param>
         /// <param name="content"> Contents to post </param>
-        /// <param name="referer"> Location of the referer </param>
         /// <returns> <c>Response</c> associated to the Request sent </returns>
-        public Response Post(string url, List<KeyValuePair<string, string>> content)
+        public Response Post(string url, IEnumerable<KeyValuePair<string, string>> content)
         {
             try
             {
-                Uri URL = new Uri(url);
+                var targetUrl = new Uri(url);
 
-                HttpClientHandler Handler = new HttpClientHandler()
+                var handler = new HttpClientHandler()
                 {
                     UseCookies = true,
                     CookieContainer = Cookies,
@@ -145,21 +144,21 @@ namespace epvpapi.Connection
 
                 if (UseProxy)
                 {
-                    Handler.UseProxy = true;
-                    Handler.Proxy = Proxy;
+                    handler.UseProxy = true;
+                    handler.Proxy = Proxy;
                 }
 
-                HttpClient Client = new HttpClient(Handler);
-                Client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
-                Client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip,deflate,sdch");
-                Client.DefaultRequestHeaders.Add("Accept-Language", "de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4");
-                Client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36");
+                var client = new HttpClient(handler);
+                client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+                client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip,deflate,sdch");
+                client.DefaultRequestHeaders.Add("Accept-Language", "de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4");
+                client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36");
 
-                FormUrlEncodedContent EncodedContent = new FormUrlEncodedContent(content);
-                EncodedContent.Headers.ContentType.MediaType = "application/x-www-form-urlencoded";
-                EncodedContent.Headers.ContentType.CharSet = "UTF-8";
+                var encodedContent = new FormUrlEncodedContent(content);
+                encodedContent.Headers.ContentType.MediaType = "application/x-www-form-urlencoded";
+                encodedContent.Headers.ContentType.CharSet = "UTF-8";
 
-                Task<HttpResponseMessage> response = Client.PostAsync(URL, EncodedContent);
+                var response = client.PostAsync(targetUrl, encodedContent);
                 if (!response.Result.IsSuccessStatusCode && response.Result.StatusCode != HttpStatusCode.SeeOther && response.Result.StatusCode != HttpStatusCode.Redirect)
                     throw new RequestFailedException("Request failed, Server returned " + response.Result.StatusCode);
 
@@ -179,7 +178,7 @@ namespace epvpapi.Connection
         /// <returns> <c>Response</c> associated to the Request sent </returns>
         public Response PostMultipartFormData(Uri url, MultipartFormDataContent content)
         {
-            HttpClientHandler Handler = new HttpClientHandler()
+            var handler = new HttpClientHandler()
             {
                 UseCookies = true,
                 CookieContainer = Cookies,
@@ -188,13 +187,13 @@ namespace epvpapi.Connection
 
             if (UseProxy)
             {
-                Handler.UseProxy = true;
-                Handler.Proxy = Proxy;
+                handler.UseProxy = true;
+                handler.Proxy = Proxy;
             }
 
-            HttpClient client = new HttpClient(Handler);
+            var client = new HttpClient(handler);
 
-            Task<HttpResponseMessage> response = client.PostAsync(url, content);
+            var response = client.PostAsync(url, content);
             if (!response.Result.IsSuccessStatusCode) throw new RequestFailedException("Server returned " + response.Result.StatusCode);
             return new Response(response.Result);
         }

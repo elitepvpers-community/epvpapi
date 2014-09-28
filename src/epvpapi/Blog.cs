@@ -18,7 +18,7 @@ namespace epvpapi
                 /// <summary>
                 /// If set, all URLs in the message are going to be parsed
                 /// </summary>
-                ParseURL = 1,
+                ParseUrl = 1,
 
                 /// <summary>
                 /// Users may reply to the entry using the built-in comment feature if this flag has been set
@@ -61,7 +61,7 @@ namespace epvpapi
             /// <param name="session"> Session that is used for sending the request </param>
             /// <param name="settings"> Additional options that can be set </param>
             public void Publish<T>(ProfileSession<T> session,
-                Settings settings = Settings.ParseURL | Settings.AllowComments) where T : User
+                Settings settings = Settings.ParseUrl | Settings.AllowComments) where T : User
             {
                 Publish(session, DateTime.Now, settings);
             }
@@ -74,7 +74,7 @@ namespace epvpapi
             /// <param name="publishDate"> Date and time when the entry will go live </param>
             /// <param name="settings"> Additional options that can be set </param>
             public void Publish<T>(ProfileSession<T> session, DateTime publishDate,
-                Settings settings = Settings.ParseURL | Settings.AllowComments) where T : User
+                Settings settings = Settings.ParseUrl | Settings.AllowComments) where T : User
             {
                 session.ThrowIfInvalid();
 
@@ -99,7 +99,7 @@ namespace epvpapi
                                 new KeyValuePair<string, string>("do", "updateblog"),
                                 new KeyValuePair<string, string>("b", String.Empty),
                                 new KeyValuePair<string, string>("posthash", String.Empty),
-                                new KeyValuePair<string, string>("poststarttime", Extensions.UNIXTimestamp().ToString()),
+                                new KeyValuePair<string, string>("poststarttime", Extensions.UnixTimestamp().ToString()),
                                 new KeyValuePair<string, string>("loggedinuser", session.User.ID.ToString()),
                                 new KeyValuePair<string, string>("u", String.Empty),
                                 new KeyValuePair<string, string>("taglist", tags),
@@ -112,7 +112,7 @@ namespace epvpapi
                                 new KeyValuePair<string, string>("publish[year]", Date.Year.ToString()),
                                 new KeyValuePair<string, string>("publish[hour]", Date.Hour.ToString()),
                                 new KeyValuePair<string, string>("publish[minute]", Date.Minute.ToString()),
-                                new KeyValuePair<string, string>("parseurl", Convert.ToUInt32(settings.HasFlag(Settings.ParseURL)).ToString()),
+                                new KeyValuePair<string, string>("parseurl", Convert.ToUInt32(settings.HasFlag(Settings.ParseUrl)).ToString()),
                                 new KeyValuePair<string, string>("parseame", "1"),
                                 new KeyValuePair<string, string>("emailupdate", "none"),
                                 new KeyValuePair<string, string>("sbutton", "Submit")

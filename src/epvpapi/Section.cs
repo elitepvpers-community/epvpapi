@@ -20,7 +20,7 @@ namespace epvpapi
         /// <summary>
         /// URL name that is shown in the address bar of the browser, mostly needed for updating information
         /// </summary>
-        public string URLName { get; set; }
+        public string UrlName { get; set; }
 
         /// <summary>
         /// Short description what the section is about 
@@ -44,7 +44,7 @@ namespace epvpapi
 
             public string GetUrl()
             {
-                return "http://www.elitepvpers.com/forum/" + Section.URLName + "/announcement-" + Title.UrlEscape() + ".html";
+                return "http://www.elitepvpers.com/forum/" + Section.UrlName + "/announcement-" + Title.UrlEscape() + ".html";
             } 
 
         }
@@ -57,7 +57,7 @@ namespace epvpapi
         public Section(uint id, string urlName)
             : base(id)
         {
-            URLName = urlName;
+            UrlName = urlName;
         }
 
         /// <summary>
@@ -67,9 +67,9 @@ namespace epvpapi
         public void Update(Session session)
         {
             session.ThrowIfInvalid();
-            if (URLName == String.Empty) throw new ArgumentException("Sections cannot be updated if no url-address-name is provided");
+            if (UrlName == String.Empty) throw new ArgumentException("Sections cannot be updated if no url-address-name is provided");
 
-            var res = session.Get("http://www.elitepvpers.com/forum/" + URLName + "/");
+            var res = session.Get("http://www.elitepvpers.com/forum/" + UrlName + "/");
             var doc = new HtmlDocument();
             doc.LoadHtml(res.ToString());
 
@@ -86,12 +86,12 @@ namespace epvpapi
         public List<SectionThread> Threads(Session session, uint pages = 1, uint startIndex = 1)
         {
             session.ThrowIfInvalid();
-            if (URLName == String.Empty) throw new ArgumentException("This section is not addressable, please specify the URLName property before using this function");
+            if (UrlName == String.Empty) throw new ArgumentException("This section is not addressable, please specify the URLName property before using this function");
 
             var parsedThreads = new List<SectionThread>();
             for (uint i = startIndex; i <= pages; ++i)
             {
-                var res = session.Get("http://www.elitepvpers.com/forum/" + URLName + "/index" + i + ".html");
+                var res = session.Get("http://www.elitepvpers.com/forum/" + UrlName + "/index" + i + ".html");
                 var doc = new HtmlDocument();
                 doc.LoadHtml(res.ToString());
 
@@ -137,7 +137,7 @@ namespace epvpapi
 
         public string GetUrl()
         {
-            return "http://www.elitepvpers.com/forum/" + URLName + "/";
+            return "http://www.elitepvpers.com/forum/" + UrlName + "/";
         } 
 
         private static Section _Main = new Section(206, "main"); 

@@ -28,7 +28,7 @@ namespace epvpapi.Evaluation
                     if (!node.Attributes.Contains("src")) continue;
 
                     var parsedRank = new User.Rank();
-                    if (User.Rank.FromURL(node.Attributes["src"].Value, out parsedRank)) // 'src' holds the url to the rank image
+                    if (User.Rank.FromUrl(node.Attributes["src"].Value, out parsedRank)) // 'src' holds the url to the rank image
                         Target.Ranks.Add(parsedRank);
                 }
             }
@@ -123,7 +123,7 @@ namespace epvpapi.Evaluation
                     if (userNameNode == null) // non-ranked users got their name wrapped in the 'a' element
                         userNameNode = profileLinkNode;
 
-                    Target.LastVisitors.Add(new User(userNameNode.InnerText, User.FromURL(profileLink)));
+                    Target.LastVisitors.Add(new User(userNameNode.InnerText, User.FromUrl(profileLink)));
                 }
             }
         }
@@ -354,7 +354,7 @@ namespace epvpapi.Evaluation
                 }
 
                 var avatarNode = coreNode.SelectSingleNode("td[2]/img[1]");
-                Target.AvatarURL = (avatarNode != null) ? avatarNode.Attributes.Contains("src") ? avatarNode.Attributes["src"].Value : "" : "";
+                Target.AvatarUrl = (avatarNode != null) ? avatarNode.Attributes.Contains("src") ? avatarNode.Attributes["src"].Value : "" : "";
             }
         }
     }

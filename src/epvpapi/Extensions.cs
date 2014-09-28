@@ -99,7 +99,7 @@ namespace epvpapi
         /// Gets unix timestamp (total seconds since 01.01.1970)
         /// </summary>
         /// <returns> Total seconds since 01.01.1970 </returns>
-        public static uint UNIXTimestamp()
+        public static uint UnixTimestamp()
         {
             return (uint) (DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
         }

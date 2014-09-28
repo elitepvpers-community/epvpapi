@@ -31,7 +31,7 @@ namespace epvpapi
         /// <summary>
         /// URL to the group picture
         /// </summary>
-        public string PictureURL { get; set; }
+        public string PictureUrl { get; set; }
 
         /// <summary>
         /// Description of the group

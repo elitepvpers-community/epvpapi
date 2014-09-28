@@ -48,7 +48,7 @@ namespace epvpapi
             /// <summary>
             /// If set, all URLs in the message are going to be parsed
             /// </summary>
-            ParseURL = 1,
+            ParseUrl = 1,
 
             /// <summary>
             /// If set, the signature of the logged in user will be displayed beneath the message
@@ -100,7 +100,7 @@ namespace epvpapi
         /// Certain requirements must be fulfilled in order to send messages automatically without entering a captcha:
         /// - More than 20 posts OR the <c>User.Rank.Premium</c> rank OR the <c>User.Rank.EliteGoldTrader</c> rank
         /// </remarks>
-        public void Send<T>(ProfileSession<T> session, Settings settings = Settings.ParseURL | Settings.ShowSignature) where T : User
+        public void Send<T>(ProfileSession<T> session, Settings settings = Settings.ParseUrl | Settings.ShowSignature) where T : User
         {
             session.ThrowIfInvalid();
             if (session.User.Posts <= 20 && !session.User.HasRank(User.Rank.Premium) && !session.User.HasRank(User.Rank.EliteGoldTrader))
@@ -131,7 +131,7 @@ namespace epvpapi
                              new KeyValuePair<string, string>("sbutton", "submit"),
                              new KeyValuePair<string, string>("savecopy", (settings & Settings.SaveCopy).ToString()),
                              new KeyValuePair<string, string>("signature", (settings & Settings.ShowSignature).ToString()),
-                             new KeyValuePair<string, string>("parseurl", (settings & Settings.ParseURL).ToString())
+                             new KeyValuePair<string, string>("parseurl", (settings & Settings.ParseUrl).ToString())
                          });
     
         }

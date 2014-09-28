@@ -15,7 +15,7 @@ namespace epvpapi
             /// <summary>
             /// If set, all URLs in the message are going to be parsed
             /// </summary>
-            ParseURL = 1,
+            ParseUrl = 1,
 
             /// <summary>
             /// If set, the signature of the logged in user will be displayed beneath the message

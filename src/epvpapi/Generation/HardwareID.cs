@@ -34,7 +34,7 @@ namespace epvpapi.Generation
         private static extern bool GetCurrentHwProfile(IntPtr lpHwProfileInfo);
 
         [DllImport("kernel32", CharSet = CharSet.Ansi, SetLastError = true, ExactSpelling = true)]
-        private static extern long GetVolumeInformationA(string PathName, StringBuilder VolumeNameBuffer, int VolumeNameSize, ref int VolumeSerialNumber, ref int MaximumComponentLength, ref int FileSystemFlags, StringBuilder FileSystemNameBuffer, int FileSystemNameSize);
+        private static extern long GetVolumeInformationA(string pathName, StringBuilder volumeNameBuffer, int volumeNameSize, ref int volumeSerialNumber, ref int maximumComponentLength, ref int fileSystemFlags, StringBuilder fileSystemNameBuffer, int fileSystemNameSize);
 
         private static HW_PROFILE_INFO ProfileInfo()
         {
@@ -71,9 +71,9 @@ namespace epvpapi.Generation
 
         private static string GetVolumeSerial(string strDriveLetter)
         {
-            int serNum = 0, maxCompLen = 0, VolFlags = 0;
-            StringBuilder VolLabel = new StringBuilder(256), FSName = new StringBuilder(256);
-            GetVolumeInformationA(strDriveLetter + ":\\", VolLabel, VolLabel.Capacity, ref serNum, ref maxCompLen, ref VolFlags, FSName, FSName.Capacity);
+            int serNum = 0, maxCompLen = 0, volFlags = 0;
+            StringBuilder volLabel = new StringBuilder(256), fsName = new StringBuilder(256);
+            GetVolumeInformationA(strDriveLetter + ":\\", volLabel, volLabel.Capacity, ref serNum, ref maxCompLen, ref volFlags, fsName, fsName.Capacity);
             return Convert.ToString(serNum);
         }
 
@@ -86,7 +86,7 @@ namespace epvpapi.Generation
         {
             var profileGuid = ProfileInfo().szHwProfileGuid.ToString();
             var volumeSerial = GetVolumeSerial(Environment.SystemDirectory.Substring(0, 1));
-            return Cryptography.GetMD5(profileGuid + volumeSerial + salt);
+            return Cryptography.GetMd5(profileGuid + volumeSerial + salt);
         }
     }
 }

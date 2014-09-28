@@ -120,7 +120,7 @@ namespace epvpapi
                         parsedShout.Sender.Name = (userNameNode != null) ? userNameNode.InnerText : "";
 
                         var userLinkNode = shoutboxNodeGroup.ElementAt(1).SelectSingleNode(@"span[1]/a[1]");
-                        parsedShout.Sender.ID = (userLinkNode != null) ? userLinkNode.Attributes.Contains("href") ? User.FromURL(userLinkNode.Attributes["href"].Value) : 0 : 0;
+                        parsedShout.Sender.ID = (userLinkNode != null) ? userLinkNode.Attributes.Contains("href") ? User.FromUrl(userLinkNode.Attributes["href"].Value) : 0 : 0;
 
                         var messageNode = shoutboxNodeGroup.ElementAt(2).SelectSingleNode(@"span[1]");
                         new ContentParser(parsedShout.Content.Elements).Execute(messageNode);
@@ -183,7 +183,7 @@ namespace epvpapi
  
                         var userNameNode = userNode.SelectSingleNode("span[1]");
                         parsedShout.Sender.Name = (userNameNode != null) ? userNameNode.InnerText : "";
-                        parsedShout.Sender.ID = PremiumUser.FromURL(userNode.Attributes["href"].Value);
+                        parsedShout.Sender.ID = PremiumUser.FromUrl(userNode.Attributes["href"].Value);
 
                         var textNode = messageNode.SelectSingleNode("td[4]/span[1]");
                         new ContentParser(parsedShout.Content.Elements).Execute(textNode);
@@ -254,7 +254,7 @@ namespace epvpapi
             {
                 var userNode = node.SelectSingleNode("td[1]/a[1]");
                 if(userNode == null) continue;
-                var userID = userNode.Attributes.Contains("href") ? User.FromURL(userNode.Attributes["href"].Value) : 0;
+                var userID = userNode.Attributes.Contains("href") ? User.FromUrl(userNode.Attributes["href"].Value) : 0;
 
                 var userNameNode = userNode.SelectSingleNode("span[1]") ?? userNode; // black user names do not have a span element
                 var userName = userNameNode.InnerText;

@@ -161,7 +161,7 @@ namespace epvpapi.Connection
                                     @"window.location='(\S+)';");
                                     // the profile link is stored within a javascript page redirect command
                                 if (regexMatch.Groups.Count > 1)
-                                    sender = new User(userName, epvpapi.User.FromURL(regexMatch.Groups[1].Value));
+                                    sender = new User(userName, epvpapi.User.FromUrl(regexMatch.Groups[1].Value));
                             }
 
                             var fetchedPrivateMessage = new PrivateMessage(pmID)
@@ -256,7 +256,7 @@ namespace epvpapi.Connection
                             {
                                 var opponent = opponentNode.Attributes.Contains("href")
                                                 ? new User(opponentNode.InnerText,
-                                                    epvpapi.User.FromURL(opponentNode.Attributes["href"].Value))
+                                                    epvpapi.User.FromUrl(opponentNode.Attributes["href"].Value))
                                                 : new User();
 
                                 if (queryStatus == Treasure.Query.Bought)

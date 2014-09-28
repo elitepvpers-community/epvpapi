@@ -177,12 +177,12 @@ namespace epvpapi.TBM
                             if (key == "Seller:")
                                 Seller = new User(userRefNode.InnerText,
                                     userRefNode.Attributes.Contains("href")
-                                        ? User.FromURL(userRefNode.Attributes["href"].Value)
+                                        ? User.FromUrl(userRefNode.Attributes["href"].Value)
                                         : 0);
                             else if (key == "Buyer:")
                                 Buyer = new User(userRefNode.InnerText,
                                     userRefNode.Attributes.Contains("href")
-                                        ? User.FromURL(userRefNode.Attributes["href"].Value)
+                                        ? User.FromUrl(userRefNode.Attributes["href"].Value)
                                         : 0);
                         }
                     }

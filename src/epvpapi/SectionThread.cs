@@ -87,7 +87,7 @@ namespace epvpapi
         /// <param name="closed"> If true, the thread state is closed meaning that no one (except the staff) can answer to this thread </param>
         /// <returns> Freshly created <c>SectionThread</c> </returns>
         public static SectionThread Create(ProfileSession<User> session, Section section, SectionPost startPost,
-                                           SectionPost.Settings settings = SectionPost.Settings.ParseURL | SectionPost.Settings.ShowSignature,
+                                           SectionPost.Settings settings = SectionPost.Settings.ParseUrl | SectionPost.Settings.ShowSignature,
                                            bool closed = false)
         {
             session.ThrowIfInvalid();
@@ -109,7 +109,7 @@ namespace epvpapi
                             new KeyValuePair<string, string>("loggedinuser", session.User.ID.ToString()),
                             new KeyValuePair<string, string>("sbutton", "Submit New Thread"),
                             new KeyValuePair<string, string>("signature", settings.HasFlag(SectionPost.Settings.ShowSignature) ? "1" : "0"),
-                            new KeyValuePair<string, string>("parseurl",  settings.HasFlag(SectionPost.Settings.ParseURL) ? "1" : "0"),
+                            new KeyValuePair<string, string>("parseurl",  settings.HasFlag(SectionPost.Settings.ParseUrl) ? "1" : "0"),
                             new KeyValuePair<string, string>("parseame", "1"),
                             new KeyValuePair<string, string>("vbseo_retrtitle", "1"),
                             new KeyValuePair<string, string>("vbseo_is_retrtitle", "1"),
@@ -221,7 +221,7 @@ namespace epvpapi
         /// The ID of the thread has to be given in order to reply
         /// </remarks>
         public void Reply(ProfileSession<User> session, SectionPost post,
-                          SectionPost.Settings settings = SectionPost.Settings.ParseURL | SectionPost.Settings.ShowSignature)
+                          SectionPost.Settings settings = SectionPost.Settings.ParseUrl | SectionPost.Settings.ShowSignature)
         {
             if (ID == 0) throw new ArgumentException("ID must not be empty");
             session.ThrowIfInvalid();
@@ -245,7 +245,7 @@ namespace epvpapi
                              new KeyValuePair<string, string>("multiquoteempty", String.Empty),
                              new KeyValuePair<string, string>("sbutton", "Submit Reply"),
                              new KeyValuePair<string, string>("signature", (settings & SectionPost.Settings.ShowSignature).ToString()),
-                             new KeyValuePair<string, string>("parseurl", (settings & SectionPost.Settings.ParseURL).ToString()),
+                             new KeyValuePair<string, string>("parseurl", (settings & SectionPost.Settings.ParseUrl).ToString()),
                              new KeyValuePair<string, string>("parseame", "1"),
                              new KeyValuePair<string, string>("vbseo_retrtitle", "1"),
                              new KeyValuePair<string, string>("vbseo_is_retrtitle", "1"),
@@ -266,7 +266,7 @@ namespace epvpapi
         {
             session.ThrowIfInvalid();
             if(ID == 0) throw new ArgumentException("ID must not be empty");
-            if(String.IsNullOrEmpty(Section.URLName)) throw new ArgumentException("The section needs to be addressable");
+            if(String.IsNullOrEmpty(Section.UrlName)) throw new ArgumentException("The section needs to be addressable");
 
             var res = session.Get(GetUrl());
             var htmlDocument = new HtmlDocument();
@@ -390,7 +390,7 @@ namespace epvpapi
 
         public string GetUrl(uint pageIndex = 1)
         {
-            return "http://www.elitepvpers.com/forum/" + Section.URLName + "/"
+            return "http://www.elitepvpers.com/forum/" + Section.UrlName + "/"
                 + ID + "-" + InitialPost.Title.UrlEscape()
                 + ((pageIndex > 1) ? "-" + pageIndex : "")
                 + ".html";

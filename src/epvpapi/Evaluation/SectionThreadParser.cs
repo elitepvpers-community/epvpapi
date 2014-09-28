@@ -95,7 +95,7 @@ namespace epvpapi.Evaluation
                 if (postCreatorNode != null)
                 {
                     Target.ID = postCreatorNode.Attributes.Contains("href")
-                        ? User.FromURL(postCreatorNode.Attributes["href"].Value)
+                        ? User.FromUrl(postCreatorNode.Attributes["href"].Value)
                         : 0;
 
                     var userNameNode = postCreatorNode.SelectSingleNode("span[1]") ??
@@ -109,7 +109,7 @@ namespace epvpapi.Evaluation
 
                     var userAvatarNode = coreNode.SelectSingleNode("div[5]/a[1]/img[1]");
                     if (userAvatarNode != null)
-                        Target.AvatarURL = userAvatarNode.Attributes.Contains("src")
+                        Target.AvatarUrl = userAvatarNode.Attributes.Contains("src")
                             ? userAvatarNode.Attributes["src"].Value
                             : "";
 
