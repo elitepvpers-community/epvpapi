@@ -121,7 +121,7 @@ namespace epvpapi
 
             public string GetUrl()
             {
-                return "http://www.elitepvpers.com/forum/blogs/" + Blog.Owner.ID + "-" + Blog.Owner.Name.URLEscape() + "/" + ID + "-" + Title.URLEscape() + ".html";
+                return "http://www.elitepvpers.com/forum/blogs/" + Blog.Owner.ID + "-" + Blog.Owner.Name.UrlEscape() + "/" + ID + "-" + Title.UrlEscape() + ".html";
             }
         }
 
@@ -138,7 +138,7 @@ namespace epvpapi
 
         public string GetUrl()
         {
-            return "http://www.elitepvpers.com/forum/blogs/" + Owner.ID + "-" + Owner.Name.URLEscape() + ".html";
+            return "http://www.elitepvpers.com/forum/blogs/" + Owner.ID + "-" + Owner.Name.UrlEscape() + ".html";
         }   
     }
 }

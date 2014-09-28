@@ -111,7 +111,7 @@ namespace epvpapi
         /// </summary>
         /// <param name="target"> The string which has to become escaped </param>
         /// <returns> The escaped url string </returns>
-        public static string URLEscape(this string target)
+        public static string UrlEscape(this string target)
         {
             return Regex.Replace(target, "([^a-zA-Z0-9]+)", "-").ToLower(); // by default, all characters are escaped in links by vBulletin itself
         }
