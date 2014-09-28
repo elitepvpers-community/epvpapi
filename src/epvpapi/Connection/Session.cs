@@ -423,13 +423,23 @@ namespace epvpapi.Connection
             if (String.IsNullOrEmpty(SecurityToken) || SecurityToken == "guest")
                 throw new InvalidAuthenticationException("Credentials entered for user " + User.Name + " were invalid");
 
-            // Automatically retrieve the logged-in user's id if it wasn't set
+            // Automatically retrieve the logged-in user's id if it hasn't been set
             if (User.ID == 0)
             {
                 var document = new HtmlDocument();
+                document.LoadHtml(res.ToString());
+
+                var userBarNode = document.GetElementbyId("userbaritems");
+                if (userBarNode != null)
+                {
+                    var userProfileLinkNode = userBarNode.SelectSingleNode("li[1]/a[1]");
+                    User.ID = userProfileLinkNode.Attributes.Contains("href")
+                                ? epvpapi.User.FromUrl(userProfileLinkNode.Attributes["href"].Value)
+                                : 0;
+                }
             }
 
-            // Update the user associated with the session
+            // Update the session user
             User.Update(this);
         }
 
