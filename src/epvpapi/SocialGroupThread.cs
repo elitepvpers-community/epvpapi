@@ -57,11 +57,10 @@ namespace epvpapi
                             new KeyValuePair<string, string>("parseame", "1"),
                         });
 
-            SocialGroupThread socialGroupThread = new SocialGroupThread(0, socialGroup) { Creator = session.User, Deleted = false };
+            var socialGroupThread = new SocialGroupThread(0, socialGroup) { Creator = session.User, Deleted = false };
             socialGroupThread.Posts.Insert(0, startPost);
             return socialGroupThread;
         }
-
 
         /// <summary>
         /// Deletes the <c>SocialGroupThread</c>
@@ -87,7 +86,6 @@ namespace epvpapi
                             new KeyValuePair<string, string>("deletereason", reason)
                         });
         }
-
 
         /// <summary>
         /// Replies to the <c>SocialGroupThread</c>
@@ -121,9 +119,9 @@ namespace epvpapi
         public string GetUrl()
         {
             return "http://www.elitepvpers.com/forum/groups/" + SocialGroup.ID
-                                                            + "-" + SocialGroup.Name.URLEscape()
-                                                            + "-d" + ID + "-"
-                                                            + Posts.First().Title.URLEscape() + ".html";
+                + "-" + SocialGroup.Name.URLEscape()
+                + "-d" + ID + "-"
+                + Posts.First().Title.URLEscape() + ".html";
         } 
     }
 }

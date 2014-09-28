@@ -30,7 +30,6 @@ namespace epvpapi
             : this(new User(), null)
         { }
 
-
         /// <summary>
         /// Sends a <c>VisitorMessage</c> using the given session
         /// </summary>

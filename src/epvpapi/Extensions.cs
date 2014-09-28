@@ -97,11 +97,20 @@ namespace epvpapi
             return Regex.Replace(target, @"(^ +)|(\r\n|\n|\r|\t)|( +)$", "");
         }
 
-        public static uint UNIXTimestamp(this DateTime dateTime)
+        /// <summary>
+        /// Gets unix timestamp (total seconds since 01.01.1970)
+        /// </summary>
+        /// <returns> Total seconds since 01.01.1970 </returns>
+        public static uint UNIXTimestamp()
         {
             return (uint) (DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
         }
 
+        /// <summary>
+        /// URL escapes a string
+        /// </summary>
+        /// <param name="target"> The string which has to become escaped </param>
+        /// <returns> The escaped url string </returns>
         public static string URLEscape(this string target)
         {
             return Regex.Replace(target, "([^a-zA-Z0-9]+)", "-").ToLower(); // by default, all characters are escaped in links by vBulletin itself
@@ -122,6 +131,11 @@ namespace epvpapi
                     && (other.Minute == self.Minute) );
         }
 
+        /// <summary>
+        /// Turns a string into elitepvpers DateTime
+        /// </summary>
+        /// <param name="formattedTime"> The string containing the datetime </param>
+        /// <returns> The elitepvpers DateTime</returns>
         public static DateTime ToElitepvpersDateTime(this string formattedTime)
         {
             var commonFormats = new List<string>
@@ -155,6 +169,12 @@ namespace epvpapi
             return dateTime;
         }
 
+        /// <summary>
+        /// Checks if a htmlNode got a specefic class
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="className"></param>
+        /// <returns></returns>
         public static bool HasClass(this HtmlNode node, string className)
         {
             return node.Attributes.Any(attribute => attribute.Name == className);

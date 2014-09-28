@@ -188,7 +188,6 @@ namespace epvpapi
             Closed = false;
         }
 
-
         /// <summary>
         /// Rates a <c>SectionThread</c>
         /// </summary>
@@ -211,7 +210,6 @@ namespace epvpapi
                             new KeyValuePair<string, string>("page", "1")
                         });
         }
-
 
         /// <summary>
         /// Replies to the <c>SectionThread</c>

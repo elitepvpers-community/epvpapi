@@ -360,13 +360,13 @@ namespace epvpapi
         /// </summary>
         public string AvatarURL { get; set; }
 
-
+        /// <param name="id"> ID of the user (profile ID) </param>
         public User(uint id = 0)
             : this(null, id)
         { }
 
         /// <param name="name"> Name of the user </param>
-        /// <param name="id"> ID of the user (profile ID)</param>
+        /// <param name="id"> ID of the user (profile ID) </param>
         public User(string name, uint id = 0)
             : base(id)
         {
@@ -396,7 +396,6 @@ namespace epvpapi
 
             return highestRank;
         }
-
 
         public class RankParser : TargetableParser<User>, INodeParser
         {
@@ -483,7 +482,6 @@ namespace epvpapi
             }
         }
 
-
         public class LastVisitorsParser : TargetableParser<User>, INodeParser
         {
             public LastVisitorsParser(User target) : base(target)
@@ -511,7 +509,6 @@ namespace epvpapi
                 }
             }
         }
-
 
         public class LastActivityParser : TargetableParser<User>, INodeParser
         {
@@ -810,6 +807,11 @@ namespace epvpapi
                     : new List<User>();
         }
 
+        /// <summary>
+        /// Gets a user object by username
+        /// </summary>
+        /// <param name="name"> The username of the wanted user object </param>
+        /// <returns> User object or null </returns>
         public static User GetUserByName(string name)
         {
             var session = new Session();

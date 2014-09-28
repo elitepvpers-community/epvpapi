@@ -98,7 +98,6 @@ namespace epvpapi
                     var shoutboxNodes = new List<HtmlNode>(tdNodes.Where(node => node.Attributes.Any(attribute => attribute.Name == "valign" && attribute.Value == "top")));
 
                     var shoutboxNodeGroups = shoutboxNodes.Split(3);
-
                     foreach(var shoutboxNodeGroup in shoutboxNodeGroups)
                     {
                         if (shoutboxNodeGroup.Count != 3) continue; // every node group needs to have exactly 3 nodes in order to be valid
@@ -193,7 +192,6 @@ namespace epvpapi
 
         };
 
-
         /// <summary>
         /// Contains the Top 10 chatters of all channels
         /// </summary>
@@ -222,7 +220,6 @@ namespace epvpapi
             get { return _EnglishOnly; }
             set { _EnglishOnly = value; }
         }
-
 
         /// <summary>
         /// Updates statistics and information about the shoutbox
