@@ -6,6 +6,11 @@ namespace epvpapi.Generation
 {
     public class Cryptography
     {
+        /// <summary>
+        /// Gets an md5 hash of the given string
+        /// </summary>
+        /// <param name="str"> The string which will be hashed </param>
+        /// <returns> The md5 of the hashed string </returns>
         public static string GetMD5(string str)
         {
             var bytes = Encoding.UTF8.GetBytes(str);

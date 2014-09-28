@@ -315,7 +315,6 @@ namespace epvpapi
             }
         }
 
-
         /// <summary>
         /// Retrieves a list of all posts in the <c>SectionThread</c>
         /// </summary>
@@ -389,13 +388,12 @@ namespace epvpapi
             return retrievedReplies;
         }
 
-
         public string GetUrl(uint pageIndex = 1)
         {
             return "http://www.elitepvpers.com/forum/" + Section.URLName + "/"
-                                                       + ID + "-" + InitialPost.Title.UrlEscape()
-                                                       + ((pageIndex > 1) ? "-" + pageIndex : "")
-                                                       + ".html";
+                + ID + "-" + InitialPost.Title.UrlEscape()
+                + ((pageIndex > 1) ? "-" + pageIndex : "")
+                + ".html";
         }
 
         /// <summary>

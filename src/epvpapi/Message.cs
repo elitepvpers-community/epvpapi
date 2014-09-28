@@ -29,7 +29,6 @@ namespace epvpapi
         /// </summary>
         public DateTime Date { get; set; }
 
-
         public Message(uint id)
             : this(id, null)
         { }

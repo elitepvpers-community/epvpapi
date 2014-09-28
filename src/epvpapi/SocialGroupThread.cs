@@ -17,7 +17,6 @@ namespace epvpapi
         /// </summary>
         public List<SocialGroupPost> Posts { get; set; }
 
-
         public SocialGroupThread(uint id, SocialGroup socialGroup)
             : base(id)
         {
@@ -62,7 +61,6 @@ namespace epvpapi
             return socialGroupThread;
         }
 
-
         /// <summary>
         /// Deletes the <c>SocialGroupThread</c>
         /// </summary>
@@ -87,7 +85,6 @@ namespace epvpapi
                             new KeyValuePair<string, string>("deletereason", reason)
                         });
         }
-
 
         /// <summary>
         /// Replies to the <c>SocialGroupThread</c>
@@ -118,12 +115,16 @@ namespace epvpapi
                         });
         }
 
+        /// <summary>
+        /// Gets the url of the group thread
+        /// </summary>
+        /// <returns> The url of the group thread </returns>
         public string GetUrl()
         {
             return "http://www.elitepvpers.com/forum/groups/" + SocialGroup.ID
-                                                            + "-" + SocialGroup.Name.UrlEscape()
-                                                            + "-d" + ID + "-"
-                                                            + Posts.First().Title.UrlEscape() + ".html";
+                + "-" + SocialGroup.Name.UrlEscape()
+                + "-d" + ID + "-"
+                + Posts.First().Title.UrlEscape() + ".html";
         } 
     }
 }

@@ -136,6 +136,10 @@ namespace epvpapi
             Owner = owner;
         }
 
+        /// <summary>
+        /// Gets the url of the blog
+        /// </summary>
+        /// <returns> The url of the blog </returns>
         public string GetUrl()
         {
             return "http://www.elitepvpers.com/forum/blogs/" + Owner.ID + "-" + Owner.Name.UrlEscape() + ".html";

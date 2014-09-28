@@ -360,7 +360,6 @@ namespace epvpapi
         /// </summary>
         public string AvatarURL { get; set; }
 
-
         public User(uint id = 0)
             : this(null, id)
         { }
@@ -380,23 +379,29 @@ namespace epvpapi
             TBMProfile = new Profile(id);
         }
 
+        /// <summary>
+        /// Checks if a user got a specific rank
+        /// </summary>
+        /// <param name="rank"></param>
+        /// <returns></returns>
         public bool HasRank(Rank rank)
         {
             return Ranks.Any(userRank => userRank == rank);
         }
 
+        /// <summary>
+        /// Gets highest rank or a user
+        /// </summary>
+        /// <returns> The highest rank object </returns>
         public Rank GetHighestRank()
         {
-            Rank highestRank = new Rank();
-            foreach(Rank rank in Ranks)
-            {
+            var highestRank = new Rank();
+            foreach(var rank in Ranks)
                 if (rank > highestRank)
                     highestRank = rank;
-            }
 
             return highestRank;
         }
-   
 
         /// <summary>
         /// Updates the user by requesting the profile
@@ -425,6 +430,10 @@ namespace epvpapi
             new UserParser.LastVisitorsParser(this).Execute(doc.GetElementbyId("collapseobj_visitors"));
         }
 
+        /// <summary>
+        /// Gets the profile url
+        /// </summary>
+        /// <returns> The profile url of the user </returns>
         public string GetUrl()
         {
             return "http://www.elitepvpers.com/forum/members/" + ID + "-" + Name.UrlEscape() + ".html";
@@ -470,6 +479,11 @@ namespace epvpapi
                     : new List<User>();
         }
 
+        /// <summary>
+        /// Gets a user object by username
+        /// </summary>
+        /// <param name="name"> The username of the wanted user object </param>
+        /// <returns> User object or null </returns>
         public static User GetUserByName(string name)
         {
             var session = new Session();

@@ -136,8 +136,6 @@ namespace epvpapi
     
         }
 
-        
-
         /// <summary>
         /// Retrieves information about the messages such as title, content and sender
         /// </summary>
@@ -155,6 +153,11 @@ namespace epvpapi
             new PrivateMessageParser.ContentParser(this).Execute(doc.GetElementbyId("td_post_"));
         }
 
+        /// <summary>
+        /// Report the private message
+        /// </summary>
+        /// <param name="session"> The session which will be used for the report </param>
+        /// <param name="reason"> The resion for the report </param>
         public void Report(Session session, string reason)
         {
             session.ThrowIfInvalid();
@@ -171,6 +174,10 @@ namespace epvpapi
                          });
         }
 
+        /// <summary>
+        /// Gets the url to the private message (Only accessable by administrators
+        /// </summary>
+        /// <returns> The url to the private message </returns>
         public string GetUrl()
         {
             return "http://www.elitepvpers.com/forum/private.php?do=showpm&pmid=" + ID;

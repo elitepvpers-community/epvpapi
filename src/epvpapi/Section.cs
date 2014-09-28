@@ -60,7 +60,6 @@ namespace epvpapi
             URLName = urlName;
         }
 
-
         /// <summary>
         /// Updates information about the section
         /// </summary>
