@@ -134,6 +134,67 @@ namespace epvpapi.Connection
 
 
             /// <summary>
+            /// Publishes the <c>Blog.Entry</c> in the logged-in user's blog
+            /// </summary>
+            /// <param name="blogEntry"> Blog entry to be published </param>
+            /// <param name="settings"> Additional options that can be set </param>
+            public void Publish(Blog.Entry blogEntry, Blog.Entry.Settings settings = Blog.Entry.Settings.ParseUrl | Blog.Entry.Settings.AllowComments)
+            {
+                Publish(blogEntry, DateTime.Now, settings);
+            }
+
+            /// <summary>
+            /// Publishes the <c>Blog.Entry</c> in the logged-in user's blog at the given time (automatically)
+            /// </summary>
+            /// <param name="blogEntry"> Blog entry to be published </param>
+            /// <param name="publishDate"> Date and time when the entry will go live </param>
+            /// <param name="settings"> Additional options that can be set </param>
+            public void Publish(Blog.Entry blogEntry, DateTime publishDate,
+                                Blog.Entry.Settings settings = Blog.Entry.Settings.ParseUrl | Blog.Entry.Settings.AllowComments)
+            {
+                Session.ThrowIfInvalid();
+
+                blogEntry.Date = publishDate;
+                var tags = "";
+                foreach (var tag in blogEntry.Tags)
+                {
+                    tags += tag;
+                    if (blogEntry.Tags.Last() != tag)
+                        tags += ",";
+                }
+
+                Session.Post("http://www.elitepvpers.com/forum/blog_post.php?do=updateblog&blogid=",
+                            new List<KeyValuePair<string, string>>()
+                            {
+                                new KeyValuePair<string, string>("title", blogEntry.Title),
+                                new KeyValuePair<string, string>("message", blogEntry.Content.ToString()),
+                                new KeyValuePair<string, string>("wysiwyg", "0"),
+                                new KeyValuePair<string, string>("s", String.Empty),
+                                new KeyValuePair<string, string>("securitytoken", Session.SecurityToken),
+                                new KeyValuePair<string, string>("do", "updateblog"),
+                                new KeyValuePair<string, string>("b", String.Empty),
+                                new KeyValuePair<string, string>("posthash", String.Empty),
+                                new KeyValuePair<string, string>("poststarttime", Extensions.UnixTimestamp().ToString()),
+                                new KeyValuePair<string, string>("loggedinuser", Session.User.ID.ToString()),
+                                new KeyValuePair<string, string>("u", String.Empty),
+                                new KeyValuePair<string, string>("taglist", tags),
+                                new KeyValuePair<string, string>("allowcomments", Convert.ToUInt32(settings.HasFlag(Blog.Entry.Settings.AllowComments)).ToString()),
+                                new KeyValuePair<string, string>("moderatecomments", Convert.ToUInt32(settings.HasFlag(Blog.Entry.Settings.ModerateComments)).ToString()),
+                                new KeyValuePair<string, string>("private", Convert.ToUInt32(settings.HasFlag(Blog.Entry.Settings.Private)).ToString()),
+                                new KeyValuePair<string, string>("status", (publishDate.Compare(DateTime.Now)) ? "publish_now" : "publish_on"),
+                                new KeyValuePair<string, string>("publish[month]", blogEntry.Date.Month.ToString()),
+                                new KeyValuePair<string, string>("publish[day]", blogEntry.Date.Day.ToString()),
+                                new KeyValuePair<string, string>("publish[year]", blogEntry.Date.Year.ToString()),
+                                new KeyValuePair<string, string>("publish[hour]", blogEntry.Date.Hour.ToString()),
+                                new KeyValuePair<string, string>("publish[minute]", blogEntry.Date.Minute.ToString()),
+                                new KeyValuePair<string, string>("parseurl", Convert.ToUInt32(settings.HasFlag(Blog.Entry.Settings.ParseUrl)).ToString()),
+                                new KeyValuePair<string, string>("parseame", "1"),
+                                new KeyValuePair<string, string>("emailupdate", "none"),
+                                new KeyValuePair<string, string>("sbutton", "Submit")
+                            });
+            }
+
+            /// <summary>
             /// Gets all private messages that are stored in the specified folder
             /// </summary>
             /// <param name="folder"> 

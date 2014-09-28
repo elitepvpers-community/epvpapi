@@ -1,52 +1,80 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace epvpapi
 {
     /// <summary>
-    /// Base class for messages within the forum
+    /// Represents formatted vBulletin content
     /// </summary>
     public class Content 
     {
+        /// <summary>
+        /// Represents a content element such as spoilers, quotes, images, links...
+        /// </summary>
         public class Element
         {
-            public string Code { get; set; }
+            /// <summary>
+            /// Tag of the element that triggers the interpretation
+            /// </summary>
+            public string Tag { get; set; }
             public string Value { get; set; }
+
+            /// <summary>
+            /// Elements being wrapped by this element
+            /// </summary>
             public List<Element> Childs { get; set; } 
 
+            /// <summary>
+            /// The plain representation that includes the element tag and the plain values of the child elements.
+            /// Commonly used for posting content to the forum since vBulletin needs to interpret the raw content first
+            /// </summary>
             public virtual string Plain
             {
-                get { return String.Format("[{0}]{1}{2}[/{0}]", Code, Value, String.Join(String.Empty, Childs.Select(childContent => childContent.Plain))); }
+                get { return String.Format("[{0}]{1}{2}[/{0}]", Tag, Value, String.Join(String.Empty, Childs.Select(childContent => childContent.Plain))); }
             }
 
-            public Element(string code = null, string value = null)
+            public Element(string tag = null, string value = null)
             {
-                Code = code;
+                Tag = tag;
                 Value = value;
                 Childs = new List<Element>();
             }
 
+            /// <summary>
+            /// Tries to parse the plain element code. For example, a spoiler may be formatted this way:
+            /// [spoiler]This is a spoiler[/spoiler] where the code parses the tag (spoiler) and the value within the tags
+            /// </summary>
+            /// <param name="input"> Text to parse </param>
+            /// <param name="contentElement"> Element representing the parsed results </param>
+            /// <returns> true if the input was parsed, false if the input couldn't be parsed </returns>
             public static bool TryParse(string input, out Element contentElement)
             {
                 contentElement = new Element();
                 var match = new Regex(@"(?:\[([a-zA-Z]+)\]){1}(.+)(?:\[\/\1\]){1}").Match(input);
-                // 0 - everything, 1 - code, 2 - value
+                // 0 - everything, 1 - Tag, 2 - value
                 if (match.Groups.Count != 3) return false;
 
                 contentElement = new Element(match.Groups[1].Value, match.Groups[2].Value);
                 return true;
             }
 
-            public List<T> Filter<T>(string code) where T : Element
+            /// <summary>
+            /// Filters all elements and child events by the given type
+            /// </summary>
+            /// <typeparam name="T"> Type of the element to parse deriving from <c>Element</c> </typeparam>
+            /// <returns> List of all elements that matched the given tag within all child nodes </returns>
+            public List<T> Filter<T>() where T : Element, new()
             {
+                var filteringElement = new T();
                 var concatenatedList = new List<T>();
                 foreach (var child in Childs)
                 {
-                    if (child.Code.Equals(code, StringComparison.InvariantCultureIgnoreCase))
+                    if (child.Tag.Equals(filteringElement.Tag, StringComparison.InvariantCultureIgnoreCase))
                         concatenatedList.Add(child as T);
-                    concatenatedList.AddRange(child.Filter<T>(code));
+                    concatenatedList.AddRange(child.Filter<T>());
                 }
 
                 return concatenatedList;
@@ -220,7 +248,7 @@ namespace epvpapi
 
                 public override string Plain
                 {
-                    get { return String.Format("[{0}={1}]{2}{3}[/{0}]", Code, Author.Name, Value, String.Join(String.Empty, Childs.Select(childContent => childContent.Plain))); }
+                    get { return String.Format("[{0}={1}]{2}{3}[/{0}]", Tag, Author.Name, Value, String.Join(String.Empty, Childs.Select(childContent => childContent.Plain))); }
                 }
 
                 public Quote(User author):
@@ -242,47 +270,47 @@ namespace epvpapi
 
         public List<Element.PlainText> PlainTexts
         {
-            get { return Filter<Element.PlainText>(""); }
+            get { return Filter<Element.PlainText>(); }
         }
 
         public List<Element.Spoiler> Spoilers
         {
-            get { return Filter<Element.Spoiler>("spoiler"); }
+            get { return Filter<Element.Spoiler>(); }
         }
 
         public List<Element.Quote> Quotes
         {
-            get { return Filter<Element.Quote>("quote"); }
+            get { return Filter<Element.Quote>(); }
         }
 
         public List<Element.Image> Images
         {
-            get { return Filter<Element.Image>("img"); }
+            get { return Filter<Element.Image>(); }
         }
 
         public List<Element.Link> Links
         {
-            get { return Filter<Element.Link>("url"); } 
+            get { return Filter<Element.Link>(); } 
         }
 
         public List<Element.BoldText> BoldText
         {
-            get { return Filter<Element.BoldText>("B"); }
+            get { return Filter<Element.BoldText>(); }
         }
 
         public List<Element.ItalicText> ItalicText
         {
-            get { return Filter<Element.ItalicText>("I"); }
+            get { return Filter<Element.ItalicText>(); }
         }
 
         public List<Element.UnderlinedText> UnderlinedText
         {
-            get { return Filter<Element.UnderlinedText>("U"); }
+            get { return Filter<Element.UnderlinedText>(); }
         }
 
         public List<Element.StruckThroughText> StruckThrough
         {
-            get { return Filter<Element.StruckThroughText>("STRIKE"); }
+            get { return Filter<Element.StruckThroughText>(); }
         }
 
         public Content(List<Element> elements)
@@ -298,14 +326,15 @@ namespace epvpapi
             this(new List<Element>())
         { }
 
-        public List<T> Filter<T>(string code) where T : Element
+        public List<T> Filter<T>() where T : Element, new()
         {
+            var filteringElement = new T();
             var concatenatedList = new List<T>();
             foreach (var element in Elements)
             {
-                if (element.Code.Equals(code, StringComparison.InvariantCultureIgnoreCase))
+                if (element.Tag.Equals(filteringElement.Tag, StringComparison.InvariantCultureIgnoreCase))
                     concatenatedList.Add(element as T);
-                concatenatedList.AddRange(element.Filter<T>(code));
+                concatenatedList.AddRange(element.Filter<T>());
             }
 
             return concatenatedList;

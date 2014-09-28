@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace epvpapi
 {
+    /// <summary>
+    /// Base class for messages within the forum
+    /// </summary>
     public class Message : UniqueRecord
     {
         /// <summary>

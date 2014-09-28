@@ -5,6 +5,9 @@ using System.Linq;
 
 namespace epvpapi
 {
+    /// <summary>
+    /// Every user got an own blog that is accessible for everyone and writeable for the owner
+    /// </summary>
     public class Blog : UniqueObject, IUniqueWebObject
     {
         public class Entry : Post
@@ -53,70 +56,6 @@ namespace epvpapi
             public Entry(uint id)
                 : this(id, new Content())
             { }
-
-            /// <summary>
-            /// Publishes the <c>Entry</c> in the logged-in user's blog
-            /// </summary>
-            /// <param name="session"> Session that is used for sending the request </param>
-            /// <param name="settings"> Additional options that can be set </param>
-            public void Publish<TUser>(Session<TUser> session,
-                                       Settings settings = Settings.ParseUrl | Settings.AllowComments) where TUser : User
-            {
-                Publish(session, DateTime.Now, settings);
-            }
-
-            /// <summary>
-            /// Publishes the <c>Entry</c> in the logged-in user's blog at the given time (automatically)
-            /// </summary>
-            /// <typeparam name="T"> Type of User </typeparam>
-            /// <param name="session"> Session that is used for sending the request </param>
-            /// <param name="publishDate"> Date and time when the entry will go live </param>
-            /// <param name="settings"> Additional options that can be set </param>
-            public void Publish<TUser>(Session<TUser> session, DateTime publishDate,
-                                       Settings settings = Settings.ParseUrl | Settings.AllowComments) where TUser : User
-            {
-                session.ThrowIfInvalid();
-
-                var tags = "";
-                foreach(var tag in Tags)
-                {
-                    tags += tag;
-                    if(Tags.Last() != tag)
-                        tags += ",";
-                }
-
-                Date = publishDate;
-
-                session.Post("http://www.elitepvpers.com/forum/blog_post.php?do=updateblog&blogid=",
-                            new List<KeyValuePair<string, string>>()
-                            {
-                                new KeyValuePair<string, string>("title", Title),
-                                new KeyValuePair<string, string>("message", Content.ToString()),
-                                new KeyValuePair<string, string>("wysiwyg", "0"),
-                                new KeyValuePair<string, string>("s", String.Empty),
-                                new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
-                                new KeyValuePair<string, string>("do", "updateblog"),
-                                new KeyValuePair<string, string>("b", String.Empty),
-                                new KeyValuePair<string, string>("posthash", String.Empty),
-                                new KeyValuePair<string, string>("poststarttime", Extensions.UnixTimestamp().ToString()),
-                                new KeyValuePair<string, string>("loggedinuser", session.User.ID.ToString()),
-                                new KeyValuePair<string, string>("u", String.Empty),
-                                new KeyValuePair<string, string>("taglist", tags),
-                                new KeyValuePair<string, string>("allowcomments", Convert.ToUInt32(settings.HasFlag(Settings.AllowComments)).ToString()),
-                                new KeyValuePair<string, string>("moderatecomments", Convert.ToUInt32(settings.HasFlag(Settings.ModerateComments)).ToString()),
-                                new KeyValuePair<string, string>("private", Convert.ToUInt32(settings.HasFlag(Settings.Private)).ToString()),
-                                new KeyValuePair<string, string>("status", (publishDate.Compare(DateTime.Now)) ? "publish_now" : "publish_on"),
-                                new KeyValuePair<string, string>("publish[month]", Date.Month.ToString()),
-                                new KeyValuePair<string, string>("publish[day]", Date.Day.ToString()),
-                                new KeyValuePair<string, string>("publish[year]", Date.Year.ToString()),
-                                new KeyValuePair<string, string>("publish[hour]", Date.Hour.ToString()),
-                                new KeyValuePair<string, string>("publish[minute]", Date.Minute.ToString()),
-                                new KeyValuePair<string, string>("parseurl", Convert.ToUInt32(settings.HasFlag(Settings.ParseUrl)).ToString()),
-                                new KeyValuePair<string, string>("parseame", "1"),
-                                new KeyValuePair<string, string>("emailupdate", "none"),
-                                new KeyValuePair<string, string>("sbutton", "Submit")
-                            });
-            }
 
             public string GetUrl()
             {
