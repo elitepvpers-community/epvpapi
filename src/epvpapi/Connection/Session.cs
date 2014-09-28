@@ -381,11 +381,26 @@ namespace epvpapi.Connection
             ConnectedProfile.Login(md5Password);
         }
 
+        public Session(TUser user, string md5Password, WebProxy proxy) :
+            this(user, proxy)
+        {
+            ConnectedProfile.Login(md5Password);
+        }
+
+        public Session(TUser user, WebProxy proxy):
+            this(user)
+        {
+            UseProxy = true;
+            Proxy = proxy;
+        }
+
         public Session(TUser user)
         {
             ConnectedProfile = new Profile(user, this);
             Cookies = new CookieContainer();
         }   
+
+        
 
         /// <summary>
         /// Logs out the session user and destroys the session
