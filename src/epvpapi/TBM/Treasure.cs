@@ -100,7 +100,7 @@ namespace epvpapi.TBM
         /// Creates the <c>Treasure</c> and makes it public 
         /// </summary>
         /// <param name="session"> Session used for sending the request </param>
-        public void Create<TUser>(ProfileSession<TUser> session) where TUser : User
+        public void Create<TUser>(Session<TUser> session) where TUser : User
         {
             session.ThrowIfInvalid();
             if (Content.Length < 4) throw new ArgumentException("The content is too short (4 characters minimum)");
@@ -124,7 +124,7 @@ namespace epvpapi.TBM
         /// Deletes the <c>Treasure</c> permanently
         /// </summary>
         /// <param name="session"> Session used for sending the request </param>
-        public void Delete<T>(ProfileSession<T> session) where T : User
+        public void Delete<TUser>(Session<TUser> session) where TUser : User
         {
             session.ThrowIfInvalid();
             if (ID == 0) throw new ArgumentException("ID must not be zero");
@@ -140,7 +140,7 @@ namespace epvpapi.TBM
         /// Updates the <c>Treasure</c> by requesting the treasure page
         /// </summary>
         /// <param name="session"> Session used for sending the request </param>
-        public void Update(Session session)
+        public void Update<TUser>(Session<TUser> session) where TUser : User
         {
             session.ThrowIfInvalid();
             if(ID == 0) throw new ArgumentException("ID must not be zero");

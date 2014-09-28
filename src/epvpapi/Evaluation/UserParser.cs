@@ -164,29 +164,7 @@ namespace epvpapi.Evaluation
             {
                 if (coreNode == null) return;
 
-                HtmlNode userNameNode = coreNode.SelectSingleNode("h1[1]/span[1]");
-                if (userNameNode != null)
-                {
-                    Target.Name = userNameNode.InnerText.Strip();
-                }
-                else
-                {
-                    // In case the user has no special color, the <span> element will be missing and no attributes are used
-                    userNameNode = coreNode.SelectSingleNode("h1[1]");
-                    Target.Name = (userNameNode != null) ? userNameNode.InnerText.Strip() : String.Empty;
-                }
-
-                HtmlNode userTitleNode = coreNode.SelectSingleNode("h2[1]");
-                Target.Title = (userTitleNode != null) ? userTitleNode.InnerText : String.Empty;
-
-                if (userNameNode.Attributes.Contains("style"))
-                {
-                    Match match = Regex.Match(userNameNode.Attributes["style"].Value, @"color:(\S+)");
-                    if (match.Groups.Count > 1)
-                        Target.Namecolor = match.Groups[1].Value;
-                }
-
-                HtmlNode userStatusNode = coreNode.SelectSingleNode("h1[1]/img[1]");
+                var userStatusNode = coreNode.SelectSingleNode("h1[1]/img[1]");
                 if (userStatusNode != null)
                 {
                     if (userStatusNode.Attributes.Contains("src"))
@@ -200,6 +178,24 @@ namespace epvpapi.Evaluation
                             Target.CurrentStatus = User.Status.Online;
                     }
                 }
+
+                var userTitleNode = coreNode.SelectSingleNode("h2[1]");
+                Target.Title = (userTitleNode != null) ? userTitleNode.InnerText : String.Empty;
+
+                var userNameNode = coreNode.SelectSingleNode("h1[1]/span[1]") ??
+                                   coreNode.SelectSingleNode("h1[1]/strike[1]") ?? // If the user is banned, the name is struck through
+                                   coreNode.SelectSingleNode("h1[1]"); // In case the user has no special color, the <span> element will be missing and no attributes are used
+                                   
+                if (userNameNode == null) return;
+                Target.Name = userNameNode.InnerText.Strip();
+                Target.Banned = (userNameNode.Name == "strike") ? true : false;
+
+                if (userNameNode.Attributes.Contains("style"))
+                {
+                    var match = Regex.Match(userNameNode.Attributes["style"].Value, @"color:(\S+)");
+                    if (match.Groups.Count > 1)
+                        Target.Namecolor = match.Groups[1].Value;
+                }   
             }
         }
 

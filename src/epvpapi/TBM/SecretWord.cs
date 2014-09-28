@@ -22,7 +22,7 @@ namespace epvpapi.TBM
         /// </summary>
         /// <param name="session"> Session used for sending the request </param>
         /// <returns> Current Secret word as string </returns>
-        public static SecretWord Get(Session session)
+        public static SecretWord Get<TUser>(Session<TUser> session) where TUser : User
         {
             session.ThrowIfInvalid();
 
@@ -37,7 +37,7 @@ namespace epvpapi.TBM
         /// Sets the Secret word
         /// </summary>
         /// <param name="session"> Session used for sending the request </param>
-        public void Set(Session session)
+        public void Set<TUser>(Session<TUser> session) where TUser : User
         {
             session.ThrowIfInvalid();
 

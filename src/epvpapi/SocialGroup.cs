@@ -78,7 +78,10 @@ namespace epvpapi
         /// <param name="access"> Access restrictions of the group determining who can see- or who can enter the group </param>
         /// <param name="settings"> Additional options that can be set  </param>
         /// <returns> The just created SocialGroup </returns>
-        public static SocialGroup Create(Session session, string name, string description, Access access = Access.Public, Options settings = Options.EnableGroupAlbums | Options.EnableGroupMessages)
+        public static SocialGroup Create<TUser>(Session<TUser> session, string name, string description,
+                                                Access access = Access.Public,
+                                                Options settings = Options.EnableGroupAlbums | Options.EnableGroupMessages)
+                                                where TUser : User
         {
             session.ThrowIfInvalid();
 
@@ -105,10 +108,11 @@ namespace epvpapi
         /// Deletes the <c>SocialGroup</c>
         /// </summary>
         /// <param name="session"> Session that is used for sending the request </param>
-        public void Delete<T>(ProfileSession<T> session) where T : User
+        public void Delete<TUser>(Session<TUser> session) where TUser : User
         {
-            if (session.User.GetHighestRank() < User.Rank.GlobalModerator 
-                && session.User != Maintainer) throw new InsufficientAccessException("You don't have enough access rights to delete this group");
+            if (session.User.GetHighestRank() < User.Rank.GlobalModerator && session.User != Maintainer) 
+                throw new InsufficientAccessException("You don't have enough access rights to delete this group");
+
             if (ID == 0) throw new ArgumentException("Group ID must not be zero");
             session.ThrowIfInvalid();
 
@@ -131,7 +135,7 @@ namespace epvpapi
         /// </summary>
         /// <param name="session"> Session that is used for sending the request </param>
         /// <param name="user"> User that will be requested to be the new owner </param>
-        public void RequestTransfer(Session session, User user)
+        public void RequestTransfer<TUser>(Session<TUser> session, User user) where TUser : User
         {
             if (ID == 0) throw new ArgumentException("Group ID must not be zero");
             session.ThrowIfInvalid();
@@ -153,7 +157,7 @@ namespace epvpapi
         /// Accepts a pending ownership transfer if any for the <c>SocialGroup</c>
         /// </summary>
         /// <param name="session"> Session that is used for sending the request </param>
-        public void AcceptTransfer(Session session)
+        public void AcceptTransfer<TUser>(Session<TUser> session) where TUser : User
         {
             if (ID == 0) throw new ArgumentException("Group ID must not be zero");
             session.ThrowIfInvalid();
@@ -178,7 +182,7 @@ namespace epvpapi
         /// <param name="description"> Description of the group </param>
         /// <param name="access"> Access restrictions of the group determining who can see- or who can enter the group </param>
         /// <param name="settings"> Additional options that can be set  </param>
-        public void Edit(Session session, string description, Access access, Options settings)
+        public void Edit<TUser>(Session<TUser> session, string description, Access access, Options settings) where TUser : User
         {
             if (ID == 0) throw new ArgumentException("Group ID must not be zero");
             session.ThrowIfInvalid();
@@ -213,7 +217,7 @@ namespace epvpapi
         /// </summary>
         /// <param name="session"> Session that is used for sending the request </param>
         /// <param name="user"> User to kick </param>
-        public void Kick(Session session, User user)
+        public void Kick<TUser>(Session<TUser> session, User user) where TUser : User
         {
             if (ID == 0) throw new ArgumentException("Group ID must not be zero");
             session.ThrowIfInvalid();
@@ -235,7 +239,7 @@ namespace epvpapi
         /// </summary>
         /// <param name="session"> Session that is used for sending the request </param>
         /// <param name="user"> User to invite </param>
-        public void Invite(Session session, User user)
+        public void Invite<TUser>(Session<TUser> session, User user) where TUser : User
         {
             if (ID == 0) throw new ArgumentException("Group ID must not be zero");
             session.ThrowIfInvalid();
@@ -256,7 +260,7 @@ namespace epvpapi
         /// </summary>
         /// <param name="session"> Session that is used for sending the request </param>
         /// <param name="user"> User whose invite will be cancelled </param>
-        public void CancelInvite(Session session, User user)
+        public void CancelInvite<TUser>(Session<TUser> session, User user) where TUser : User
         {
             if (ID == 0) throw new ArgumentException("Group ID must not be zero");
             session.ThrowIfInvalid();
@@ -276,7 +280,7 @@ namespace epvpapi
         /// Joins the <c>SocialGroup</c>
         /// </summary>
         /// <param name="session"> Session that is used for sending the request </param>
-        public void Join(Session session)
+        public void Join<TUser>(Session<TUser> session) where TUser : User
         {
             if (ID == 0) throw new ArgumentException("Group ID must not be zero");
             session.ThrowIfInvalid();
@@ -298,7 +302,7 @@ namespace epvpapi
         /// Leaves the <c>SocialGroup</c>
         /// </summary>
         /// <param name="session"> Session that is used for sending the request </param>
-        public void Leave(Session session)
+        public void Leave<TUser>(Session<TUser> session) where TUser : User
         {
             if (ID == 0) throw new ArgumentException("Group ID must not be zero");
             session.ThrowIfInvalid();

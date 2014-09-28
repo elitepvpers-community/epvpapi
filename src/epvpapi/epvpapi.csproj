@@ -56,7 +56,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Blog.cs" />
-    <Compile Include="Connection\ProfileSession.cs" />
     <Compile Include="EpvpapiException.cs" />
     <Compile Include="Evaluation\PrivateMessageParser.cs" />
     <Compile Include="Evaluation\SectionThreadParser.cs" />
@@ -77,7 +76,6 @@
     <Compile Include="IReasonableDeletable.cs" />
     <Compile Include="InvalidAuthenticationException.cs" />
     <Compile Include="IReportable.cs" />
-    <Compile Include="IProfileUpdatable.cs" />
     <Compile Include="Content.cs" />
     <Compile Include="Evaluation\ParsingFailedException.cs" />
     <Compile Include="Message.cs" />

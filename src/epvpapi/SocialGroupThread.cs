@@ -32,8 +32,9 @@ namespace epvpapi
         /// <param name="startPost"> Represents the content and title of the <c>SocialGroupThread</c> </param>
         /// <param name="settings"> Additional options that can be set </param>
         /// <returns> Freshly created <c>SocialGroupThread</c></returns>
-        public static SocialGroupThread Create(ProfileSession<User> session, SocialGroup socialGroup, SocialGroupPost startPost,
-                                               Message.Settings settings = Message.Settings.ParseUrl)
+        public static SocialGroupThread Create<TUser>(Session<TUser> session, SocialGroup socialGroup, SocialGroupPost startPost,
+                                                     Message.Settings settings = Message.Settings.ParseUrl)
+                                                     where TUser : User
         {
             session.ThrowIfInvalid();
 
@@ -66,7 +67,7 @@ namespace epvpapi
         /// </summary>
         /// <param name="session"> Session that is used for sending the request </param>
         /// <param name="reason"> Reason for the deletion </param>
-        public void Delete<T>(ProfileSession<T> session, string reason) where T : User
+        public void Delete<TUser>(Session<TUser> session, string reason) where TUser : User
         {
             if (session.User.GetHighestRank() < User.Rank.GlobalModerator && session.User != SocialGroup.Maintainer) throw new InsufficientAccessException("You don't have enough access rights to delete this social group post");
             if (ID == 0) throw new System.ArgumentException("ID must not be empty");
@@ -92,7 +93,7 @@ namespace epvpapi
         /// <param name="session"> Session that is used for sending the request </param>
         /// <param name="settings"> Additional options that can be set </param>
         /// <param name="post"> Reply to post </param>
-        public void Reply(ProfileSession<User> session, SocialGroupPost post, Message.Settings settings = Message.Settings.ParseUrl)
+        public void Reply<TUser>(Session<TUser> session, SocialGroupPost post, Message.Settings settings = Message.Settings.ParseUrl) where TUser : User
         {
             session.ThrowIfInvalid();
 

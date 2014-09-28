@@ -17,7 +17,7 @@ namespace UnitTests.Tests
         {
             try
             {
-                var foundUsers = User.Search(TestEnvironment.Session, TestEnvironment.Session.User.Name);
+                var foundUsers = new List<User>(User.Search(TestEnvironment.Session, TestEnvironment.Session.User.Name));
                 Assert.AreNotEqual(0, foundUsers.Count, "No users were found for search term {0}", TestEnvironment.Session.User.Name);
 
                 if (foundUsers.Count != 0)

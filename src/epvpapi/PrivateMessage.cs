@@ -100,7 +100,7 @@ namespace epvpapi
         /// Certain requirements must be fulfilled in order to send messages automatically without entering a captcha:
         /// - More than 20 posts OR the <c>User.Rank.Premium</c> rank OR the <c>User.Rank.EliteGoldTrader</c> rank
         /// </remarks>
-        public void Send<T>(ProfileSession<T> session, Settings settings = Settings.ParseUrl | Settings.ShowSignature) where T : User
+        public void Send<TUser>(Session<TUser> session, Settings settings = Settings.ParseUrl | Settings.ShowSignature) where TUser : User
         {
             session.ThrowIfInvalid();
             if (session.User.Posts <= 20 && !session.User.HasRank(User.Rank.Premium) && !session.User.HasRank(User.Rank.EliteGoldTrader))
@@ -140,7 +140,7 @@ namespace epvpapi
         /// Retrieves information about the messages such as title, content and sender
         /// </summary>
         /// <param name="session"> Session used for sending the request </param>
-        public void Update(Session session)
+        public void Update<TUser>(Session<TUser> session) where TUser : User
         {
             session.ThrowIfInvalid();
             if (ID == 0) throw new System.ArgumentException("ID must not be emtpy");
@@ -158,7 +158,7 @@ namespace epvpapi
         /// </summary>
         /// <param name="session"> The session which will be used for the report </param>
         /// <param name="reason"> The resion for the report </param>
-        public void Report(Session session, string reason)
+        public void Report<TUser>(Session<TUser> session, string reason) where TUser : User
         {
             session.ThrowIfInvalid();
 

@@ -33,7 +33,7 @@ namespace epvpapi
         /// <remarks>
         /// The ID of the recipient has to be given in order to send the message
         /// </remarks>
-        public void Send(Session session, Message.Settings settings = Message.Settings.ParseUrl)
+        public void Send<TUser>(Session<TUser> session, Message.Settings settings = Message.Settings.ParseUrl) where TUser : User
         {
             if (Receiver.ID == 0) throw new ArgumentException("Receiver ID must not be empty");
             session.ThrowIfInvalid();

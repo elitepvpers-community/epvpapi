@@ -29,9 +29,9 @@ namespace epvpapi.TBM
         /// Use the <c>Transaction.Query.Received</c> or <c>Transaction.Query.Sent</c> constant. You can also concatenate both constants to get all transactions
         /// </param>
         /// <returns> List of <c>Transaction</c> objects representing the Transactions </returns>
-        public List<Transaction> GetTransactions<TUser>(ProfileSession<TUser> session, 
-                                                    Transaction.Query query = Transaction.Query.Sent | Transaction.Query.Received) 
-                                                    where TUser : User
+        public List<Transaction> GetTransactions<TUser>(Session<TUser> session, 
+                                                        Transaction.Query query = Transaction.Query.Sent | Transaction.Query.Received) 
+                                                        where TUser : User
         {
             var typeParameter = "all";
             if (query.HasFlag(Transaction.Query.Received) && !query.HasFlag(Transaction.Query.Sent))

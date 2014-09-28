@@ -4,6 +4,6 @@ namespace epvpapi
 {
     public interface IUpdatable
     {
-        void Update(Session session);
+        void Update<TUser>(Session<TUser> session) where TUser : User;
     }
 }

@@ -86,9 +86,10 @@ namespace epvpapi
         /// <param name="settings"> Additional options that can be set </param>
         /// <param name="closed"> If true, the thread state is closed meaning that no one (except the staff) can answer to this thread </param>
         /// <returns> Freshly created <c>SectionThread</c> </returns>
-        public static SectionThread Create(ProfileSession<User> session, Section section, SectionPost startPost,
-                                           SectionPost.Settings settings = SectionPost.Settings.ParseUrl | SectionPost.Settings.ShowSignature,
-                                           bool closed = false)
+        public static SectionThread Create<TUser>(Session<TUser> session, Section section, SectionPost startPost,
+                                                   SectionPost.Settings settings = SectionPost.Settings.ParseUrl | SectionPost.Settings.ShowSignature,
+                                                   bool closed = false)
+                                                   where TUser : User
         {
             session.ThrowIfInvalid();
 
@@ -128,7 +129,7 @@ namespace epvpapi
         /// <remarks>
         /// Not tested yet!
         /// </remarks>
-        public void Delete<T>(ProfileSession<T> session, string reason) where T : User
+        public void Delete<TUser>(Session<TUser> session, string reason) where TUser : User
         {
             if (session.User.GetHighestRank() < User.Rank.GlobalModerator) throw new InsufficientAccessException("You don't have enough access rights to delete this thread");
             if (ID == 0) throw new System.ArgumentException("ID must not be empty");
@@ -157,7 +158,7 @@ namespace epvpapi
         /// Switch function - If the thread is closed, it will be opened and vice versa when executing this function
         /// Not tested yet!
         /// </remarks>
-        public void Close(Session session)
+        public void Close<TUser>(Session<TUser> session) where TUser : User
         {
             if (ID == 0) throw new ArgumentException("ID must not be empty");
             session.ThrowIfInvalid();
@@ -182,7 +183,7 @@ namespace epvpapi
         /// <remarks>
         /// Not tested yet!
         /// </remarks>
-        public void Open(Session session)
+        public void Open<TUser>(Session<TUser> session) where TUser : User
         {
             Close(session);
             Closed = false;
@@ -193,7 +194,7 @@ namespace epvpapi
         /// </summary>
         /// <param name="session"> Session that is used for sending the request </param>
         /// <param name="rating"> Represents the rate value (0-5) </param>
-        public void Rate(Session session, uint rating)
+        public void Rate<TUser>(Session<TUser> session, uint rating) where TUser : User
         {
             if (ID == 0) throw new System.ArgumentException("ID must not be empty");
             session.ThrowIfInvalid();
@@ -220,8 +221,9 @@ namespace epvpapi
         /// <remarks>
         /// The ID of the thread has to be given in order to reply
         /// </remarks>
-        public void Reply(ProfileSession<User> session, SectionPost post,
-                          SectionPost.Settings settings = SectionPost.Settings.ParseUrl | SectionPost.Settings.ShowSignature)
+        public void Reply<TUser>(Session<TUser> session, SectionPost post,
+                                SectionPost.Settings settings = SectionPost.Settings.ParseUrl | SectionPost.Settings.ShowSignature)
+                                where TUser : User
         {
             if (ID == 0) throw new ArgumentException("ID must not be empty");
             session.ThrowIfInvalid();
@@ -262,7 +264,7 @@ namespace epvpapi
         /// <remarks>
         /// ID and the section represented by a <c>Section</c> object is required in order to update.
         /// </remarks>
-        public void Update(Session session)
+        public void Update<TUser>(Session<TUser> session) where TUser : User
         {
             session.ThrowIfInvalid();
             if(ID == 0) throw new ArgumentException("ID must not be empty");
@@ -322,7 +324,7 @@ namespace epvpapi
         /// <param name="firstPage"> Index of the first page to fetch </param>
         /// <param name="pageCount"> Amount of pages to get replies from. The higher this count, the more data will be generated and received </param>
         /// <returns> List of <c>SectionPost</c>s representing the replies </returns>
-        public List<SectionPost> Replies(Session session, uint pageCount = 1, uint firstPage = 1)
+        public List<SectionPost> Replies<TUser>(Session<TUser> session, uint pageCount = 1, uint firstPage = 1) where TUser : User
         {
             session.ThrowIfInvalid();
             if(ID == 0) throw new ArgumentException("ID must not be empty");

@@ -59,7 +59,7 @@ namespace epvpapi
         /// <remarks>
         /// The ID of the <c>SectionPost</c> has to be given in order to report the post
         /// </remarks>
-        public void Report(Session session, string reason)
+        public void Report<TUser>(Session<TUser> session, string reason) where TUser : User
         {
             if (ID == 0) throw new System.ArgumentException("ID must not be empty");
             session.ThrowIfInvalid();

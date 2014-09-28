@@ -50,7 +50,7 @@ namespace epvpapi
             /// </summary>
             /// <param name="session"> Session used for sending the request </param>
             /// <param name="message"> The message text to send </param>
-            public void Send(Session session, string message)
+            public void Send<TUser>(Session<TUser> session, string message) where TUser : User
             {
                 session.ThrowIfInvalid();
 
@@ -69,7 +69,7 @@ namespace epvpapi
             /// Updates the most recent shouts usually displayed when loading the main page 
             /// </summary>
             /// <param name="session"> Session used for sending the request </param>
-            public List<Shout> Shouts(Session session)
+            public List<Shout> Shouts<TUser>(Session<TUser> session) where TUser : User
             {
                 session.ThrowIfInvalid();
 
@@ -145,7 +145,7 @@ namespace epvpapi
             /// <param name="updateShoutbox"> When set to true, additional shoutbox information will be updated on the fly. This does not cause any major
             /// resources to be used since the information can be parsed from the same <c>HtmlDocument</c> as the channel history </param>
             /// <returns> Shouts listed in the channel history that could be obtained and parsed </returns>
-            public List<Shout> History(ProfileSession<PremiumUser> session, uint pageCount = 1, uint firstPage = 1, bool updateShoutbox = true)
+            public List<Shout> History<TUser>(Session<TUser> session, uint pageCount = 1, uint firstPage = 1, bool updateShoutbox = true) where TUser : PremiumUser
             {
                 session.ThrowIfInvalid();
 
@@ -233,7 +233,7 @@ namespace epvpapi
         /// Updates statistics and information about the shoutbox
         /// </summary>
         /// <param name="session"> Session used for storing personal shoutbox data into the session user field </param>
-        public static void Update(ProfileSession<PremiumUser> session)
+        public static void Update<TUser>(Session<TUser> session) where TUser : PremiumUser
         {
             session.ThrowIfInvalid();
 
