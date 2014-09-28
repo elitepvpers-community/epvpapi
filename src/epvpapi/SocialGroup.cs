@@ -272,7 +272,6 @@ namespace epvpapi
                         });
         }
 
-
         /// <summary>
         /// Joins the <c>SocialGroup</c>
         /// </summary>
@@ -294,7 +293,6 @@ namespace epvpapi
                             new KeyValuePair<string, string>("confirm", "++Yes++")
                         });
         }
-
 
         /// <summary>
         /// Leaves the <c>SocialGroup</c>
@@ -322,7 +320,6 @@ namespace epvpapi
         {
             return "http://www.elitepvpers.com/forum/groups/" + ID + "-" + Name.UrlEscape() + ".html";
         } 
-
     }
 }
 

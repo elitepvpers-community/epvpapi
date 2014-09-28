@@ -45,7 +45,6 @@ namespace epvpapi
             return "http://www.elitepvpers.com/forum/joining-e-pvp/" + Thread.ID + "-" + Thread.InitialPost.Title.UrlEscape() + ".html";
         } 
 
-
         /// <summary>
         /// Reports the <c>SectionPost</c> using the built-in report function
         /// </summary>

@@ -61,6 +61,10 @@ namespace epvpapi
         }
 
 
+        /// <summary>
+        /// Updates information about the section
+        /// </summary>
+        /// <param name="session"> Session used for storing personal shoutbox data into the session user field </param>
         public void Update(Session session)
         {
             session.ThrowIfInvalid();
