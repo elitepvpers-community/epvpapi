@@ -99,8 +99,11 @@ namespace epvpapi.Evaluation
                         : 0;
 
                     var userNameNode = postCreatorNode.SelectSingleNode("span[1]") ??
-                                       postCreatorNode.SelectSingleNode("text()[1]");
+                                       postCreatorNode.SelectSingleNode("text()[1]") ??
+                                       postCreatorNode.SelectSingleNode("strike[1]"); // banned users
+
                     Target.Name = (userNameNode != null) ? userNameNode.InnerText : "";
+                    Target.Banned = (userNameNode != null) ? (userNameNode.Name == "strike") ? true : false : false;
 
                     var userTitleNode = coreNode.SelectSingleNode("div[3]");
                     Target.Title = (userTitleNode != null) ? userTitleNode.InnerText : "";
@@ -113,7 +116,9 @@ namespace epvpapi.Evaluation
                             ? userAvatarNode.Attributes["src"].Value
                             : "";
 
-                    var additionalStatsNode = coreNode.SelectSingleNode("div[6]"); // node that contains posts, thanks, elite*gold, the join date...                    
+                    // node that contains posts, thanks, elite*gold, the join date... 
+                    // if the user has set an avatar, the node will be set of by 1. Otherwise if no avatar was set, the avatar node is the stats container 
+                    var additionalStatsNode = (String.IsNullOrEmpty(Target.AvatarUrl)) ? coreNode.SelectSingleNode("div[5]") : coreNode.SelectSingleNode("div[6]"); 
                     if (additionalStatsNode != null)
                     {
                         var statsNodes = additionalStatsNode.ChildNodes.GetElementsByTagName("div");

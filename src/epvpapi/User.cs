@@ -331,6 +331,11 @@ namespace epvpapi
         public List<Rank> Ranks { get; set; }
 
         /// <summary>
+        /// Indicates whether the user is banned or not
+        /// </summary>
+        public bool Banned { get; internal set; }
+
+        /// <summary>
         /// Additional information that can be entered by the user. Listed under tab 'About'
         /// </summary>
         public string Biography { get; set; }
