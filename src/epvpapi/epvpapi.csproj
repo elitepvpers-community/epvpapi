@@ -94,7 +94,6 @@
     <Compile Include="SocialGroup.cs" />
     <Compile Include="SocialGroupPost.cs" />
     <Compile Include="SocialGroupThread.cs" />
-    <Compile Include="SubscribedThread.cs" />
     <Compile Include="TBM\Profile.cs" />
     <Compile Include="TBM\Ratings.cs" />
     <Compile Include="TBM\Mediations.cs" />

@@ -335,14 +335,14 @@ namespace epvpapi.Connection
             }
 
             /// <summary>
-            /// Retrieves all <c>SubscribedThread</c>s using the logged-in user account
+            /// Retrieves all subscribed <c>SectionThread</c>s using the logged-in user account
             /// </summary>
-            /// <returns> List of all <c>SubscribedThread</c>s that could be retrieved </returns>
-            public List<SubscribedThread> GetSubscribedThreads()
+            /// <returns> List of all subscribed <c>SectionThread</c>s that could be retrieved </returns>
+            public List<SectionThread> GetSubscribedThreads()
             {
                 Session.ThrowIfInvalid();
 
-                var subscribedThreads = new List<SubscribedThread>();
+                var subscribedThreads = new List<SectionThread>();
 
                 var res = Session.Get("http://www.elitepvpers.com/forum/subscription.php?do=viewsubscription&daysprune=-1&folderid=all");
                 var htmlDocument = new HtmlDocument();
@@ -360,14 +360,10 @@ namespace epvpapi.Connection
                         continue;
 
                     uint threadId = Convert.ToUInt32(new Regex("<td class=\"alt1\" id=\"td_threadtitle_(.*?)\"").Match(node.InnerHtml).Groups[1].Value);
-                    string threadTitle = new Regex("<a href=\".*?\" id=\"thread_title_.*?\">(.*?)</a>").Match(node.InnerHtml).Groups[1].Value;
                     string threadSection = new Regex("<a href=\"(.*?)/.*?\" id=\"thread_title_.*?\">.*?</a>").Match(node.InnerHtml).Groups[1].Value;
                     Section section = Section.Sections.Where(n => n.UrlName == threadSection).FirstOrDefault();
 
-                    var subscribedThread = new SubscribedThread(threadId, section)
-                    {
-                        Title = threadTitle,
-                    };
+                    var subscribedThread = new SectionThread(threadId, section);
 
                     subscribedThreads.Add(subscribedThread);
                 }
