@@ -89,16 +89,16 @@ namespace epvpapi.Connection
             public void Login(string md5Password)
             {
                 var res = Session.Post("http://www.elitepvpers.com/forum/login.php?do=login&langid=1",
-                                            new List<KeyValuePair<string, string>>()
-                                        {
-                                            new KeyValuePair<string, string>("vb_login_username", User.Name),
-                                            new KeyValuePair<string, string>("cookieuser", "1"),
-                                            new KeyValuePair<string, string>("s", String.Empty),
-                                            new KeyValuePair<string, string>("securitytoken", "guest"),
-                                            new KeyValuePair<string, string>("do", "login"),
-                                            new KeyValuePair<string, string>("vb_login_md5password", md5Password),
-                                            new KeyValuePair<string, string>("vb_login_md5password_utf", md5Password)
-                                        });
+                    new List<KeyValuePair<string, string>>()
+                    {
+                        new KeyValuePair<string, string>("vb_login_username", User.Name),
+                        new KeyValuePair<string, string>("cookieuser", "1"),
+                        new KeyValuePair<string, string>("s", String.Empty),
+                        new KeyValuePair<string, string>("securitytoken", "guest"),
+                        new KeyValuePair<string, string>("do", "login"),
+                        new KeyValuePair<string, string>("vb_login_md5password", md5Password),
+                        new KeyValuePair<string, string>("vb_login_md5password_utf", md5Password)
+                    });
 
                 Session.Update();
             }
@@ -126,10 +126,10 @@ namespace epvpapi.Connection
                 Session.ThrowIfInvalid();
 
                 Session.Post("http://www.elitepvpers.com/theblackmarket/api/secretword/",
-                            new List<KeyValuePair<string, string>>()
-                            {
-                                new KeyValuePair<string, string>("secretword", newSecretWord)
-                            });
+                    new List<KeyValuePair<string, string>>()
+                    {
+                        new KeyValuePair<string, string>("secretword", newSecretWord)
+                    });
             }
 
 
@@ -138,7 +138,8 @@ namespace epvpapi.Connection
             /// </summary>
             /// <param name="blogEntry"> Blog entry to be published </param>
             /// <param name="settings"> Additional options that can be set </param>
-            public void Publish(Blog.Entry blogEntry, Blog.Entry.Settings settings = Blog.Entry.Settings.ParseUrl | Blog.Entry.Settings.AllowComments)
+            public void Publish(Blog.Entry blogEntry,
+                Blog.Entry.Settings settings = Blog.Entry.Settings.ParseUrl | Blog.Entry.Settings.AllowComments)
             {
                 Publish(blogEntry, DateTime.Now, settings);
             }
@@ -150,48 +151,44 @@ namespace epvpapi.Connection
             /// <param name="publishDate"> Date and time when the entry will go live </param>
             /// <param name="settings"> Additional options that can be set </param>
             public void Publish(Blog.Entry blogEntry, DateTime publishDate,
-                                Blog.Entry.Settings settings = Blog.Entry.Settings.ParseUrl | Blog.Entry.Settings.AllowComments)
+                Blog.Entry.Settings settings = Blog.Entry.Settings.ParseUrl | Blog.Entry.Settings.AllowComments)
             {
                 Session.ThrowIfInvalid();
 
                 blogEntry.Date = publishDate;
                 var tags = "";
                 foreach (var tag in blogEntry.Tags)
-                {
-                    tags += tag;
-                    if (blogEntry.Tags.Last() != tag)
-                        tags += ",";
-                }
+                    tags += tag + (blogEntry.Tags.Last() != tag ? "," : "");
 
                 Session.Post("http://www.elitepvpers.com/forum/blog_post.php?do=updateblog&blogid=",
-                            new List<KeyValuePair<string, string>>()
-                            {
-                                new KeyValuePair<string, string>("title", blogEntry.Title),
-                                new KeyValuePair<string, string>("message", blogEntry.Content.ToString()),
-                                new KeyValuePair<string, string>("wysiwyg", "0"),
-                                new KeyValuePair<string, string>("s", String.Empty),
-                                new KeyValuePair<string, string>("securitytoken", Session.SecurityToken),
-                                new KeyValuePair<string, string>("do", "updateblog"),
-                                new KeyValuePair<string, string>("b", String.Empty),
-                                new KeyValuePair<string, string>("posthash", String.Empty),
-                                new KeyValuePair<string, string>("poststarttime", Extensions.UnixTimestamp().ToString()),
-                                new KeyValuePair<string, string>("loggedinuser", Session.User.ID.ToString()),
-                                new KeyValuePair<string, string>("u", String.Empty),
-                                new KeyValuePair<string, string>("taglist", tags),
-                                new KeyValuePair<string, string>("allowcomments", Convert.ToUInt32(settings.HasFlag(Blog.Entry.Settings.AllowComments)).ToString()),
-                                new KeyValuePair<string, string>("moderatecomments", Convert.ToUInt32(settings.HasFlag(Blog.Entry.Settings.ModerateComments)).ToString()),
-                                new KeyValuePair<string, string>("private", Convert.ToUInt32(settings.HasFlag(Blog.Entry.Settings.Private)).ToString()),
-                                new KeyValuePair<string, string>("status", (publishDate.Compare(DateTime.Now)) ? "publish_now" : "publish_on"),
-                                new KeyValuePair<string, string>("publish[month]", blogEntry.Date.Month.ToString()),
-                                new KeyValuePair<string, string>("publish[day]", blogEntry.Date.Day.ToString()),
-                                new KeyValuePair<string, string>("publish[year]", blogEntry.Date.Year.ToString()),
-                                new KeyValuePair<string, string>("publish[hour]", blogEntry.Date.Hour.ToString()),
-                                new KeyValuePair<string, string>("publish[minute]", blogEntry.Date.Minute.ToString()),
-                                new KeyValuePair<string, string>("parseurl", Convert.ToUInt32(settings.HasFlag(Blog.Entry.Settings.ParseUrl)).ToString()),
-                                new KeyValuePair<string, string>("parseame", "1"),
-                                new KeyValuePair<string, string>("emailupdate", "none"),
-                                new KeyValuePair<string, string>("sbutton", "Submit")
-                            });
+                    new List<KeyValuePair<string, string>>()
+                    {
+                        new KeyValuePair<string, string>("title", blogEntry.Title),
+                        new KeyValuePair<string, string>("message", blogEntry.Content.ToString()),
+                        new KeyValuePair<string, string>("wysiwyg", "0"),
+                        new KeyValuePair<string, string>("s", String.Empty),
+                        new KeyValuePair<string, string>("securitytoken", Session.SecurityToken),
+                        new KeyValuePair<string, string>("do", "updateblog"),
+                        new KeyValuePair<string, string>("b", String.Empty),
+                        new KeyValuePair<string, string>("posthash", String.Empty),
+                        new KeyValuePair<string, string>("poststarttime", Extensions.UnixTimestamp().ToString()),
+                        new KeyValuePair<string, string>("loggedinuser", Session.User.ID.ToString()),
+                        new KeyValuePair<string, string>("u", String.Empty),
+                        new KeyValuePair<string, string>("taglist", tags),
+                        new KeyValuePair<string, string>("allowcomments", Convert.ToUInt32(settings.HasFlag(Blog.Entry.Settings.AllowComments)).ToString()),
+                        new KeyValuePair<string, string>("moderatecomments", Convert.ToUInt32(settings.HasFlag(Blog.Entry.Settings.ModerateComments)).ToString()),
+                        new KeyValuePair<string, string>("private", Convert.ToUInt32(settings.HasFlag(Blog.Entry.Settings.Private)).ToString()),
+                        new KeyValuePair<string, string>("status", (publishDate.Compare(DateTime.Now)) ? "publish_now" : "publish_on"),
+                        new KeyValuePair<string, string>("publish[month]", blogEntry.Date.Month.ToString()),
+                        new KeyValuePair<string, string>("publish[day]", blogEntry.Date.Day.ToString()),
+                        new KeyValuePair<string, string>("publish[year]", blogEntry.Date.Year.ToString()),
+                        new KeyValuePair<string, string>("publish[hour]", blogEntry.Date.Hour.ToString()),
+                        new KeyValuePair<string, string>("publish[minute]", blogEntry.Date.Minute.ToString()),
+                        new KeyValuePair<string, string>("parseurl", Convert.ToUInt32(settings.HasFlag(Blog.Entry.Settings.ParseUrl)).ToString()),
+                        new KeyValuePair<string, string>("parseame", "1"),
+                        new KeyValuePair<string, string>("emailupdate", "none"),
+                        new KeyValuePair<string, string>("sbutton", "Submit")
+                    });
             }
 
             /// <summary>
@@ -266,7 +263,7 @@ namespace epvpapi.Connection
                         {
                             var tdBaseNode = subNode.SelectSingleNode("td[3]");
                             if (tdBaseNode == null) continue;
-                            uint pmID = Convert.ToUInt32(new string(tdBaseNode.Id.Skip(1).ToArray())); // skip the first character that is always prefixed before the actual id
+                            var pmID = new string(tdBaseNode.Id.Skip(1).ToArray()).To<uint>(); // skip the first character that is always prefixed before the actual id
 
                             var dateNode = tdBaseNode.SelectSingleNode("div[1]/span[1]");
                             string date = (dateNode != null) ? dateNode.InnerText : "";
@@ -286,7 +283,6 @@ namespace epvpapi.Connection
                             }
                             title = (titleNode != null) ? titleNode.InnerText : "";
 
-                            string userName = "";
                             var userNameNode = tdBaseNode.SelectSingleNode("div[2]/span[2]");
                             if (userNameNode == null)
                             {
@@ -294,8 +290,8 @@ namespace epvpapi.Connection
                                 userNameNode = tdBaseNode.SelectSingleNode("div[2]/strong[1]/span[1]");
                                 messageUnread = true;
                             }
-                            userName = (userNameNode != null) ? userNameNode.InnerText : "";
 
+                            var userName = (userNameNode != null) ? userNameNode.InnerText : "";
                             var sender = new User(userName);
                             if (userNameNode != null)
                             {
@@ -352,8 +348,9 @@ namespace epvpapi.Connection
                 for (var i = startIndex; i < (startIndex + pageCount); ++i)
                 {
                     var res = Session.Get("http://www.elitepvpers.com/theblackmarket/treasures/" +
-                                         ((queryStatus == Treasure.Query.Bought) ? "bought" : "soldunsold")
-                                         + "/" + i);
+                        ((queryStatus == Treasure.Query.Bought) ? "bought" : "soldunsold")
+                        + "/" + i);
+
                     var htmlDocument = new HtmlDocument();
                     htmlDocument.LoadHtml(res.ToString());
 
@@ -397,9 +394,8 @@ namespace epvpapi.Connection
                             if (opponentNode != null)
                             {
                                 var opponent = opponentNode.Attributes.Contains("href")
-                                                ? new User(opponentNode.InnerText,
-                                                    epvpapi.User.FromUrl(opponentNode.Attributes["href"].Value))
-                                                : new User();
+                                    ? new User(opponentNode.InnerText, epvpapi.User.FromUrl(opponentNode.Attributes["href"].Value))
+                                    : new User();
 
                                 if (queryStatus == Treasure.Query.Bought)
                                 {
@@ -475,7 +471,6 @@ namespace epvpapi.Connection
             set { ConnectedProfile.User = value; }
         }
 
-
         public Session(TUser user, string md5Password):
             this(user)
         {
@@ -532,8 +527,8 @@ namespace epvpapi.Connection
                 {
                     var userProfileLinkNode = userBarNode.SelectSingleNode("li[1]/a[1]");
                     User.ID = userProfileLinkNode.Attributes.Contains("href")
-                                ? epvpapi.User.FromUrl(userProfileLinkNode.Attributes["href"].Value)
-                                : 0;
+                        ? epvpapi.User.FromUrl(userProfileLinkNode.Attributes["href"].Value)
+                        : 0;
                 }
             }
 
@@ -546,9 +541,10 @@ namespace epvpapi.Connection
         /// </summary>
         internal void ThrowIfInvalid()
         {
-            if (!Valid) throw new InvalidSessionException("Session is not valid, Cookies: " + Cookies.Count +
-                                                          " | Security Token: " + SecurityToken +
-                                                          " | User: " + User.Name);
+            if (!Valid)
+                throw new InvalidSessionException(
+                    String.Format("Session is not valid, Cookies: {1} | Security Token: {2} | User: {3}",
+                    Cookies.Count, SecurityToken, User.Name));
         }
 
 
@@ -572,14 +568,13 @@ namespace epvpapi.Connection
                 }
 
                 var client = new HttpClient(handler);
-                
-                Task<HttpResponseMessage> response = client.GetAsync(url);
+                var response = client.GetAsync(url);
                 if (!response.Result.IsSuccessStatusCode && response.Result.StatusCode != HttpStatusCode.SeeOther)
                     throw new RequestFailedException("Request failed, Server returned " + response.Result.StatusCode);
 
                 return new Response(response.Result);
             }
-            catch (System.Net.CookieException exception)
+            catch (CookieException exception)
             {
                 throw new RequestFailedException("The Session could not be resolved", exception);
             }
@@ -592,7 +587,6 @@ namespace epvpapi.Connection
         {
             return Get(new Uri(url));
         }
-
 
         /// <summary> Performs a HTTP POST request </summary>
         /// <param name="url"> Location where to post the data </param>
@@ -634,7 +628,7 @@ namespace epvpapi.Connection
 
                 return new Response(response.Result);
             }
-            catch (System.Net.CookieException exception)
+            catch (CookieException exception)
             {
                 throw new RequestFailedException("The Session could not be resolved", exception);
             }

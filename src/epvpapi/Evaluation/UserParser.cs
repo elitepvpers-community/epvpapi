@@ -52,9 +52,7 @@ namespace epvpapi.Evaluation
                 Target.Interests = (interestsNode != null) ? interestsNode.SelectSingleNode("text()[1]").InnerText.Strip() : "";
 
                 var occupationNode = document.GetElementbyId("profilefield_value_4");
-                Target.Occupation = (occupationNode != null)
-                            ? occupationNode.SelectSingleNode("text()[1]").InnerText.Strip()
-                            : "";
+                Target.Occupation = (occupationNode != null) ? occupationNode.SelectSingleNode("text()[1]").InnerText.Strip() : "";
 
                 var steamIdNode = document.GetElementbyId("profilefield_value_8");
                 Target.SteamID = (steamIdNode != null) ? steamIdNode.SelectSingleNode("text()[1]").InnerText.Strip() : "";
@@ -81,7 +79,7 @@ namespace epvpapi.Evaluation
                 {
                     foreach (var fieldNode in fieldNodes)
                     {
-                        string actualValue = valueNodes.ElementAt(fieldNodes.IndexOf(fieldNode)).InnerText;
+                        var actualValue = valueNodes.ElementAt(fieldNodes.IndexOf(fieldNode)).InnerText;
 
                         if (fieldNode.InnerText == "Biography")
                             Target.Biography = actualValue;
@@ -117,7 +115,7 @@ namespace epvpapi.Evaluation
                 {
                     var profileLinkNode = visitorNode.SelectSingleNode("a[1]");
                     if (profileLinkNode == null) continue;
-                    string profileLink = (profileLinkNode.Attributes.Contains("href")) ? profileLinkNode.Attributes["href"].Value : "";
+                    var profileLink = (profileLinkNode.Attributes.Contains("href")) ? profileLinkNode.Attributes["href"].Value : "";
 
                     var userNameNode = profileLinkNode.SelectSingleNode("span[1]");
                     if (userNameNode == null) // non-ranked users got their name wrapped in the 'a' element
@@ -169,7 +167,7 @@ namespace epvpapi.Evaluation
                 {
                     if (userStatusNode.Attributes.Contains("src"))
                     {
-                        string userStatusLink = userStatusNode.Attributes["src"].Value;
+                        var userStatusLink = userStatusNode.Attributes["src"].Value;
                         if (userStatusLink.Contains("invisible"))
                             Target.CurrentStatus = User.Status.Invisible;
                         else if (userStatusLink.Contains("offline"))
@@ -180,11 +178,11 @@ namespace epvpapi.Evaluation
                 }
 
                 var userTitleNode = coreNode.SelectSingleNode("h2[1]");
-                Target.Title = (userTitleNode != null) ? userTitleNode.InnerText : String.Empty;
+                Target.Title = (userTitleNode != null) ? userTitleNode.InnerText : "";
 
                 var userNameNode = coreNode.SelectSingleNode("h1[1]/span[1]") ??
-                                   coreNode.SelectSingleNode("h1[1]/strike[1]") ?? // If the user is banned, the name is struck through
-                                   coreNode.SelectSingleNode("h1[1]"); // In case the user has no special color, the <span> element will be missing and no attributes are used
+                    coreNode.SelectSingleNode("h1[1]/strike[1]") ?? // If the user is banned, the name is struck through
+                    coreNode.SelectSingleNode("h1[1]"); // In case the user has no special color, the <span> element will be missing and no attributes are used
                                    
                 if (userNameNode == null) return;
                 Target.Name = userNameNode.InnerText.Strip();
@@ -218,7 +216,7 @@ namespace epvpapi.Evaluation
                 // Loop through the fields since vBulletin sorts them dynamically according to rank and certain user settings
                 foreach (var statisticsGroup in coreNode.ChildNodes.GetElementsByTagName("fieldset"))
                 {
-                    string legendCaption = statisticsGroup.SelectSingleNode("legend[1]").InnerText;
+                    var legendCaption = statisticsGroup.SelectSingleNode("legend[1]").InnerText;
 
                     if (legendCaption == "Total Posts")
                     {
@@ -234,9 +232,7 @@ namespace epvpapi.Evaluation
                         Target.VisitorMessages = (visitorMessagesNode != null) ? (uint)visitorMessagesNode.InnerText.To<double>() : 0;
 
                         var lastVisitorMessageNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[1]");
-                        Target.LastVisitorMessage = (lastVisitorMessageNode != null)
-                                                    ? lastVisitorMessageNode.InnerText.ToElitepvpersDateTime()
-                                                    : new DateTime();
+                        Target.LastVisitorMessage = (lastVisitorMessageNode != null) ? lastVisitorMessageNode.InnerText.ToElitepvpersDateTime() : new DateTime();
                     }
                     else if (legendCaption == "Thanks Given")
                     {

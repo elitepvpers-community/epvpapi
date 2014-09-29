@@ -60,8 +60,8 @@ namespace epvpapi.Evaluation
 
             // get all first layer child-quotes.
             var quoteNodes = new List<HtmlNode>(coreNode.ChildNodes
-                                                .GetElementsByClassName("bbcode-quote")
-                                                .Select(baseNode => baseNode.SelectSingleNode("table[1]/tr[1]/td[1]")));
+                .GetElementsByClassName("bbcode-quote")
+                .Select(baseNode => baseNode.SelectSingleNode("table[1]/tr[1]/td[1]")));
 
             foreach (var quoteNode in quoteNodes)
             {
@@ -72,8 +72,8 @@ namespace epvpapi.Evaluation
                 foreach (var parsedQuoteElement in ParseText<Content.Element.Quote>(quoteContentNode))
                 {
                     parsedQuoteElement.Author = (quoteAuthorNode != null)
-                                                ? new User(quoteAuthorNode.InnerText)
-                                                : new User();
+                        ? new User(quoteAuthorNode.InnerText)
+                        : new User();
 
                     Target.Add(parsedQuoteElement);
                 }
@@ -81,11 +81,8 @@ namespace epvpapi.Evaluation
 
             // every code node got the specified style attributes
             foreach (var codeNode in coreNode.ChildNodes.GetElementsByAttribute("style", "margin:20px; margin-top:5px"))
-            {
                 Target.AddRange(ParseText<Content.Element.GenericCode>(codeNode.ChildNodes
-                                                                       .GetElementsByAttribute("dir",
-                                                                       "ltr")));
-            }
+                    .GetElementsByAttribute("dir", "ltr")));
 
             
             // get all spoilers within the specified core node and extract the text in the spoiler
@@ -102,7 +99,6 @@ namespace epvpapi.Evaluation
                 }
                 
             }
-
 
             Target.AddRange(ParseText<Content.Element.BoldText>(coreNode.ChildNodes.GetElementsByTagName("b")));
             Target.AddRange(ParseText<Content.Element.ItalicText>(coreNode.ChildNodes.GetElementsByTagName("i")));

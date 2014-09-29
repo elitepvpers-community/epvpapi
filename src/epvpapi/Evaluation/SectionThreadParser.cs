@@ -21,32 +21,32 @@ namespace epvpapi.Evaluation
 
                 public void Execute(HtmlNode coreNode)
                 {
-                    string innerText = coreNode.InnerText;
+                    var innerText = coreNode.InnerText;
 
                     if (innerText.Contains("elite*gold"))
                     {
                         var elitegoldNode = coreNode.SelectSingleNode("text()[2]");
                         Target.EliteGold = (elitegoldNode != null)
-                                                ? new String(elitegoldNode.InnerText.Skip(2).ToArray()).To<int>()
-                                                : 0;
+                            ? new String(elitegoldNode.InnerText.Skip(2).ToArray()).To<int>()
+                            : 0;
 
                     }
                     else if (innerText.Contains("The Black Market"))
                     {
                         var tbmPositiveNode = coreNode.SelectSingleNode("span[1]");
                         Target.TBMProfile.Ratings.Positive = (tbmPositiveNode != null)
-                                                            ? tbmPositiveNode.InnerText.To<uint>()
-                                                            : 0;
+                            ? tbmPositiveNode.InnerText.To<uint>()
+                            : 0;
 
                         var tbmNeutralNode = coreNode.SelectSingleNode("text()[3]");
                         Target.TBMProfile.Ratings.Neutral = (tbmNeutralNode != null)
-                                                        ? tbmNeutralNode.InnerText.TrimStart('/').TrimEnd('/').To<uint>()
-                                                            : 0;
+                            ? tbmNeutralNode.InnerText.TrimStart('/').TrimEnd('/').To<uint>()
+                            : 0;
 
                         var tbmNegativeNode = coreNode.SelectSingleNode("span[2]");
                         Target.TBMProfile.Ratings.Negative = (tbmNegativeNode != null)
-                                                            ? tbmNegativeNode.InnerText.To<uint>()
-                                                            : 0;
+                            ? tbmNegativeNode.InnerText.To<uint>()
+                            : 0;
                     }
                     else if (innerText.Contains("Mediations"))
                     {
@@ -62,13 +62,9 @@ namespace epvpapi.Evaluation
                         // data may look as follows: Registriert seit: Jun 2007 (German)
                         var match = new Regex(@"([a-zA-Z]{3})\s{1}([0-9]+)").Match(coreNode.InnerText);
                         if (match.Groups.Count == 3)
-                        {
                             for (var j = 1; j <= 12; j++)
-                            {
                                 if (CultureInfo.InvariantCulture.DateTimeFormat.GetMonthName(j).Contains(match.Groups[1].Value))
                                     Target.JoinDate = new DateTime(match.Groups[2].Value.To<int>(), j, 1);
-                            }
-                        }
                     }
                     else if (innerText.Contains("Posts"))
                     {
@@ -99,8 +95,8 @@ namespace epvpapi.Evaluation
                         : 0;
 
                     var userNameNode = postCreatorNode.SelectSingleNode("span[1]") ??
-                                       postCreatorNode.SelectSingleNode("text()[1]") ??
-                                       postCreatorNode.SelectSingleNode("strike[1]"); // banned users
+                        postCreatorNode.SelectSingleNode("text()[1]") ??
+                        postCreatorNode.SelectSingleNode("strike[1]"); // banned users
 
                     Target.Name = (userNameNode != null) ? userNameNode.InnerText : "";
                     Target.Banned = (userNameNode != null) ? (userNameNode.Name == "strike") ? true : false : false;

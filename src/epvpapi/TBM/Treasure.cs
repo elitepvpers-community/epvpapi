@@ -82,7 +82,6 @@ namespace epvpapi.TBM
             this(0, title, content, cost)
         { }
 
-
         public Treasure(uint id = 0, string title = null, string content = null, uint cost = 0):
             base(id)
         {
@@ -108,13 +107,13 @@ namespace epvpapi.TBM
             if (Cost < 1) throw new ArgumentException("The price is too low (at least 1 elite*gold)");
 
             session.Post("http://www.elitepvpers.com/theblackmarket/treasures/",
-                        new List<KeyValuePair<string, string>>()
-                        {
-                            new KeyValuePair<string, string>("title", Title),
-                            new KeyValuePair<string, string>("content", Content),
-                            new KeyValuePair<string, string>("cost", Cost.ToString()),
-                            new KeyValuePair<string, string>("createtreasure", "Submit")
-                        });
+                new List<KeyValuePair<string, string>>()
+                {
+                    new KeyValuePair<string, string>("title", Title),
+                    new KeyValuePair<string, string>("content", Content),
+                    new KeyValuePair<string, string>("cost", Cost.ToString()),
+                    new KeyValuePair<string, string>("createtreasure", "Submit")
+                });
 
             CreationDate = DateTime.Now;
             Seller = session.User;
@@ -130,10 +129,10 @@ namespace epvpapi.TBM
             if (ID == 0) throw new ArgumentException("ID must not be zero");
 
             var res = session.Post(GetUrl(),
-                                    new List<KeyValuePair<string, string>>()
-                                    {
-                                        new KeyValuePair<string, string>("deletetreasure", "1")
-                                    });
+                new List<KeyValuePair<string, string>>()
+                {
+                    new KeyValuePair<string, string>("deletetreasure", "1")
+                });
         }
 
         /// <summary>
@@ -214,6 +213,5 @@ namespace epvpapi.TBM
         {
             return "http://www.elitepvpers.com/theblackmarket/treasure/" + ID;
         }
-
     }
 }

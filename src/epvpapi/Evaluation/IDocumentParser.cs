@@ -7,4 +7,3 @@ namespace epvpapi.Evaluation
         void Execute(HtmlDocument document);
     }
 }
-

@@ -33,8 +33,7 @@ namespace epvpapi.TBM
         /// </param>
         /// <returns> List of <c>Transaction</c> objects representing the Transactions </returns>
         public List<Transaction> GetTransactions<TUser>(Session<TUser> session, 
-                                                        Transaction.Query query = Transaction.Query.Sent | Transaction.Query.Received) 
-                                                        where TUser : User
+            Transaction.Query query = Transaction.Query.Sent | Transaction.Query.Received)  where TUser : User
         {
             var typeParameter = "all";
             if (query.HasFlag(Transaction.Query.Received) && !query.HasFlag(Transaction.Query.Sent))
@@ -44,8 +43,10 @@ namespace epvpapi.TBM
 
             var res = session.Get("http://www.elitepvpers.com/theblackmarket/api/transactions.php?u=" + session.User.ID +
                                     "&type=" + typeParameter + "&secretword=" + SecretWord);
+
             var responseContent = res.ToString();
-            if(String.IsNullOrEmpty(responseContent)) throw new InvalidAuthenticationException("The provided Secret Word was invalid");
+            if(String.IsNullOrEmpty(responseContent))
+                throw new InvalidAuthenticationException("The provided Secret Word was invalid");
 
             try
             {
@@ -53,25 +54,23 @@ namespace epvpapi.TBM
                 dynamic transactions = JsonConvert.DeserializeObject(responseContent);
                 foreach (var jsonTransaction in transactions)
                 {
-                    var transaction = new Transaction(Convert.ToUInt32(jsonTransaction.eg_transactionid))
+                    var transaction = new Transaction(jsonTransaction.eg_transactionid.To<uint>())
                     {
                         Note = jsonTransaction.note,
-                        EliteGold = Convert.ToInt32(jsonTransaction.amount),
-                        Time = ((double) (Convert.ToDouble(jsonTransaction.dateline))).ToDateTime()
+                        EliteGold = jsonTransaction.amount.To<int>(),
+                        Time = jsonTransaction.dateline.To<double>().ToDateTime()
                     };
 
                     if (query.HasFlag(Transaction.Query.Received))
                     {
                         transaction.Receiver = session.User;
-                        transaction.Sender = new User(Convert.ToString(jsonTransaction.eg_fromusername),
-                                                      Convert.ToUInt32(jsonTransaction.eg_from));
+                        transaction.Sender = new User(jsonTransaction.eg_fromusername, jsonTransaction.eg_from.To<uint>());
                     }
 
                     if (query.HasFlag(Transaction.Query.Sent))
                     {
                         transaction.Sender = session.User;
-                        transaction.Receiver = new User(Convert.ToString(jsonTransaction.eg_tousername),
-                                                        Convert.ToUInt32(jsonTransaction.eg_to));
+                        transaction.Receiver = new User(jsonTransaction.eg_tousername, jsonTransaction.eg_to.To<uint>());
                     }
 
                     receivedTransactions.Add(transaction);
