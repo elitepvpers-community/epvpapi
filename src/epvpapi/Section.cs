@@ -193,5 +193,18 @@ namespace epvpapi
         {
             get { return Trading; }
         }
+
+        public static List<Section> Sections = new List<Section>()
+        {
+            _Main,
+            _Suggestions,
+            _JoiningElitepvpers,
+            _ContentTeamApplications,
+            _ComplaintArea,
+            _TBMRatingSupport,
+            _EliteGoldSupport,
+            _EliteGoldTrading,
+            _Trading
+        };
     }
 }
