@@ -543,10 +543,9 @@ namespace epvpapi.Connection
         {
             if (!Valid)
                 throw new InvalidSessionException(
-                    String.Format("Session is not valid, Cookies: {1} | Security Token: {2} | User: {3}",
+                    String.Format("Session is not valid, Cookies: {0} | Security Token: {1} | User: {2}",
                     Cookies.Count, SecurityToken, User.Name));
         }
-
 
         /// <summary> Performs a HTTP GET request </summary>
         /// <param name="url"> Location to request </param>
@@ -616,7 +615,7 @@ namespace epvpapi.Connection
                 client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip,deflate,sdch");
                 client.DefaultRequestHeaders.Add("Accept-Language", "de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4");
                 client.DefaultRequestHeaders.Add("User-Agent", "epvpapi - .NET Library v." 
-                                                 + FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion);
+                    + FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion);
 
                 var encodedContent = new FormUrlEncodedContent(content);
                 encodedContent.Headers.ContentType.MediaType = "application/x-www-form-urlencoded";

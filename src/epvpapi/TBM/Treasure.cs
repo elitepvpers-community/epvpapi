@@ -208,7 +208,6 @@ namespace epvpapi.TBM
             Content = (treasureContentNode != null) ? treasureContentNode.InnerText.Strip() : "";
         }
 
-
         public string GetUrl()
         {
             return "http://www.elitepvpers.com/theblackmarket/treasure/" + ID;
