@@ -361,7 +361,7 @@ namespace epvpapi.Connection
                         node.SelectSingleNode("td[@class='tfoot']") != null)
                         continue;
 
-                    uint threadId = Convert.ToUInt32(new Regex("<td class=\"alt1\" id=\"td_threadtitle_(.*?)\"").Match(node.InnerHtml).Groups[1].Value);
+                    var threadId = new Regex("<td class=\"alt1\" id=\"td_threadtitle_(.*?)\"").Match(node.InnerHtml).Groups[1].Value.To<UInt32>();
                     string threadSection = new Regex("<a href=\"(.*?)/.*?\" id=\"thread_title_.*?\">.*?</a>").Match(node.InnerHtml).Groups[1].Value;
                     Section section = Section.Sections.Where(n => n.UrlName == threadSection).FirstOrDefault();
 
