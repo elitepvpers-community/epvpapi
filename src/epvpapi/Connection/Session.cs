@@ -342,7 +342,6 @@ namespace epvpapi.Connection
 
                 var res = Session.Get("http://www.elitepvpers.com/forum/subscription.php?do=viewsubscription&daysprune=-1&folderid=all");
                 var htmlDocument = new HtmlDocument();
-
                 htmlDocument.LoadHtml(res.ToString());
 
                 // a bit ugly but it works so far
@@ -352,17 +351,16 @@ namespace epvpapi.Connection
 
                 foreach (var node in rootNode.ChildNodes.GetElementsByName("tr"))
                 {
-                    if (node.SelectSingleNode("td[@class='thead']") != null || 
-                        node.SelectSingleNode("td[@class='tcat']") != null || 
-                        node.SelectSingleNode("td[@class='tfoot']") != null)
+                    if (node.SelectSingleNode("td[@class='thead']") != null
+                        || node.SelectSingleNode("td[@class='tcat']") != null
+                        || node.SelectSingleNode("td[@class='tfoot']") != null)
                         continue;
 
-                    var threadId = new Regex("<td class=\"alt1\" id=\"td_threadtitle_(.*?)\"").Match(node.InnerHtml).Groups[1].Value.To<UInt32>();
-                    string threadSection = new Regex("<a href=\"(.*?)/.*?\" id=\"thread_title_.*?\">.*?</a>").Match(node.InnerHtml).Groups[1].Value;
-                    Section section = Section.Sections.Where(n => n.UrlName == threadSection).FirstOrDefault();
+                    var threadId = new Regex("<td class=\"alt1\" id=\"td_threadtitle_(.*?)\"").Match(node.InnerHtml).Groups[1].Value.To<uint>();
+                    var threadSection = new Regex("<a href=\"(.*?)/.*?\" id=\"thread_title_.*?\">.*?</a>").Match(node.InnerHtml).Groups[1].Value;
+                    var section = Section.Sections.Where(n => n.UrlName == threadSection).FirstOrDefault();
 
                     var subscribedThread = new SectionThread(threadId, section);
-
                     subscribedThreads.Add(subscribedThread);
                 }
 

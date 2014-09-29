@@ -141,70 +141,43 @@ namespace epvpapi
         } 
 
         private static Section _Main = new Section(206, "main"); 
-        public static Section Main
-        {
-            get { return _Main; }
-        }
+        public static Section Main { get { return _Main; } }
 
         private static Section _Suggestions = new Section(749, "suggestions");
-        public static Section Suggestions
-        {
-            get { return _Suggestions; }
-        }
+        public static Section Suggestions { get { return _Suggestions; } }
 
         private static Section _JoiningElitepvpers = new Section(210, "joining-e-pvp");
-        public static Section JoiningElitepvpers
-        {
-            get { return _JoiningElitepvpers; }
-        }
+        public static Section JoiningElitepvpers { get { return _JoiningElitepvpers; } }
 
         private static Section _ContentTeamApplications = new Section(564, "content-team-applications");
-        public static Section ContentTeamApplications
-        {
-            get { return _ContentTeamApplications; }
-        }
+        public static Section ContentTeamApplications { get { return _ContentTeamApplications; } }
 
         private static Section _ComplaintArea = new Section(466, "complaint-area");
-        public static Section ComplaintArea
-        {
-            get { return _ComplaintArea; }
-        }
+        public static Section ComplaintArea { get { return _ComplaintArea; } }
 
         private static Section _TBMRatingSupport = new Section(770, "tbm-rating-support");
-        public static Section TBMRatingSupport
-        {
-            get { return _TBMRatingSupport; }
-        }
+        public static Section TBMRatingSupport { get { return _TBMRatingSupport; } }
 
         private static Section _EliteGoldSupport = new Section(614, "elite-gold-support");
-        public static Section EliteGoldSupport
-        {
-            get { return _EliteGoldSupport; }
-        }
+        public static Section EliteGoldSupport { get { return _EliteGoldSupport; } }
 
         private static Section _EliteGoldTrading = new Section(580, "elite-gold-trading");
-        public static Section EliteGoldTrading
-        {
-            get { return _EliteGoldTrading; }
-        }
+        public static Section EliteGoldTrading { get { return _EliteGoldTrading; } }
 
         private static Section _Trading = new Section(368, "trading");
-        public static Section Trading
-        {
-            get { return Trading; }
-        }
+        public static Section Trading { get { return Trading; } }
 
         public static List<Section> Sections = new List<Section>()
         {
-            _Main,
-            _Suggestions,
-            _JoiningElitepvpers,
-            _ContentTeamApplications,
-            _ComplaintArea,
-            _TBMRatingSupport,
-            _EliteGoldSupport,
-            _EliteGoldTrading,
-            _Trading
+            Main,
+            Suggestions,
+            JoiningElitepvpers,
+            ContentTeamApplications,
+            ComplaintArea,
+            TBMRatingSupport,
+            EliteGoldSupport,
+            EliteGoldTrading,
+            Trading
         };
     }
 }
