@@ -181,5 +181,17 @@ namespace epvpapi
         {
             get { return _EliteGoldSupport; }
         }
+
+        private static Section _EliteGoldTrading = new Section(580, "elite-gold-trading");
+        public static Section EliteGoldTrading
+        {
+            get { return _EliteGoldTrading; }
+        }
+
+        private static Section _Trading = new Section(368, "trading");
+        public static Section Trading
+        {
+            get { return Trading; }
+        }
     }
 }
