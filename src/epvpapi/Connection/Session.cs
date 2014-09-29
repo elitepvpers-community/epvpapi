@@ -351,6 +351,8 @@ namespace epvpapi.Connection
 
                 // a bit ugly but it works so far
                 var rootNode = htmlDocument.DocumentNode.SelectSingleNode("//tr/td[@class='tcat']/span[@class='smallfont']").ParentNode.ParentNode.ParentNode;
+                if (rootNode == null)
+                    return null;
 
                 foreach (var node in rootNode.ChildNodes.GetElementsByName("tr"))
                 {
