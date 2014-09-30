@@ -490,13 +490,18 @@ namespace epvpapi
         /// </summary>
         /// <param name="name"> The username of the wanted user object </param>
         /// <returns> User object or null </returns>
-        public static User ByName<TUser>(Session<TUser> session, string name) where TUser : User
+        public static bool ByName<TUser>(Session<TUser> session, string name, out User foundUser) where TUser : User
         {
+            foundUser = default(User);
+
             var results = epvpapi.User.Search(session, name)
                          .Where(x => x.Name == name)
                          .ToList();
 
-            return results.Count > 0 ? results[0] : null;
+            if (results.Count != 0)
+                foundUser = results[0];
+
+            return Convert.ToBoolean(results.Count);
         }
     }
 }
