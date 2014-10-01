@@ -15,8 +15,8 @@ These pages provide explanations and samples on how to properly use the library.
 * [Users and Ranks](https://github.com/Mostey/epvpapi/wiki/Users-and-Ranks)
 * [Profiles (Session Users)](https://github.com/Mostey/epvpapi/wiki/Profiles-(Session-Users))
 * [Threads](https://github.com/Mostey/epvpapi/wiki/Threads)
-* [The Black Market (Treasures, Transactions, ...)](https://github.com/Mostey/epvpapi/wiki/The-Black-Market-(Treasures,-Transactions,-...))
-
+* [The Black Market](https://github.com/Mostey/epvpapi/wiki/The-Black-Market)
+* [Contents](https://github.com/Mostey/epvpapi/wiki/Contents)
 
 Samples and Troubleshooting
 ===
