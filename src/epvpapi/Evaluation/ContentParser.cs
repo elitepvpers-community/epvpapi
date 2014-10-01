@@ -81,7 +81,7 @@ namespace epvpapi.Evaluation
 
             // every code node got the specified style attributes
             foreach (var codeNode in coreNode.ChildNodes.GetElementsByAttribute("style", "margin:20px; margin-top:5px"))
-                Target.AddRange(ParseText<Content.Element.GenericCode>(codeNode.ChildNodes
+                Target.AddRange(ParseText<Content.Element.Code>(codeNode.ChildNodes
                     .GetElementsByAttribute("dir", "ltr")));
 
             
