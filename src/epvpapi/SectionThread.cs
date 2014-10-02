@@ -326,7 +326,8 @@ namespace epvpapi
                 var postsRootNode = htmlDocument.GetElementbyId("posts");
                 if (postsRootNode == null) continue;
 
-                foreach (var postContainerNode in postsRootNode.ChildNodes.GetElementsByTagName("div"))
+                // for some reason, the lastpost container contains nothing and needs to be filtered out 
+                foreach (var postContainerNode in postsRootNode.ChildNodes.GetElementsByTagName("div").Where(element => element.Id != "lastpost"))
                 {
                     var parsedPost = new SectionPost(0, this);
                     new SectionPostParser(parsedPost).Execute(postContainerNode);
