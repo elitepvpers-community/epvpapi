@@ -116,7 +116,9 @@ namespace epvpapi
 
                         parsedShout.Date = time;
 
-                        var userNameNode = shoutboxNodeGroup.ElementAt(1).SelectSingleNode(@"span[1]/a[1]/span[1]");
+                        var userNameNode = shoutboxNodeGroup.ElementAt(1).SelectSingleNode(@"span[1]/a[1]/span[1]") ??
+                                           shoutboxNodeGroup.ElementAt(1).SelectSingleNode(@"span[1]/a[1]"); // users with black names do not have the span element
+
                         parsedShout.Sender.Name = (userNameNode != null) ? userNameNode.InnerText : "";
 
                         var userLinkNode = shoutboxNodeGroup.ElementAt(1).SelectSingleNode(@"span[1]/a[1]");
@@ -180,9 +182,11 @@ namespace epvpapi
 
                         var userNode = messageNode.SelectSingleNode("td[3]/span[1]/a[1]");
                         if(userNode == null) continue;
- 
-                        var userNameNode = userNode.SelectSingleNode("span[1]");
-                        parsedShout.Sender.Name = (userNameNode != null) ? userNameNode.InnerText : "";
+
+                        var userNameNode = userNode.SelectSingleNode("span[1]") ??
+                                           userNode; // users with black names do not have the span element
+
+                        parsedShout.Sender.Name = userNameNode.InnerText;
                         parsedShout.Sender.ID = PremiumUser.FromUrl(userNode.Attributes["href"].Value);
 
                         var textNode = messageNode.SelectSingleNode("td[4]/span[1]");
