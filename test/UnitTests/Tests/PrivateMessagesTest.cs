@@ -14,10 +14,10 @@ namespace UnitTests.Tests
             try
             {
                 // parse only the first page
-                var messages = TestEnvironment.Session.ConnectedProfile.GetPrivateMessages(1, 1, PrivateMessage.Folder.Received);
+                var messages = PrivateMessageFolder.Inbox.GetMessages(TestEnvironment.Session);
 
                 if (messages.Count <= 0)
-                    Assert.Fail("Messages could not be parsed or no private messages do exist");
+                    Assert.Fail("Messages could not be parsed or no private messages do exist in the inbox");
 
                 // check if the properties of all messages were parsed correctly
                 foreach (var message in messages)

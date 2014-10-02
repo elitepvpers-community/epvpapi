@@ -8,37 +8,7 @@ using System.Linq;
 namespace epvpapi
 {
     public class PrivateMessage : Post, IReportable, IUpdatable, IUniqueWebObject
-    {
-        public class Folder
-        {
-            public enum Storage
-            {
-                Sent,
-                Received
-            }
-
-            public int ID { get; set; }
-            public string Name { get; set; }
-            public Storage StorageType { get; set; }
-
-            public static Folder Sent
-            {
-                get { return new Folder(-1, "Sent", Storage.Sent); }
-            }
-
-            public static Folder Received
-            {
-                get { return new Folder(0, "Received", Storage.Received); }
-            }
-
-            public Folder(int id, string name = null, Storage storageType = Storage.Received)
-            {
-                ID = id;
-                Name = name;
-                StorageType = storageType;
-            }
-        }
-
+    {  
         /// <summary>
         /// Additional options that can be set when posting messages
         /// </summary>
