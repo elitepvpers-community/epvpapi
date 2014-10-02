@@ -63,13 +63,13 @@ namespace epvpapi
         /// <summary>
         /// Updates information about the section
         /// </summary>
-        /// <param name="session"> Session used for storing personal shoutbox data into the session user field </param>
-        public void Update<TUser>(Session<TUser> session) where TUser : User
+        /// <param name="authenticatedSession"> Session used for storing personal shoutbox data into the session user field </param>
+        public void Update<TUser>(AuthenticatedSession<TUser> authenticatedSession) where TUser : User
         {
-            session.ThrowIfInvalid();
+            authenticatedSession.ThrowIfInvalid();
             if (UrlName == String.Empty) throw new ArgumentException("Sections cannot be updated if no url-address-name is provided");
 
-            var res = session.Get("http://www.elitepvpers.com/forum/" + UrlName + "/");
+            var res = authenticatedSession.Get("http://www.elitepvpers.com/forum/" + UrlName + "/");
             var doc = new HtmlDocument();
             doc.LoadHtml(res.ToString());
 
@@ -79,19 +79,19 @@ namespace epvpapi
         /// <summary>
         /// Loops through the section pages and retrieves the <c>SectionThread</c>s within this section
         /// </summary>
-        /// <param name="session"> Session that is used for sending the request </param>
+        /// <param name="authenticatedSession"> Session that is used for sending the request </param>
         /// <param name="pages"> Amount of pages to request </param>
         /// <param name="startIndex"> Index of the first page that will be requested </param>
         /// <returns> List of all <c>SectionThread</c>s that could be obtained through the requests </returns>
-        public List<SectionThread> Threads<TUser>(Session<TUser> session, uint pages = 1, uint startIndex = 1) where TUser : User
+        public List<SectionThread> Threads<TUser>(AuthenticatedSession<TUser> authenticatedSession, uint pages = 1, uint startIndex = 1) where TUser : User
         {
-            session.ThrowIfInvalid();
+            authenticatedSession.ThrowIfInvalid();
             if (UrlName == String.Empty) throw new ArgumentException("This section is not addressable, please specify the URLName property before using this function");
 
             var parsedThreads = new List<SectionThread>();
             for (uint i = startIndex; i <= pages; ++i)
             {
-                var res = session.Get("http://www.elitepvpers.com/forum/" + UrlName + "/index" + i + ".html");
+                var res = authenticatedSession.Get("http://www.elitepvpers.com/forum/" + UrlName + "/index" + i + ".html");
                 var doc = new HtmlDocument();
                 doc.LoadHtml(res.ToString());
 

@@ -80,20 +80,20 @@ namespace epvpapi
         /// <summary>
         /// Creates a <c>SectionThread</c>
         /// </summary>
-        /// <param name="session"> Session that is used for sending the request </param>
+        /// <param name="authenticatedSession"> Session that is used for sending the request </param>
         /// <param name="section"> Section under which the <c>SectionThread</c> is listed </param>
         /// <param name="startPost"> Represents the content and title of the <c>SectionThread</c> </param>
         /// <param name="settings"> Additional options that can be set </param>
         /// <param name="closed"> If true, the thread state is closed meaning that no one (except the staff) can answer to this thread </param>
         /// <returns> Freshly created <c>SectionThread</c> </returns>
-        public static SectionThread Create<TUser>(Session<TUser> session, Section section, SectionPost startPost,
+        public static SectionThread Create<TUser>(AuthenticatedSession<TUser> authenticatedSession, Section section, SectionPost startPost,
                                                    SectionPost.Settings settings = SectionPost.Settings.ParseUrl | SectionPost.Settings.ShowSignature,
                                                    bool closed = false)
                                                    where TUser : User
         {
-            session.ThrowIfInvalid();
+            authenticatedSession.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/forum/newthread.php?do=postthread&f=" + section.ID,
+            authenticatedSession.Post("http://www.elitepvpers.com/forum/newthread.php?do=postthread&f=" + section.ID,
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("subject", String.IsNullOrEmpty(startPost.Title) ? "-" : startPost.Title),
@@ -102,12 +102,12 @@ namespace epvpapi
                             new KeyValuePair<string, string>("taglist", String.Empty),
                             new KeyValuePair<string, string>("iconid", "0"),
                             new KeyValuePair<string, string>("s", String.Empty),
-                            new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
+                            new KeyValuePair<string, string>("securitytoken", authenticatedSession.SecurityToken),
                             new KeyValuePair<string, string>("f", section.ID.ToString()),
                             new KeyValuePair<string, string>("do", "postthread"),
                             new KeyValuePair<string, string>("posthash", "74532335f4d3a9f352db6af1b1c257f7"),
                             new KeyValuePair<string, string>("poststarttime", "1389309192"),
-                            new KeyValuePair<string, string>("loggedinuser", session.User.ID.ToString()),
+                            new KeyValuePair<string, string>("loggedinuser", authenticatedSession.User.ID.ToString()),
                             new KeyValuePair<string, string>("sbutton", "Submit New Thread"),
                             new KeyValuePair<string, string>("signature", settings.HasFlag(SectionPost.Settings.ShowSignature) ? "1" : "0"),
                             new KeyValuePair<string, string>("parseurl",  settings.HasFlag(SectionPost.Settings.ParseUrl) ? "1" : "0"),
@@ -124,25 +124,25 @@ namespace epvpapi
         /// <summary>
         /// Deletes the <c>SectionThread</c>
         /// </summary>
-        /// <param name="session"> Session that is used for sending the request </param>
+        /// <param name="authenticatedSession"> Session that is used for sending the request </param>
         /// <param name="reason"> Reason for the deletion </param>
         /// <remarks>
         /// Not tested yet!
         /// </remarks>
-        public void Delete<TUser>(Session<TUser> session, string reason) where TUser : User
+        public void Delete<TUser>(AuthenticatedSession<TUser> authenticatedSession, string reason) where TUser : User
         {
-            if (session.User.GetHighestRank() < User.Rank.GlobalModerator) throw new InsufficientAccessException("You don't have enough access rights to delete this thread");
+            if (authenticatedSession.User.GetHighestRank() < User.Rank.GlobalModerator) throw new InsufficientAccessException("You don't have enough access rights to delete this thread");
             if (ID == 0) throw new System.ArgumentException("ID must not be empty");
-            session.ThrowIfInvalid();
+            authenticatedSession.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/forum/postings.php",
+            authenticatedSession.Post("http://www.elitepvpers.com/forum/postings.php",
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("s", String.Empty),
                             new KeyValuePair<string, string>("t", ID.ToString()),
                             new KeyValuePair<string, string>("do", "dodeletethread"),
                             new KeyValuePair<string, string>("deletetype", "1"),
-                            new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
+                            new KeyValuePair<string, string>("securitytoken", authenticatedSession.SecurityToken),
                             new KeyValuePair<string, string>("deletereason", reason),
 
                         });
@@ -154,19 +154,19 @@ namespace epvpapi
         /// Opens or closes the <c>SectionThread</c>, depends on the current status. 
         /// If the thread is opened, it will be closed. If it is closed, it will be opened
         /// </summary>
-        /// <param name="session"> Session that is used for sending the request </param>
-        public void ToggleStatus<TUser>(Session<TUser> session) where TUser : User
+        /// <param name="authenticatedSession"> Session that is used for sending the request </param>
+        public void ToggleStatus<TUser>(AuthenticatedSession<TUser> authenticatedSession) where TUser : User
         {
             if (ID == 0) throw new ArgumentException("ID must not be empty");
-            session.ThrowIfInvalid();
+            authenticatedSession.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/forum/postings.php",
+            authenticatedSession.Post("http://www.elitepvpers.com/forum/postings.php",
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("s", String.Empty),
                             new KeyValuePair<string, string>("t", ID.ToString()),
                             new KeyValuePair<string, string>("do", "openclosethread"),
-                            new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
+                            new KeyValuePair<string, string>("securitytoken", authenticatedSession.SecurityToken),
                             new KeyValuePair<string, string>("pollid", String.Empty),
                         });
 
@@ -177,18 +177,18 @@ namespace epvpapi
         /// <summary>
         /// Rates a <c>SectionThread</c>
         /// </summary>
-        /// <param name="session"> Session that is used for sending the request </param>
+        /// <param name="authenticatedSession"> Session that is used for sending the request </param>
         /// <param name="rating"> Represents the rate value (0-5) </param>
-        public void Rate<TUser>(Session<TUser> session, uint rating) where TUser : User
+        public void Rate<TUser>(AuthenticatedSession<TUser> authenticatedSession, uint rating) where TUser : User
         {
             if (ID == 0) throw new System.ArgumentException("ID must not be empty");
-            session.ThrowIfInvalid();
+            authenticatedSession.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/forum/threadrate.php",
+            authenticatedSession.Post("http://www.elitepvpers.com/forum/threadrate.php",
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("ajax", "1"),
-                            new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
+                            new KeyValuePair<string, string>("securitytoken", authenticatedSession.SecurityToken),
                             new KeyValuePair<string, string>("vote", rating.ToString()),
                             new KeyValuePair<string, string>("s", String.Empty),
                             new KeyValuePair<string, string>("t", ID.ToString()),
@@ -200,20 +200,20 @@ namespace epvpapi
         /// <summary>
         /// Replies to the <c>SectionThread</c>
         /// </summary>
-        /// <param name="session"> Session that is used for sending the request </param>
+        /// <param name="authenticatedSession"> Session that is used for sending the request </param>
         /// <param name="post"> Reply to post </param>
         /// <param name="settings"> Additional options that can be set </param>
         /// <remarks>
         /// The ID of the thread has to be given in order to reply
         /// </remarks>
-        public void Reply<TUser>(Session<TUser> session, SectionPost post,
+        public void Reply<TUser>(AuthenticatedSession<TUser> authenticatedSession, SectionPost post,
                                 SectionPost.Settings settings = SectionPost.Settings.ParseUrl | SectionPost.Settings.ShowSignature)
                                 where TUser : User
         {
             if (ID == 0) throw new ArgumentException("ID must not be empty");
-            session.ThrowIfInvalid();
+            authenticatedSession.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/forum/newreply.php?do=postreply&t=" + ID,
+            authenticatedSession.Post("http://www.elitepvpers.com/forum/newreply.php?do=postreply&t=" + ID,
                          new List<KeyValuePair<string, string>>() 
                          { 
                              new KeyValuePair<string, string>("title", String.IsNullOrEmpty(post.Title) ? "-" : post.Title),
@@ -221,14 +221,14 @@ namespace epvpapi
                              new KeyValuePair<string, string>("wysiwyg", "0"),
                              new KeyValuePair<string, string>("iconid", post.Icon.ToString()),
                              new KeyValuePair<string, string>("s", String.Empty),
-                             new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
+                             new KeyValuePair<string, string>("securitytoken", authenticatedSession.SecurityToken),
                              new KeyValuePair<string, string>("do", "postreply"),
                              new KeyValuePair<string, string>("t", ID.ToString()),
                              new KeyValuePair<string, string>("p", String.Empty),
                              new KeyValuePair<string, string>("specifiedpost", "0"),
                              new KeyValuePair<string, string>("posthash", "6fd3840e9b2ed6a8dcc9d9d0432abb14"),
                              new KeyValuePair<string, string>("poststarttime", String.Empty),
-                             new KeyValuePair<string, string>("loggedinuser", session.User.ID.ToString()),
+                             new KeyValuePair<string, string>("loggedinuser", authenticatedSession.User.ID.ToString()),
                              new KeyValuePair<string, string>("multiquoteempty", String.Empty),
                              new KeyValuePair<string, string>("sbutton", "Submit Reply"),
                              new KeyValuePair<string, string>("signature", (settings & SectionPost.Settings.ShowSignature).ToString()),
@@ -245,17 +245,17 @@ namespace epvpapi
         /// <summary>
         /// Retrieves information about the <c>SectionThread</c>
         /// </summary>
-        /// <param name="session"> Session used for sending the request </param>
+        /// <param name="authenticatedSession"> Session used for sending the request </param>
         /// <remarks>
         /// ID and the section represented by a <c>Section</c> object is required in order to update.
         /// </remarks>
-        public void Update<TUser>(Session<TUser> session) where TUser : User
+        public void Update<TUser>(AuthenticatedSession<TUser> authenticatedSession) where TUser : User
         {
-            session.ThrowIfInvalid();
+            authenticatedSession.ThrowIfInvalid();
             if(ID == 0) throw new ArgumentException("ID must not be empty");
             if(String.IsNullOrEmpty(Section.UrlName)) throw new ArgumentException("The section needs to be addressable");
 
-            var res = session.Get(GetUrl());
+            var res = authenticatedSession.Get(GetUrl());
             var htmlDocument = new HtmlDocument();
             htmlDocument.LoadHtml(res.ToString());
 
@@ -305,13 +305,13 @@ namespace epvpapi
         /// <summary>
         /// Retrieves a list of all posts in the <c>SectionThread</c>
         /// </summary>
-        /// <param name="session"> Session used for sending the request </param>
+        /// <param name="authenticatedSession"> Session used for sending the request </param>
         /// <param name="firstPage"> Index of the first page to fetch </param>
         /// <param name="pageCount"> Amount of pages to get replies from. The higher this count, the more data will be generated and received </param>
         /// <returns> List of <c>SectionPost</c>s representing the replies </returns>
-        public List<SectionPost> Replies<TUser>(Session<TUser> session, uint pageCount = 1, uint firstPage = 1) where TUser : User
+        public List<SectionPost> Replies<TUser>(AuthenticatedSession<TUser> authenticatedSession, uint pageCount = 1, uint firstPage = 1) where TUser : User
         {
-            session.ThrowIfInvalid();
+            authenticatedSession.ThrowIfInvalid();
             if(ID == 0) throw new ArgumentException("ID must not be empty");
 
             // in case the amount of pages to fetch is greater than the available page count, set it to the maximum available count
@@ -320,7 +320,7 @@ namespace epvpapi
             var retrievedReplies = new List<SectionPost>();
             for (uint i = 0; i < pageCount; ++i)
             {
-                var res = session.Get(GetUrl(i));
+                var res = authenticatedSession.Get(GetUrl(i));
                 var htmlDocument = new HtmlDocument();
                 htmlDocument.LoadHtml(res.ToString());
 

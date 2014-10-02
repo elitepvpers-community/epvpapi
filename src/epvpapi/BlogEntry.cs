@@ -58,41 +58,41 @@ namespace epvpapi
         /// <summary>
         /// Publishes the <c>Blog.Entry</c> in the logged-in user's blog
         /// </summary>
-        /// <param name="session"> Session used for sending the request </param>
+        /// <param name="authenticatedSession"> Session used for sending the request </param>
         /// <param name="settings"> Additional options that can be set </param>
-        public void Publish<TUser>(Session<TUser> session, Settings settings = Settings.ParseUrl | Settings.AllowComments)
+        public void Publish<TUser>(AuthenticatedSession<TUser> authenticatedSession, Settings settings = Settings.ParseUrl | Settings.AllowComments)
                                     where TUser : User
         {
-            Publish(session, DateTime.Now, settings);
+            Publish(authenticatedSession, DateTime.Now, settings);
         }
 
         /// <summary>
         /// Publishes the <c>Blog.Entry</c> in the logged-in user's blog at the given time (automatically)
         /// </summary>
-        /// <param name="session"> Session used for sending the request </param>
+        /// <param name="authenticatedSession"> Session used for sending the request </param>
         /// <param name="publishDate"> Date and time when the entry will go live </param>
         /// <param name="settings"> Additional options that can be set </param>
-        public void Publish<TUser>(Session<TUser> session, DateTime publishDate, Settings settings = Settings.ParseUrl |Settings.AllowComments)
+        public void Publish<TUser>(AuthenticatedSession<TUser> authenticatedSession, DateTime publishDate, Settings settings = Settings.ParseUrl |Settings.AllowComments)
                                     where TUser : User
         {
-            session.ThrowIfInvalid();
+            authenticatedSession.ThrowIfInvalid();
 
             Date = publishDate;
             var tags = Tags.Aggregate("", (current, tag) => current + (tag + (Tags.Last() != tag ? "," : "")));
 
-            session.Post("http://www.elitepvpers.com/forum/blog_post.php?do=updateblog&blogid=",
+            authenticatedSession.Post("http://www.elitepvpers.com/forum/blog_post.php?do=updateblog&blogid=",
                 new List<KeyValuePair<string, string>>()
                 {
                     new KeyValuePair<string, string>("title", Title),
                     new KeyValuePair<string, string>("message", Content.ToString()),
                     new KeyValuePair<string, string>("wysiwyg", "0"),
                     new KeyValuePair<string, string>("s", String.Empty),
-                    new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
+                    new KeyValuePair<string, string>("securitytoken", authenticatedSession.SecurityToken),
                     new KeyValuePair<string, string>("do", "updateblog"),
                     new KeyValuePair<string, string>("b", String.Empty),
                     new KeyValuePair<string, string>("posthash", String.Empty),
                     new KeyValuePair<string, string>("poststarttime", Extensions.UnixTimestamp().ToString()),
-                    new KeyValuePair<string, string>("loggedinuser", session.User.ID.ToString()),
+                    new KeyValuePair<string, string>("loggedinuser", authenticatedSession.User.ID.ToString()),
                     new KeyValuePair<string, string>("u", String.Empty),
                     new KeyValuePair<string, string>("taglist", tags),
                     new KeyValuePair<string, string>("allowcomments", Convert.ToUInt32(settings.HasFlag(Settings.AllowComments)).ToString()),

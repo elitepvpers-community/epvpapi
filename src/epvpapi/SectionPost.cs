@@ -54,20 +54,20 @@ namespace epvpapi
         /// <summary>
         /// Reports the <c>SectionPost</c> using the built-in report function
         /// </summary>
-        /// <param name="session"> Session that is used for sending the request </param>
+        /// <param name="authenticatedSession"> Session that is used for sending the request </param>
         /// <param name="reason"> Reason of the report </param>
         /// <remarks>
         /// The ID of the <c>SectionPost</c> has to be given in order to report the post
         /// </remarks>
-        public void Report<TUser>(Session<TUser> session, string reason) where TUser : User
+        public void Report<TUser>(AuthenticatedSession<TUser> authenticatedSession, string reason) where TUser : User
         {
             if (ID == 0) throw new System.ArgumentException("ID must not be empty");
-            session.ThrowIfInvalid();
+            authenticatedSession.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/forum/report.php?do=sendemail",
+            authenticatedSession.Post("http://www.elitepvpers.com/forum/report.php?do=sendemail",
                         new List<KeyValuePair<string, string>>()
                         {
-                            new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
+                            new KeyValuePair<string, string>("securitytoken", authenticatedSession.SecurityToken),
                             new KeyValuePair<string, string>("reason", reason),
                             new KeyValuePair<string, string>("postid", ID.ToString()),
                             new KeyValuePair<string, string>("do", "sendemail"),

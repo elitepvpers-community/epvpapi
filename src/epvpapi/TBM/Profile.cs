@@ -26,13 +26,13 @@ namespace epvpapi.TBM
         /// <summary>
         /// Fetches all recorded transactions of the profile using the TBM API
         /// </summary>
-        /// <param name="session"> Session used for sending the request </param>
+        /// <param name="authenticatedSession"> Session used for sending the request </param>
         /// <param name="query"> 
         /// Indicates whether to retrieve all transactions, only the sent transactions or only the received transactions.
         /// Use the <c>Transaction.Query.Received</c> or <c>Transaction.Query.Sent</c> constant. You can also concatenate both constants to get all transactions
         /// </param>
         /// <returns> List of <c>Transaction</c> objects representing the Transactions </returns>
-        public List<Transaction> GetTransactions<TUser>(Session<TUser> session, 
+        public List<Transaction> GetTransactions<TUser>(AuthenticatedSession<TUser> authenticatedSession, 
             Transaction.Query query = Transaction.Query.Sent | Transaction.Query.Received)  where TUser : User
         {
             var typeParameter = "all";
@@ -41,7 +41,7 @@ namespace epvpapi.TBM
             else if (query.HasFlag(Transaction.Query.Sent) && !query.HasFlag(Transaction.Query.Received))
                 typeParameter = "sent";
 
-            var res = session.Get("http://www.elitepvpers.com/theblackmarket/api/transactions.php?u=" + session.User.ID +
+            var res = authenticatedSession.Get("http://www.elitepvpers.com/theblackmarket/api/transactions.php?u=" + authenticatedSession.User.ID +
                                     "&type=" + typeParameter + "&secretword=" + SecretWord);
 
             var responseContent = res.ToString();
@@ -63,13 +63,13 @@ namespace epvpapi.TBM
 
                     if (query.HasFlag(Transaction.Query.Received))
                     {
-                        transaction.Receiver = session.User;
+                        transaction.Receiver = authenticatedSession.User;
                         transaction.Sender = new User((jsonTransaction.eg_fromusername as object).To<string>(), (jsonTransaction.eg_from as object).To<uint>());
                     }
 
                     if (query.HasFlag(Transaction.Query.Sent))
                     {
-                        transaction.Sender = session.User;
+                        transaction.Sender = authenticatedSession.User;
                         transaction.Receiver = new User((jsonTransaction.eg_tousername as object).To<string>(), (jsonTransaction.eg_to as object).To<uint>());
                     }
 

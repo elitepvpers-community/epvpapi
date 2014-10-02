@@ -27,29 +27,29 @@ namespace epvpapi
         /// <summary>
         /// Creates a <c>SocialGroupThread</c>
         /// </summary>
-        /// <param name="session"> Session that is used for sending the request </param>
+        /// <param name="authenticatedSession"> Session that is used for sending the request </param>
         /// <param name="socialGroup"> SocialGroup where to create the <c>SocialGroupThread</c></param>
         /// <param name="startPost"> Represents the content and title of the <c>SocialGroupThread</c> </param>
         /// <param name="settings"> Additional options that can be set </param>
         /// <returns> Freshly created <c>SocialGroupThread</c></returns>
-        public static SocialGroupThread Create<TUser>(Session<TUser> session, SocialGroup socialGroup, SocialGroupPost startPost,
+        public static SocialGroupThread Create<TUser>(AuthenticatedSession<TUser> authenticatedSession, SocialGroup socialGroup, SocialGroupPost startPost,
                                                      Message.Settings settings = Message.Settings.ParseUrl)
                                                      where TUser : User
         {
-            session.ThrowIfInvalid();
+            authenticatedSession.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/forum/group.php?do=message",
+            authenticatedSession.Post("http://www.elitepvpers.com/forum/group.php?do=message",
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("subject", startPost.Title),
                             new KeyValuePair<string, string>("message", startPost.Content.ToString()),
                             new KeyValuePair<string, string>("wysiwyg", "0"),
                             new KeyValuePair<string, string>("s", String.Empty),
-                            new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
+                            new KeyValuePair<string, string>("securitytoken", authenticatedSession.SecurityToken),
                             new KeyValuePair<string, string>("do", "message"),
                             new KeyValuePair<string, string>("gmid", String.Empty),
                             new KeyValuePair<string, string>("posthash", String.Empty),
-                            new KeyValuePair<string, string>("loggedinuser", session.User.ID.ToString()),
+                            new KeyValuePair<string, string>("loggedinuser", authenticatedSession.User.ID.ToString()),
                             new KeyValuePair<string, string>("groupid", socialGroup.ID.ToString()),
                             new KeyValuePair<string, string>("discussionid", String.Empty),
                             new KeyValuePair<string, string>("sbutton", "Nachricht+speichern"),
@@ -57,7 +57,7 @@ namespace epvpapi
                             new KeyValuePair<string, string>("parseame", "1"),
                         });
 
-            SocialGroupThread socialGroupThread = new SocialGroupThread(0, socialGroup) { Creator = session.User, Deleted = false };
+            SocialGroupThread socialGroupThread = new SocialGroupThread(0, socialGroup) { Creator = authenticatedSession.User, Deleted = false };
             socialGroupThread.Posts.Insert(0, startPost);
             return socialGroupThread;
         }
@@ -65,18 +65,18 @@ namespace epvpapi
         /// <summary>
         /// Deletes the <c>SocialGroupThread</c>
         /// </summary>
-        /// <param name="session"> Session that is used for sending the request </param>
+        /// <param name="authenticatedSession"> Session that is used for sending the request </param>
         /// <param name="reason"> Reason for the deletion </param>
-        public void Delete<TUser>(Session<TUser> session, string reason) where TUser : User
+        public void Delete<TUser>(AuthenticatedSession<TUser> authenticatedSession, string reason) where TUser : User
         {
-            if (session.User.GetHighestRank() < User.Rank.GlobalModerator && session.User != SocialGroup.Maintainer) throw new InsufficientAccessException("You don't have enough access rights to delete this social group post");
+            if (authenticatedSession.User.GetHighestRank() < User.Rank.GlobalModerator && authenticatedSession.User != SocialGroup.Maintainer) throw new InsufficientAccessException("You don't have enough access rights to delete this social group post");
             if (ID == 0) throw new System.ArgumentException("ID must not be empty");
-            session.ThrowIfInvalid();
+            authenticatedSession.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/forum/group_inlinemod.php?gmids=",
+            authenticatedSession.Post("http://www.elitepvpers.com/forum/group_inlinemod.php?gmids=",
                         new List<KeyValuePair<string, string>>()
                         {
-                            new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
+                            new KeyValuePair<string, string>("securitytoken", authenticatedSession.SecurityToken),
                             new KeyValuePair<string, string>("groupid", SocialGroup.ID.ToString()),
                             new KeyValuePair<string, string>("messageids", ID.ToString()),
                             new KeyValuePair<string, string>("do", "doinlinedelete"),
@@ -90,24 +90,24 @@ namespace epvpapi
         /// <summary>
         /// Replies to the <c>SocialGroupThread</c>
         /// </summary>
-        /// <param name="session"> Session that is used for sending the request </param>
+        /// <param name="authenticatedSession"> Session that is used for sending the request </param>
         /// <param name="settings"> Additional options that can be set </param>
         /// <param name="post"> Reply to post </param>
-        public void Reply<TUser>(Session<TUser> session, SocialGroupPost post, Message.Settings settings = Message.Settings.ParseUrl) where TUser : User
+        public void Reply<TUser>(AuthenticatedSession<TUser> authenticatedSession, SocialGroupPost post, Message.Settings settings = Message.Settings.ParseUrl) where TUser : User
         {
-            session.ThrowIfInvalid();
+            authenticatedSession.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/forum/group.php?do=message",
+            authenticatedSession.Post("http://www.elitepvpers.com/forum/group.php?do=message",
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("message", post.Content.ToString()),
                             new KeyValuePair<string, string>("wysiwyg", "0"),
                             new KeyValuePair<string, string>("s", String.Empty),
-                            new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
+                            new KeyValuePair<string, string>("securitytoken", authenticatedSession.SecurityToken),
                             new KeyValuePair<string, string>("do", "message"),
                             new KeyValuePair<string, string>("gmid", String.Empty),
                             new KeyValuePair<string, string>("posthash", String.Empty),
-                            new KeyValuePair<string, string>("loggedinuser", session.User.ID.ToString()),
+                            new KeyValuePair<string, string>("loggedinuser", authenticatedSession.User.ID.ToString()),
                             new KeyValuePair<string, string>("groupid", SocialGroup.ID.ToString()),
                             new KeyValuePair<string, string>("discussionid", ID.ToString()),
                             new KeyValuePair<string, string>("sbutton", "Post+Message"),

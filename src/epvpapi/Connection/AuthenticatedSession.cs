@@ -17,13 +17,8 @@ namespace epvpapi.Connection
     /// <summary>
     /// Represents a web session
     /// </summary>
-    public class Session<TUser> where TUser : User
-    {
-        /// <summary>
-        /// Container containing the cookies used in the current session
-        /// </summary>
-        public CookieContainer Cookies { get; private set; }
-
+    public class AuthenticatedSession<TUser> : GuestSession where TUser : User
+    {      
         /// <summary>
         /// Represents an unique ID identifiying the session which is frequently getting updated on each request
         /// Besides that, the security token needs to be provided for most of the forum actions.
@@ -31,17 +26,7 @@ namespace epvpapi.Connection
         /// </summary>
         public string SecurityToken { get; private set; }
 
-        /// <summary>
-        /// Proxy for issuing requests when behind a proxy
-        /// </summary>
-        public WebProxy Proxy { get; set; }
-
-        /// <summary>
-        /// If set to true, the proxy will be used for all requests
-        /// </summary>
-        public bool UseProxy { get; set; }
-
-
+       
         /// <summary>
         /// Searches the local cookie container for the session cookie.
         /// Determines whether the session is valid or not, i.e. if the session cookie has been set
@@ -71,13 +56,13 @@ namespace epvpapi.Connection
             /// <summary>
             /// Session used for sending the requests
             /// </summary>
-            public Session<TUser> Session { get; private set; }
+            public AuthenticatedSession<TUser> AuthenticatedSession { get; private set; }
 
 
-            public Profile(TUser user, Session<TUser> session)
+            public Profile(TUser user, AuthenticatedSession<TUser> authenticatedSession)
             {
                 User = user;
-                Session = session;
+                AuthenticatedSession = authenticatedSession;
             }
 
             /// <summary>
@@ -89,7 +74,7 @@ namespace epvpapi.Connection
             /// </remarks>
             public void Login(string md5Password)
             {
-                var res = Session.Post("http://www.elitepvpers.com/forum/login.php?do=login&langid=1",
+                var res = AuthenticatedSession.Post("http://www.elitepvpers.com/forum/login.php?do=login&langid=1",
                     new List<KeyValuePair<string, string>>()
                     {
                         new KeyValuePair<string, string>("vb_login_username", User.Name),
@@ -101,7 +86,7 @@ namespace epvpapi.Connection
                         new KeyValuePair<string, string>("vb_login_md5password_utf", md5Password)
                     });
 
-                Session.Update();
+                AuthenticatedSession.Update();
             }
 
             /// <summary>
@@ -110,9 +95,9 @@ namespace epvpapi.Connection
             /// <returns> Current Secret word as string </returns>
             public string GetSecretWord()
             {
-                Session.ThrowIfInvalid();
+                AuthenticatedSession.ThrowIfInvalid();
 
-                var res = Session.Get("http://www.elitepvpers.com/theblackmarket/api/secretword/");
+                var res = AuthenticatedSession.Get("http://www.elitepvpers.com/theblackmarket/api/secretword/");
                 var doc = new HtmlDocument();
                 doc.LoadHtml(res.ToString());
 
@@ -124,9 +109,9 @@ namespace epvpapi.Connection
             /// </summary>
             public void SetSecretWord(string newSecretWord)
             {
-                Session.ThrowIfInvalid();
+                AuthenticatedSession.ThrowIfInvalid();
 
-                Session.Post("http://www.elitepvpers.com/theblackmarket/api/secretword/",
+                AuthenticatedSession.Post("http://www.elitepvpers.com/theblackmarket/api/secretword/",
                     new List<KeyValuePair<string, string>>()
                     {
                         new KeyValuePair<string, string>("secretword", newSecretWord)
@@ -140,11 +125,11 @@ namespace epvpapi.Connection
             /// <returns> List of all subscribed <c>SectionThread</c>s that could be retrieved </returns>
             public List<SectionThread> GetSubscribedThreads()
             {
-                Session.ThrowIfInvalid();
+                AuthenticatedSession.ThrowIfInvalid();
 
                 var subscribedThreads = new List<SectionThread>();
 
-                var res = Session.Get("http://www.elitepvpers.com/forum/subscription.php?do=viewsubscription&daysprune=-1&folderid=all");
+                var res = AuthenticatedSession.Get("http://www.elitepvpers.com/forum/subscription.php?do=viewsubscription&daysprune=-1&folderid=all");
                 var htmlDocument = new HtmlDocument();
                 htmlDocument.LoadHtml(res.ToString());
 
@@ -183,12 +168,12 @@ namespace epvpapi.Connection
             /// <returns> List of all <c>Treasure</c>s that could be retrieved </returns>
             public List<Treasure> GetTreasures(Treasure.Query queryStatus = Treasure.Query.SoldListed, uint pageCount = 1, uint startIndex = 1)
             {
-                Session.ThrowIfInvalid();
+                AuthenticatedSession.ThrowIfInvalid();
 
                 var listedTreasures = new List<Treasure>();
                 for (var i = startIndex; i < (startIndex + pageCount); ++i)
                 {
-                    var res = Session.Get("http://www.elitepvpers.com/theblackmarket/treasures/" +
+                    var res = AuthenticatedSession.Get("http://www.elitepvpers.com/theblackmarket/treasures/" +
                         ((queryStatus == Treasure.Query.Bought) ? "bought" : "soldunsold")
                         + "/" + i);
 
@@ -290,12 +275,12 @@ namespace epvpapi.Connection
                         (String.IsNullOrEmpty(image.Name)) ? "Unnamed.jpeg" : image.Name + image.Format
                     },
                     { new StringContent(String.Empty), "s" },
-                    { new StringContent(Session.SecurityToken), "securitytoken" },
+                    { new StringContent(AuthenticatedSession.SecurityToken), "securitytoken" },
                     { new StringContent("updateavatar"), "do" },
                     { new StringContent(changeType.ToString()), "avatarid" }
                 };
 
-                Session.PostMultipartFormData(new Uri("http://www.elitepvpers.com/forum/profile.php?do=updateavatar"), content);
+                AuthenticatedSession.PostMultipartFormData(new Uri("http://www.elitepvpers.com/forum/profile.php?do=updateavatar"), content);
             }
         }
 
@@ -313,26 +298,26 @@ namespace epvpapi.Connection
             set { ConnectedProfile.User = value; }
         }
 
-        public Session(TUser user, string md5Password):
+        public AuthenticatedSession(TUser user, string md5Password):
             this(user)
         {
             ConnectedProfile.Login(md5Password);
         }
 
-        public Session(TUser user, string md5Password, WebProxy proxy) :
+        public AuthenticatedSession(TUser user, string md5Password, WebProxy proxy) :
             this(user, proxy)
         {
             ConnectedProfile.Login(md5Password);
         }
 
-        public Session(TUser user, WebProxy proxy):
+        public AuthenticatedSession(TUser user, WebProxy proxy):
             this(user)
         {
             UseProxy = true;
             Proxy = proxy;
         }
 
-        public Session(TUser user)
+        public AuthenticatedSession(TUser user)
         {
             ConnectedProfile = new Profile(user, this);
             Cookies = new CookieContainer();
@@ -388,120 +373,6 @@ namespace epvpapi.Connection
                 throw new InvalidSessionException(
                     String.Format("Session is not valid, Cookies: {0} | Security Token: {1} | User: {2}",
                     Cookies.Count, SecurityToken, User.Name));
-        }
-
-        /// <summary> Performs a HTTP GET request </summary>
-        /// <param name="url"> Location to request </param>
-        /// <returns> Server <c>Response</c> to the sent request </returns>
-        internal Response Get(Uri url)
-        {
-            try
-            {
-                var handler = new HttpClientHandler
-                {
-                    UseCookies = true,
-                    CookieContainer = Cookies
-                };
-
-                if(UseProxy)
-                {
-                    handler.UseProxy = true;
-                    handler.Proxy = Proxy;
-                }
-
-                var client = new HttpClient(handler);
-                var response = client.GetAsync(url);
-                if (!response.Result.IsSuccessStatusCode && response.Result.StatusCode != HttpStatusCode.SeeOther)
-                    throw new RequestFailedException("Request failed, Server returned " + response.Result.StatusCode);
-
-                return new Response(response.Result);
-            }
-            catch (CookieException exception)
-            {
-                throw new RequestFailedException("The Session could not be resolved", exception);
-            }
-        }
-
-        /// <summary> Performs a HTTP GET request </summary>
-        /// <param name="url"> Location to request </param>
-        /// <returns> Server <c>Response</c> to the sent request </returns>
-        internal Response Get(string url)
-        {
-            return Get(new Uri(url));
-        }
-
-        /// <summary> Performs a HTTP POST request </summary>
-        /// <param name="url"> Location where to post the data </param>
-        /// <param name="content"> Contents to post </param>
-        /// <returns> Server <c>Response</c> to the sent request </returns>
-        internal Response Post(string url, IEnumerable<KeyValuePair<string, string>> content)
-        {
-            try
-            {
-                var targetUrl = new Uri(url);
-
-                var handler = new HttpClientHandler()
-                {
-                    UseCookies = true,
-                    CookieContainer = Cookies,
-                    AllowAutoRedirect = true
-                };
-
-                if (UseProxy)
-                {
-                    handler.UseProxy = true;
-                    handler.Proxy = Proxy;
-                }
-
-                var client = new HttpClient(handler);
-                client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
-                client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip,deflate,sdch");
-                client.DefaultRequestHeaders.Add("Accept-Language", "de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4");
-                client.DefaultRequestHeaders.Add("User-Agent", "epvpapi - .NET Library v." 
-                    + FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion);
-
-                var encodedContent = new FormUrlEncodedContent(content);
-                encodedContent.Headers.ContentType.MediaType = "application/x-www-form-urlencoded";
-                encodedContent.Headers.ContentType.CharSet = "UTF-8";
-
-                var response = client.PostAsync(targetUrl, encodedContent);
-                if (!response.Result.IsSuccessStatusCode && response.Result.StatusCode != HttpStatusCode.SeeOther && response.Result.StatusCode != HttpStatusCode.Redirect)
-                    throw new RequestFailedException("Request failed, Server returned " + response.Result.StatusCode);
-
-                return new Response(response.Result);
-            }
-            catch (CookieException exception)
-            {
-                throw new RequestFailedException("The Session could not be resolved", exception);
-            }
-        }
-
-        /// <summary>
-        /// Performs a Multipart POST request
-        /// </summary>
-        /// <param name="url"> Location where to post the data </param>
-        /// <param name="content"> Contents to post </param>
-        /// <returns> Server <c>Response</c> to the sent request  </returns>
-        internal Response PostMultipartFormData(Uri url, MultipartFormDataContent content)
-        {
-            var handler = new HttpClientHandler()
-            {
-                UseCookies = true,
-                CookieContainer = Cookies,
-                AllowAutoRedirect = true
-            };
-
-            if (UseProxy)
-            {
-                handler.UseProxy = true;
-                handler.Proxy = Proxy;
-            }
-
-            var client = new HttpClient(handler);
-
-            var response = client.PostAsync(url, content);
-            if (!response.Result.IsSuccessStatusCode) throw new RequestFailedException("Server returned " + response.Result.StatusCode);
-            return new Response(response.Result);
         }
     }
 }

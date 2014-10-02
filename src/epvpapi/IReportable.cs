@@ -10,8 +10,8 @@ namespace epvpapi
         /// <summary>
         /// Reports the object 
         /// </summary>
-        /// <param name="session"> Session that is used for sending the request </param>
+        /// <param name="authenticatedSession"> Session that is used for sending the request </param>
         /// <param name="reason"> Reason of the report </param>
-        void Report<TUser>(Session<TUser> session, string reason) where TUser : User;
+        void Report<TUser>(AuthenticatedSession<TUser> authenticatedSession, string reason) where TUser : User;
     }
 }

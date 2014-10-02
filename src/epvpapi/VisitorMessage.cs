@@ -24,24 +24,24 @@ namespace epvpapi
         /// <summary>
         /// Sends a <c>VisitorMessage</c> using the given session
         /// </summary>
-        /// <param name="session"> Session that is used for sending the request </param>
+        /// <param name="authenticatedSession"> Session that is used for sending the request </param>
         /// <param name="settings"> Additional options that can be set </param>
         /// <remarks>
         /// The ID of the recipient has to be given in order to send the message
         /// </remarks>
-        public void Send<TUser>(Session<TUser> session, Settings settings = Settings.ParseUrl) where TUser : User
+        public void Send<TUser>(AuthenticatedSession<TUser> authenticatedSession, Settings settings = Settings.ParseUrl) where TUser : User
         {
             if (Receiver.ID == 0) throw new ArgumentException("Receiver ID must not be empty");
-            session.ThrowIfInvalid();
+            authenticatedSession.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/forum/visitormessage.php?do=message",
+            authenticatedSession.Post("http://www.elitepvpers.com/forum/visitormessage.php?do=message",
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("ajax", "1"),
                             new KeyValuePair<string, string>("wysiwyg", "0"),
                             new KeyValuePair<string, string>("styleid", "0"),
                             new KeyValuePair<string, string>("fromquickcomment", "1"),
-                            new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
+                            new KeyValuePair<string, string>("securitytoken", authenticatedSession.SecurityToken),
                             new KeyValuePair<string, string>("do", "message"),
                             new KeyValuePair<string, string>("u", Receiver.ID.ToString()),
                             new KeyValuePair<string, string>("u2", String.Empty),
