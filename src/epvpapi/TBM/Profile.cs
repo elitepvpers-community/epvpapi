@@ -54,23 +54,23 @@ namespace epvpapi.TBM
                 dynamic transactions = JsonConvert.DeserializeObject(responseContent);
                 foreach (var jsonTransaction in transactions)
                 {
-                    var transaction = new Transaction(jsonTransaction.eg_transactionid.To<uint>())
+                    var transaction = new Transaction((jsonTransaction.eg_transactionid as object).To<uint>())
                     {
                         Note = jsonTransaction.note,
-                        EliteGold = jsonTransaction.amount.To<int>(),
-                        Time = jsonTransaction.dateline.To<double>().ToDateTime()
+                        EliteGold = (jsonTransaction.amount as object).To<int>(),
+                        Time = (jsonTransaction.dateline as object).To<uint>().ToDateTime()
                     };
 
                     if (query.HasFlag(Transaction.Query.Received))
                     {
                         transaction.Receiver = session.User;
-                        transaction.Sender = new User(jsonTransaction.eg_fromusername, jsonTransaction.eg_from.To<uint>());
+                        transaction.Sender = new User((jsonTransaction.eg_fromusername as object).To<string>(), (jsonTransaction.eg_from as object).To<uint>());
                     }
 
                     if (query.HasFlag(Transaction.Query.Sent))
                     {
                         transaction.Sender = session.User;
-                        transaction.Receiver = new User(jsonTransaction.eg_tousername, jsonTransaction.eg_to.To<uint>());
+                        transaction.Receiver = new User((jsonTransaction.eg_tousername as object).To<string>(), (jsonTransaction.eg_to as object).To<uint>());
                     }
 
                     receivedTransactions.Add(transaction);

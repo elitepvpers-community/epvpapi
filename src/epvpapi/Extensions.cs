@@ -10,7 +10,7 @@ namespace epvpapi
     public static class Extensions
     {
         // -> http://stackoverflow.com/questions/249760/how-to-convert-unix-timestamp-to-datetime-and-vice-versa
-        public static DateTime ToDateTime(this double unixTimeStamp)
+        public static DateTime ToDateTime(this uint unixTimeStamp)
         {
             // Unix timestamp is seconds past epoch
             var dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
@@ -186,9 +186,9 @@ namespace epvpapi
         /// <typeparam name="T"> Type it will be converted to </typeparam>
         /// <param name="value"> The given string </param>
         /// <returns></returns>
-        public static T To<T>(this string value) where T : IConvertible
+        public static Target To<Target>(this object value) where Target : IConvertible
         {
-            return (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
+            return (Target)Convert.ChangeType(value, typeof(Target), CultureInfo.InvariantCulture);
         }
     }
 }
