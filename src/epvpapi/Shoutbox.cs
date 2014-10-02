@@ -48,19 +48,19 @@ namespace epvpapi
             /// <summary>
             /// Sends a message to the channel
             /// </summary>
-            /// <param name="authenticatedSession"> Session used for sending the request </param>
+            /// <param name="session"> Session used for sending the request </param>
             /// <param name="message"> The message text to send </param>
-            public void Send<TUser>(AuthenticatedSession<TUser> authenticatedSession, string message) where TUser : User
+            public void Send<TUser>(AuthenticatedSession<TUser> session, string message) where TUser : User
             {
-                authenticatedSession.ThrowIfInvalid();
+                session.ThrowIfInvalid();
 
-                var res = authenticatedSession.Post("http://www.elitepvpers.com/forum/mgc_cb_evo_ajax.php",
+                var res = session.Post("http://www.elitepvpers.com/forum/mgc_cb_evo_ajax.php",
                                             new List<KeyValuePair<string, string>>()
                                             {
                                                 new KeyValuePair<string, string>("do", "ajax_chat"),
                                                 new KeyValuePair<string, string>("channel_id", ID.ToString()),
                                                 new KeyValuePair<string, string>("chat", message),
-                                                new KeyValuePair<string, string>("securitytoken", authenticatedSession.SecurityToken),
+                                                new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
                                                 new KeyValuePair<string, string>("s", String.Empty)
                                             });
             }
@@ -68,12 +68,12 @@ namespace epvpapi
             /// <summary>
             /// Updates the most recent shouts usually displayed when loading the main page 
             /// </summary>
-            /// <param name="authenticatedSession"> Session used for sending the request </param>
-            public List<Shout> Shouts<TUser>(AuthenticatedSession<TUser> authenticatedSession) where TUser : User
+            /// <param name="session"> Session used for sending the request </param>
+            public List<Shout> Shouts<TUser>(AuthenticatedSession<TUser> session) where TUser : User
             {
-                authenticatedSession.ThrowIfInvalid();
+                session.ThrowIfInvalid();
 
-                var res = authenticatedSession.Post("http://www.elitepvpers.com/forum/mgc_cb_evo_ajax.php",
+                var res = session.Post("http://www.elitepvpers.com/forum/mgc_cb_evo_ajax.php",
                                             new List<KeyValuePair<string, string>>
                                             {
                                                 new KeyValuePair<string, string>("do", "ajax_refresh_chat"),
@@ -81,8 +81,8 @@ namespace epvpapi
                                                 new KeyValuePair<string, string>("channel_id", ID.ToString()),
                                                 new KeyValuePair<string, string>("location", "inc"),
                                                 new KeyValuePair<string, string>("first_load", "0"),
-                                                new KeyValuePair<string, string>("securitytoken", authenticatedSession.SecurityToken),
-                                                new KeyValuePair<string, string>("securitytoken", authenticatedSession.SecurityToken), // for some reason, the security token is send twice
+                                                new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
+                                                new KeyValuePair<string, string>("securitytoken", session.SecurityToken), // for some reason, the security token is send twice
                                                 new KeyValuePair<string, string>("s", String.Empty),
                                             });
 
@@ -143,18 +143,18 @@ namespace epvpapi
             /// </summary>
             /// <param name="firstPage"> Index of the first page to fetch </param>
             /// <param name="pageCount"> Amount of pages to get. The higher this count, the more data will be generated and received </param>
-            /// <param name="authenticatedSession"> Session used for sending the request </param>
+            /// <param name="session"> Session used for sending the request </param>
             /// <param name="updateShoutbox"> When set to true, additional shoutbox information will be updated on the fly. This does not cause any major
             /// resources to be used since the information can be parsed from the same <c>HtmlDocument</c> as the channel history </param>
             /// <returns> Shouts listed in the channel history that could be obtained and parsed </returns>
-            public List<Shout> History<TUser>(AuthenticatedSession<TUser> authenticatedSession, uint pageCount = 1, uint firstPage = 1, bool updateShoutbox = true) where TUser : PremiumUser
+            public List<Shout> History<TUser>(AuthenticatedSession<TUser> session, uint pageCount = 1, uint firstPage = 1, bool updateShoutbox = true) where TUser : PremiumUser
             {
-                authenticatedSession.ThrowIfInvalid();
+                session.ThrowIfInvalid();
 
                 var shoutList = new List<Shout>();
                 for(int i = 0; i < pageCount; ++i)
                 {
-                    var res = authenticatedSession.Get("http://www.elitepvpers.com/forum/mgc_cb_evo.php?do=view_archives&page=" + (firstPage + i));
+                    var res = session.Get("http://www.elitepvpers.com/forum/mgc_cb_evo.php?do=view_archives&page=" + (firstPage + i));
                     
                     var doc = new HtmlDocument();
                     doc.LoadHtml(res.ToString());
@@ -197,7 +197,7 @@ namespace epvpapi
                 }
 
                 if (updateShoutbox)
-                    Shoutbox.Update(authenticatedSession);
+                    Shoutbox.Update(session);
 
                 return shoutList;
             }
@@ -236,12 +236,12 @@ namespace epvpapi
         /// <summary>
         /// Updates statistics and information about the shoutbox
         /// </summary>
-        /// <param name="authenticatedSession"> Session used for storing personal shoutbox data into the session user field </param>
-        public static void Update<TUser>(AuthenticatedSession<TUser> authenticatedSession) where TUser : PremiumUser
+        /// <param name="session"> Session used for storing personal shoutbox data into the session user field </param>
+        public static void Update<TUser>(AuthenticatedSession<TUser> session) where TUser : PremiumUser
         {
-            authenticatedSession.ThrowIfInvalid();
+            session.ThrowIfInvalid();
 
-            var res = authenticatedSession.Get("http://www.elitepvpers.com/forum/mgc_cb_evo.php?do=view_archives&page=1");
+            var res = session.Get("http://www.elitepvpers.com/forum/mgc_cb_evo.php?do=view_archives&page=1");
             var document = new HtmlDocument();
             document.LoadHtml(res.ToString());
 
@@ -279,7 +279,7 @@ namespace epvpapi
             MessageCountCurrentDay = (totalMessages24HoursValueNode != null) ? totalMessages24HoursValueNode.InnerText.To<uint>() : 0;
 
             var ownMessagesValueNode = additionalInfoNodes.ElementAt(2).SelectSingleNode("td[2]");
-            authenticatedSession.User.ShoutboxMessages = (ownMessagesValueNode != null) ? ownMessagesValueNode.InnerText.To<uint>() : 0;
+            session.User.ShoutboxMessages = (ownMessagesValueNode != null) ? ownMessagesValueNode.InnerText.To<uint>() : 0;
         }
     }
 }

@@ -8,7 +8,7 @@ using HtmlAgilityPack;
 
 namespace epvpapi.Evaluation
 {
-    internal static class UserParser
+    internal class UserParser : TargetableParser<User>, IDocumentParser
     {
         internal class RankParser : TargetableParser<User>, INodeParser
         {
@@ -348,6 +348,30 @@ namespace epvpapi.Evaluation
                 var avatarNode = coreNode.SelectSingleNode("td[2]/img[1]");
                 Target.AvatarUrl = (avatarNode != null) ? avatarNode.Attributes.Contains("src") ? avatarNode.Attributes["src"].Value : "" : "";
             }
+        }
+
+        public bool IsSessionUser { get; private set; }
+
+        public UserParser(User target, bool isSessionUser) : base(target)
+        {
+            IsSessionUser = isSessionUser;
+        }
+
+        public void Execute(HtmlDocument document)
+        {
+            new GeneralInfoParser(Target).Execute(document.GetElementbyId("username_box"));
+            new LastActivityParser(Target).Execute(document.GetElementbyId("last_online"));
+
+            // In case the user is the logged in user, all fields are editable and therefore got his own ids. 
+            if (IsSessionUser)
+                new SessionUserAboutParser(Target).Execute(document);
+            else // otherwise, fields are not owning an id
+                new AboutParser(Target).Execute(document.GetElementbyId("collapseobj_aboutme"));
+
+            new RankParser(Target).Execute(document.GetElementbyId("rank"));
+            new StatisticsParser(Target, IsSessionUser).Execute(document.GetElementbyId("collapseobj_stats"));
+            new MiniStatsParser(Target).Execute(document.GetElementbyId("collapseobj_stats_mini"));
+            new LastVisitorsParser(Target).Execute(document.GetElementbyId("collapseobj_visitors"));
         }
     }
 }

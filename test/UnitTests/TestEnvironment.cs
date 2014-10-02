@@ -44,8 +44,8 @@ namespace UnitTests
             return credentials;
         }
 
-        private static Session<PremiumUser> _Session;
-        public static Session<PremiumUser> Session
+        private static AuthenticatedSession<PremiumUser> _Session;
+        public static AuthenticatedSession<PremiumUser> Session
         {
             get
             {
@@ -66,7 +66,7 @@ namespace UnitTests
             try
             {
                 TestCredentials = LoadTestCredentials();
-                _Session = new Session<PremiumUser>(new PremiumUser(TestCredentials.Name, TestCredentials.ID), TestCredentials.MD5Hash);
+                _Session = new AuthenticatedSession<PremiumUser>(new PremiumUser(TestCredentials.Name, TestCredentials.ID), TestCredentials.MD5Hash);
                 Assert.AreEqual(true, _Session.Valid, "The session is invalid");
                 Assert.AreNotEqual(0, _Session.SecurityToken.Length, "The session's security token was not detected");
             }

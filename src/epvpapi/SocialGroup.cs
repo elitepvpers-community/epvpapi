@@ -72,24 +72,24 @@ namespace epvpapi
         /// <summary>
         /// Creates a <c>SocialGroup</c>
         /// </summary>
-        /// <param name="authenticatedSession"> Session that is used for sending the request </param>
+        /// <param name="session"> Session that is used for sending the request </param>
         /// <param name="name"> Name of the group </param>
         /// <param name="description"> Description of the group </param>
         /// <param name="access"> Access restrictions of the group determining who can see- or who can enter the group </param>
         /// <param name="settings"> Additional options that can be set  </param>
         /// <returns> The just created SocialGroup </returns>
-        public static SocialGroup Create<TUser>(AuthenticatedSession<TUser> authenticatedSession, string name, string description,
+        public static SocialGroup Create<TUser>(AuthenticatedSession<TUser> session, string name, string description,
                                                 Access access = Access.Public,
                                                 Options settings = Options.EnableGroupAlbums | Options.EnableGroupMessages)
                                                 where TUser : User
         {
-            authenticatedSession.ThrowIfInvalid();
+            session.ThrowIfInvalid();
 
-            authenticatedSession.Post("http://www.elitepvpers.com/forum/group.php?do=docreate",
+            session.Post("http://www.elitepvpers.com/forum/group.php?do=docreate",
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("s", String.Empty),
-                            new KeyValuePair<string, string>("securitytoken", authenticatedSession.SecurityToken),
+                            new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
                             new KeyValuePair<string, string>("do", "docreate"),
                             new KeyValuePair<string, string>("groupid", String.Empty),
                             new KeyValuePair<string, string>("url", "http%3A%2F%2Fwww.elitepvpers.com%2Fforum%2Fgroups%2F"),
@@ -107,23 +107,23 @@ namespace epvpapi
         /// <summary>
         /// Deletes the <c>SocialGroup</c>
         /// </summary>
-        /// <param name="authenticatedSession"> Session that is used for sending the request </param>
-        public void Delete<TUser>(AuthenticatedSession<TUser> authenticatedSession) where TUser : User
+        /// <param name="session"> Session that is used for sending the request </param>
+        public void Delete<TUser>(AuthenticatedSession<TUser> session) where TUser : User
         {
-            if (authenticatedSession.User.GetHighestRank() < User.Rank.GlobalModerator && authenticatedSession.User != Maintainer) 
+            if (session.User.GetHighestRank() < User.Rank.GlobalModerator && session.User != Maintainer) 
                 throw new InsufficientAccessException("You don't have enough access rights to delete this group");
 
             if (ID == 0) throw new ArgumentException("Group ID must not be zero");
-            authenticatedSession.ThrowIfInvalid();
+            session.ThrowIfInvalid();
 
-            authenticatedSession.Post("http://www.elitepvpers.com/forum/group.php?do=delete",
+            session.Post("http://www.elitepvpers.com/forum/group.php?do=delete",
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("do", "dodelete"),
                             new KeyValuePair<string, string>("groupid", ID.ToString()),
                             new KeyValuePair<string, string>("pictureid", String.Empty),
                             new KeyValuePair<string, string>("s", String.Empty),
-                            new KeyValuePair<string, string>("securitytoken", authenticatedSession.SecurityToken),
+                            new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
                             new KeyValuePair<string, string>("url", "http%3A%2F%2Fwww.elitepvpers.com%2Fforum%2Fgroups%2F" + ID.ToString() + "--.html"),
                             new KeyValuePair<string, string>("confirm", "++Yes++")
                         });
@@ -133,20 +133,20 @@ namespace epvpapi
         /// <summary>
         /// Requests a ownership transfer for the <c>SocialGroup</c>
         /// </summary>
-        /// <param name="authenticatedSession"> Session that is used for sending the request </param>
+        /// <param name="session"> Session that is used for sending the request </param>
         /// <param name="user"> User that will be requested to be the new owner </param>
-        public void RequestTransfer<TUser>(AuthenticatedSession<TUser> authenticatedSession, User user) where TUser : User
+        public void RequestTransfer<TUser>(AuthenticatedSession<TUser> session, User user) where TUser : User
         {
             if (ID == 0) throw new ArgumentException("Group ID must not be zero");
-            authenticatedSession.ThrowIfInvalid();
+            session.ThrowIfInvalid();
 
-            authenticatedSession.Post("http://www.elitepvpers.com/forum/group.php?do=dotransfer&groupid=" + ID.ToString(),
+            session.Post("http://www.elitepvpers.com/forum/group.php?do=dotransfer&groupid=" + ID.ToString(),
                         new List<KeyValuePair<string, string>>()
                         { 
                             new KeyValuePair<string, string>("do", "dotransfer"),
                             new KeyValuePair<string, string>("groupid", ID.ToString()),
                             new KeyValuePair<string, string>("s", String.Empty),
-                            new KeyValuePair<string, string>("securitytoken", authenticatedSession.SecurityToken),
+                            new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
                             new KeyValuePair<string, string>("url", String.Empty),
                             new KeyValuePair<string, string>("targetusername", user.Name),
                         });
@@ -156,19 +156,19 @@ namespace epvpapi
         /// <summary>
         /// Accepts a pending ownership transfer if any for the <c>SocialGroup</c>
         /// </summary>
-        /// <param name="authenticatedSession"> Session that is used for sending the request </param>
-        public void AcceptTransfer<TUser>(AuthenticatedSession<TUser> authenticatedSession) where TUser : User
+        /// <param name="session"> Session that is used for sending the request </param>
+        public void AcceptTransfer<TUser>(AuthenticatedSession<TUser> session) where TUser : User
         {
             if (ID == 0) throw new ArgumentException("Group ID must not be zero");
-            authenticatedSession.ThrowIfInvalid();
+            session.ThrowIfInvalid();
 
-            authenticatedSession.Post("http://www.elitepvpers.com/forum/groups/" + ID.ToString() + "--.html",
+            session.Post("http://www.elitepvpers.com/forum/groups/" + ID.ToString() + "--.html",
                         new List<KeyValuePair<string, string>>()
                         { 
                             new KeyValuePair<string, string>("do", "doaccepttransfer"),
                             new KeyValuePair<string, string>("groupid", ID.ToString()),
                             new KeyValuePair<string, string>("s", String.Empty),
-                            new KeyValuePair<string, string>("securitytoken", authenticatedSession.SecurityToken),
+                            new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
                             new KeyValuePair<string, string>("url", "http://www.elitepvpers.com/forum/private.php?do=showpm&pmid=99999999"),
                             new KeyValuePair<string, string>("confirm", "Yes"),
                         });
@@ -178,19 +178,19 @@ namespace epvpapi
         /// <summary>
         /// Edits the <c>SocialGroup</c> and applies the given options
         /// </summary>
-        /// <param name="authenticatedSession"> Session that is used for sending the request </param>
+        /// <param name="session"> Session that is used for sending the request </param>
         /// <param name="description"> Description of the group </param>
         /// <param name="access"> Access restrictions of the group determining who can see- or who can enter the group </param>
         /// <param name="settings"> Additional options that can be set  </param>
-        public void Edit<TUser>(AuthenticatedSession<TUser> authenticatedSession, string description, Access access, Options settings) where TUser : User
+        public void Edit<TUser>(AuthenticatedSession<TUser> session, string description, Access access, Options settings) where TUser : User
         {
             if (ID == 0) throw new ArgumentException("Group ID must not be zero");
-            authenticatedSession.ThrowIfInvalid();
+            session.ThrowIfInvalid();
 
-            authenticatedSession.Post("http://www.elitepvpers.com/forum/group.php?do=doedit",
+            session.Post("http://www.elitepvpers.com/forum/group.php?do=doedit",
                         new List<KeyValuePair<string, string>>()
                         { 
-                            new KeyValuePair<string, string>("securitytoken", authenticatedSession.SecurityToken),
+                            new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
                             new KeyValuePair<string, string>("do", "doedit"),
                             new KeyValuePair<string, string>("groupid", ID.ToString()),
                             new KeyValuePair<string, string>("s", String.Empty),
@@ -215,20 +215,20 @@ namespace epvpapi
         /// <summary>
         /// Kicks a <c>User</c> out of the <c>SocialGroup</c>
         /// </summary>
-        /// <param name="authenticatedSession"> Session that is used for sending the request </param>
+        /// <param name="session"> Session that is used for sending the request </param>
         /// <param name="user"> User to kick </param>
-        public void Kick<TUser>(AuthenticatedSession<TUser> authenticatedSession, User user) where TUser : User
+        public void Kick<TUser>(AuthenticatedSession<TUser> session, User user) where TUser : User
         {
             if (ID == 0) throw new ArgumentException("Group ID must not be zero");
-            authenticatedSession.ThrowIfInvalid();
+            session.ThrowIfInvalid();
 
-            authenticatedSession.Post("http://www.elitepvpers.com/forum/group.php?do=pendingmembers",
+            session.Post("http://www.elitepvpers.com/forum/group.php?do=pendingmembers",
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("do", "kickmembers"),
                             new KeyValuePair<string, string>("groupid", ID.ToString()),
                             new KeyValuePair<string, string>("s", String.Empty),
-                            new KeyValuePair<string, string>("securitytoken", authenticatedSession.SecurityToken),
+                            new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
                             new KeyValuePair<string, string>("ids[" + user.ID.ToString() + "]", user.ID.ToString())
                         });
         }
@@ -237,20 +237,20 @@ namespace epvpapi
         /// <summary>
         /// Invites another user to the <c>SocialGroup</c>
         /// </summary>
-        /// <param name="authenticatedSession"> Session that is used for sending the request </param>
+        /// <param name="session"> Session that is used for sending the request </param>
         /// <param name="user"> User to invite </param>
-        public void Invite<TUser>(AuthenticatedSession<TUser> authenticatedSession, User user) where TUser : User
+        public void Invite<TUser>(AuthenticatedSession<TUser> session, User user) where TUser : User
         {
             if (ID == 0) throw new ArgumentException("Group ID must not be zero");
-            authenticatedSession.ThrowIfInvalid();
+            session.ThrowIfInvalid();
 
-            authenticatedSession.Post("http://www.elitepvpers.com/forum/group.php?do=sendinvite",
+            session.Post("http://www.elitepvpers.com/forum/group.php?do=sendinvite",
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("do", "sendinvite"),
                             new KeyValuePair<string, string>("groupid", ID.ToString()),
                             new KeyValuePair<string, string>("s", String.Empty),
-                            new KeyValuePair<string, string>("securitytoken", authenticatedSession.SecurityToken),
+                            new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
                             new KeyValuePair<string, string>("username", user.Name)
                         });
         }
@@ -258,20 +258,20 @@ namespace epvpapi
         /// <summary>
         /// Cancels a pending invite to the <c>SocialGroup</c> for another user
         /// </summary>
-        /// <param name="authenticatedSession"> Session that is used for sending the request </param>
+        /// <param name="session"> Session that is used for sending the request </param>
         /// <param name="user"> User whose invite will be cancelled </param>
-        public void CancelInvite<TUser>(AuthenticatedSession<TUser> authenticatedSession, User user) where TUser : User
+        public void CancelInvite<TUser>(AuthenticatedSession<TUser> session, User user) where TUser : User
         {
             if (ID == 0) throw new ArgumentException("Group ID must not be zero");
-            authenticatedSession.ThrowIfInvalid();
+            session.ThrowIfInvalid();
 
-            authenticatedSession.Post("http://www.elitepvpers.com/forum/group.php?do=pendingmembers",
+            session.Post("http://www.elitepvpers.com/forum/group.php?do=pendingmembers",
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("do", "cancelinvites"),
                             new KeyValuePair<string, string>("groupid", ID.ToString()),
                             new KeyValuePair<string, string>("s", String.Empty),
-                            new KeyValuePair<string, string>("securitytoken", authenticatedSession.SecurityToken),
+                            new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
                             new KeyValuePair<string, string>("ids[" + user.ID.ToString() + "]", user.ID.ToString())
                         });
         }
@@ -279,20 +279,20 @@ namespace epvpapi
         /// <summary>
         /// Joins the <c>SocialGroup</c>
         /// </summary>
-        /// <param name="authenticatedSession"> Session that is used for sending the request </param>
-        public void Join<TUser>(AuthenticatedSession<TUser> authenticatedSession) where TUser : User
+        /// <param name="session"> Session that is used for sending the request </param>
+        public void Join<TUser>(AuthenticatedSession<TUser> session) where TUser : User
         {
             if (ID == 0) throw new ArgumentException("Group ID must not be zero");
-            authenticatedSession.ThrowIfInvalid();
+            session.ThrowIfInvalid();
 
-            authenticatedSession.Post("http://www.elitepvpers.com/forum/group.php?do=dojoin",
+            session.Post("http://www.elitepvpers.com/forum/group.php?do=dojoin",
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("do", "dojoin"),
                             new KeyValuePair<string, string>("groupid", ID.ToString()),
                             new KeyValuePair<string, string>("pictureid", String.Empty),
                             new KeyValuePair<string, string>("s", String.Empty),
-                            new KeyValuePair<string, string>("securitytoken", authenticatedSession.SecurityToken),
+                            new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
                             new KeyValuePair<string, string>("url", "http%3A%2F%2Fwww.elitepvpers.com%2Fforum%2Fgroups%2F" + ID.ToString() + "--.hml"),
                             new KeyValuePair<string, string>("confirm", "++Yes++")
                         });
@@ -301,20 +301,20 @@ namespace epvpapi
         /// <summary>
         /// Leaves the <c>SocialGroup</c>
         /// </summary>
-        /// <param name="authenticatedSession"> Session that is used for sending the request </param>
-        public void Leave<TUser>(AuthenticatedSession<TUser> authenticatedSession) where TUser : User
+        /// <param name="session"> Session that is used for sending the request </param>
+        public void Leave<TUser>(AuthenticatedSession<TUser> session) where TUser : User
         {
             if (ID == 0) throw new ArgumentException("Group ID must not be zero");
-            authenticatedSession.ThrowIfInvalid();
+            session.ThrowIfInvalid();
 
-            authenticatedSession.Post("http://www.elitepvpers.com/forum/group.php?do=doleave",
+            session.Post("http://www.elitepvpers.com/forum/group.php?do=doleave",
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("do", "doleave"),
                             new KeyValuePair<string, string>("groupid", ID.ToString()),
                             new KeyValuePair<string, string>("pictureid", String.Empty),
                             new KeyValuePair<string, string>("s", String.Empty),
-                            new KeyValuePair<string, string>("securitytoken", authenticatedSession.SecurityToken),
+                            new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
                             new KeyValuePair<string, string>("url", "http%3A%2F%2Fwww.elitepvpers.com%2Fforum%2Fgroups%2F" + ID.ToString() + "--.hml"),
                             new KeyValuePair<string, string>("confirm", "++Yes++")
                         });

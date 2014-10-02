@@ -68,7 +68,8 @@
     <Compile Include="Evaluation\TargetableParser.cs" />
     <Compile Include="Generation\Cryptography.cs" />
     <Compile Include="Generation\HardwareID.cs" />
-    <Compile Include="IUpdatable.cs" />
+    <Compile Include="IInternUpdatable.cs" />
+    <Compile Include="IUpdateable.cs" />
     <Compile Include="IDeletable.cs" />
     <Compile Include="Evaluation\IDocumentParser.cs" />
     <Compile Include="Evaluation\INodeParser.cs" />

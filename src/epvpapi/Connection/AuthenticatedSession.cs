@@ -59,10 +59,10 @@ namespace epvpapi.Connection
             public AuthenticatedSession<TUser> AuthenticatedSession { get; private set; }
 
 
-            public Profile(TUser user, AuthenticatedSession<TUser> authenticatedSession)
+            public Profile(TUser user, AuthenticatedSession<TUser> session)
             {
                 User = user;
-                AuthenticatedSession = authenticatedSession;
+                AuthenticatedSession = session;
             }
 
             /// <summary>

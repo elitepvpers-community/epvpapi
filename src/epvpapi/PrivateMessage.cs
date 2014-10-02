@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace epvpapi
 {
-    public class PrivateMessage : Post, IReportable, IUpdatable, IUniqueWebObject
+    public class PrivateMessage : Post, IReportable, IInternUpdatable, IUniqueWebObject
     {  
         /// <summary>
         /// Additional options that can be set when posting messages
@@ -62,7 +62,7 @@ namespace epvpapi
         /// <summary>
         /// Sends a <c>PrivateMessage</c> using the given session
         /// </summary>
-        /// <param name="authenticatedSession"> Session that is used for sending the request </param>
+        /// <param name="session"> Session that is used for sending the request </param>
         /// <param name="settings"> Additional options that can be set </param>
         /// <remarks>
         /// The names of the recipients have to be given in order to send the message.
@@ -70,10 +70,10 @@ namespace epvpapi
         /// Certain requirements must be fulfilled in order to send messages automatically without entering a captcha:
         /// - More than 20 posts OR the <c>User.Rank.Premium</c> rank OR the <c>User.Rank.EliteGoldTrader</c> rank
         /// </remarks>
-        public void Send<TUser>(AuthenticatedSession<TUser> authenticatedSession, Settings settings = Settings.ParseUrl | Settings.ShowSignature) where TUser : User
+        public void Send<TUser>(AuthenticatedSession<TUser> session, Settings settings = Settings.ParseUrl | Settings.ShowSignature) where TUser : User
         {
-            authenticatedSession.ThrowIfInvalid();
-            if (authenticatedSession.User.Posts <= 20 && !authenticatedSession.User.HasRank(User.Rank.Premium) && !authenticatedSession.User.HasRank(User.Rank.EliteGoldTrader))
+            session.ThrowIfInvalid();
+            if (session.User.Posts <= 20 && !session.User.HasRank(User.Rank.Premium) && !session.User.HasRank(User.Rank.EliteGoldTrader))
                 throw new InsufficientAccessException("More than 20 posts or the premium / elite*gold trader badge is required for sending private messages without captchas");
 
             var recipients = "";
@@ -84,7 +84,7 @@ namespace epvpapi
                     recipients += ";";
             }
 
-            authenticatedSession.Post("http://www.elitepvpers.com/forum/private.php?do=insertpm&pmid=",
+            session.Post("http://www.elitepvpers.com/forum/private.php?do=insertpm&pmid=",
                          new List<KeyValuePair<string, string>>()
                          {
                              new KeyValuePair<string, string>("recipients", recipients),
@@ -94,7 +94,7 @@ namespace epvpapi
                              new KeyValuePair<string, string>("wysiwyg", "0"),
                              new KeyValuePair<string, string>("iconid", "0"),
                              new KeyValuePair<string, string>("s", String.Empty),
-                             new KeyValuePair<string, string>("securitytoken", authenticatedSession.SecurityToken),
+                             new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
                              new KeyValuePair<string, string>("do", "insertpm"),
                              new KeyValuePair<string, string>("pmid", String.Empty),
                              new KeyValuePair<string, string>("forward", String.Empty),
@@ -109,13 +109,13 @@ namespace epvpapi
         /// <summary>
         /// Retrieves information about the messages such as title, content and sender
         /// </summary>
-        /// <param name="authenticatedSession"> Session used for sending the request </param>
-        public void Update<TUser>(AuthenticatedSession<TUser> authenticatedSession) where TUser : User
+        /// <param name="session"> Session used for sending the request </param>
+        public void Update<TUser>(AuthenticatedSession<TUser> session) where TUser : User
         {
-            authenticatedSession.ThrowIfInvalid();
+            session.ThrowIfInvalid();
             if (ID == 0) throw new System.ArgumentException("ID must not be emtpy");
 
-            var res = authenticatedSession.Get("http://www.elitepvpers.com/forum/private.php?do=showpm&pmid=" + ID.ToString());
+            var res = session.Get("http://www.elitepvpers.com/forum/private.php?do=showpm&pmid=" + ID.ToString());
             var doc = new HtmlDocument();
             doc.LoadHtml(res.ToString());
 
@@ -126,17 +126,17 @@ namespace epvpapi
         /// <summary>
         /// Report the private message
         /// </summary>
-        /// <param name="authenticatedSession"> The session which will be used for the report </param>
+        /// <param name="session"> The session which will be used for the report </param>
         /// <param name="reason"> The resion for the report </param>
-        public void Report<TUser>(AuthenticatedSession<TUser> authenticatedSession, string reason) where TUser : User
+        public void Report<TUser>(AuthenticatedSession<TUser> session, string reason) where TUser : User
         {
-            authenticatedSession.ThrowIfInvalid();
+            session.ThrowIfInvalid();
 
-            authenticatedSession.Post("http://www.elitepvpers.com/forum/private.php?do=sendemail",
+            session.Post("http://www.elitepvpers.com/forum/private.php?do=sendemail",
                          new List<KeyValuePair<string, string>>()
                          {
                              new KeyValuePair<string, string>("s", String.Empty),
-                             new KeyValuePair<string, string>("securitytoken", authenticatedSession.SecurityToken),
+                             new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
                              new KeyValuePair<string, string>("reason", reason),
                              new KeyValuePair<string, string>("pmid", ID.ToString()),
                              new KeyValuePair<string, string>("do", "sendemail"),

@@ -13,7 +13,7 @@ namespace epvpapi.TBM
     /// <summary>
     /// Represents a treasure containing user-defined content that can be purchased with elite*gold
     /// </summary>
-    public class Treasure : UniqueObject, IUniqueWebObject, IUpdatable, IDeletable
+    public class Treasure : UniqueObject, IUniqueWebObject, IInternUpdatable, IDeletable
     {
         public enum Query
         {
@@ -98,15 +98,15 @@ namespace epvpapi.TBM
         /// <summary>
         /// Creates the <c>Treasure</c> and makes it public 
         /// </summary>
-        /// <param name="authenticatedSession"> Session used for sending the request </param>
-        public void Create<TUser>(AuthenticatedSession<TUser> authenticatedSession) where TUser : User
+        /// <param name="session"> Session used for sending the request </param>
+        public void Create<TUser>(AuthenticatedSession<TUser> session) where TUser : User
         {
-            authenticatedSession.ThrowIfInvalid();
+            session.ThrowIfInvalid();
             if (Content.Length < 4) throw new ArgumentException("The content is too short (4 characters minimum)");
             if (Title.Length < 4) throw new ArgumentException("The title is too short (4 characters minimum)");
             if (Cost < 1) throw new ArgumentException("The price is too low (at least 1 elite*gold)");
 
-            authenticatedSession.Post("http://www.elitepvpers.com/theblackmarket/treasures/",
+            session.Post("http://www.elitepvpers.com/theblackmarket/treasures/",
                 new List<KeyValuePair<string, string>>()
                 {
                     new KeyValuePair<string, string>("title", Title),
@@ -116,19 +116,19 @@ namespace epvpapi.TBM
                 });
 
             CreationDate = DateTime.Now;
-            Seller = authenticatedSession.User;
+            Seller = session.User;
         }
 
         /// <summary>
         /// Deletes the <c>Treasure</c> permanently
         /// </summary>
-        /// <param name="authenticatedSession"> Session used for sending the request </param>
-        public void Delete<TUser>(AuthenticatedSession<TUser> authenticatedSession) where TUser : User
+        /// <param name="session"> Session used for sending the request </param>
+        public void Delete<TUser>(AuthenticatedSession<TUser> session) where TUser : User
         {
-            authenticatedSession.ThrowIfInvalid();
+            session.ThrowIfInvalid();
             if (ID == 0) throw new ArgumentException("ID must not be zero");
 
-            var res = authenticatedSession.Post(GetUrl(),
+            var res = session.Post(GetUrl(),
                 new List<KeyValuePair<string, string>>()
                 {
                     new KeyValuePair<string, string>("deletetreasure", "1")
@@ -138,13 +138,13 @@ namespace epvpapi.TBM
         /// <summary>
         /// Updates the <c>Treasure</c> by requesting the treasure page
         /// </summary>
-        /// <param name="authenticatedSession"> Session used for sending the request </param>
-        public void Update<TUser>(AuthenticatedSession<TUser> authenticatedSession) where TUser : User
+        /// <param name="session"> Session used for sending the request </param>
+        public void Update<TUser>(AuthenticatedSession<TUser> session) where TUser : User
         {
-            authenticatedSession.ThrowIfInvalid();
+            session.ThrowIfInvalid();
             if(ID == 0) throw new ArgumentException("ID must not be zero");
 
-            var res = authenticatedSession.Get(GetUrl());
+            var res = session.Get(GetUrl());
             var htmlDocument = new HtmlDocument();
             htmlDocument.LoadHtml(res.ToString());
 

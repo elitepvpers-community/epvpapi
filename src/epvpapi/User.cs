@@ -12,7 +12,7 @@ namespace epvpapi
     /// <summary>
     /// Represents an user in elitepvpers
     /// </summary>
-    public class User : UniqueObject, IUpdatable, IUniqueWebObject
+    public class User : UniqueObject, IUpdatable, IInternUpdatable, IUniqueWebObject
     {
         /// <summary>
         /// Available usergroups an user can have 
@@ -411,29 +411,30 @@ namespace epvpapi
         /// <summary>
         /// Updates the user by requesting the profile
         /// </summary>
-        /// <param name="authenticatedSession"> Session used for sending the request </param>
-        public void Update<TUser>(AuthenticatedSession<TUser> authenticatedSession) where TUser : User
+        /// <param name="session"> Session used for sending the request </param>
+        public void Update<TUser>(AuthenticatedSession<TUser> session) where TUser : User
         {
             if(ID == 0) throw new ArgumentException("User ID must not be 0");
-            authenticatedSession.ThrowIfInvalid();
-            var res = authenticatedSession.Get("http://www.elitepvpers.com/forum/members/" + ID.ToString() + "--.html");
+            session.ThrowIfInvalid();
+            var res = session.Get(GetUrl());
 
             var doc = new HtmlDocument();
             doc.LoadHtml(res.ToString());
+            new UserParser(this, (this == session.User)).Execute(doc);
+        }
 
-            new UserParser.GeneralInfoParser(this).Execute(doc.GetElementbyId("username_box"));
-            new UserParser.LastActivityParser(this).Execute(doc.GetElementbyId("last_online"));
+        /// <summary>
+        /// Updates the user by requesting the profile
+        /// </summary>
+        /// <param name="session"> Session used for sending the request </param>
+        public void Update(GuestSession session)
+        {
+            if (ID == 0) throw new ArgumentException("User ID must not be 0");
+            var res = session.Get(GetUrl());
 
-            // In case the user is the logged in user, all fields are editable and therefore got his own ids. 
-            if (this == authenticatedSession.User)
-                new UserParser.SessionUserAboutParser(this).Execute(doc);
-            else // otherwise, fields are not owning an id
-                new UserParser.AboutParser(this).Execute(doc.GetElementbyId("collapseobj_aboutme"));
-
-            new UserParser.RankParser(this).Execute(doc.GetElementbyId("rank"));
-            new UserParser.StatisticsParser(this, (this == authenticatedSession.User)).Execute(doc.GetElementbyId("collapseobj_stats"));
-            new UserParser.MiniStatsParser(this).Execute(doc.GetElementbyId("collapseobj_stats_mini"));
-            new UserParser.LastVisitorsParser(this).Execute(doc.GetElementbyId("collapseobj_visitors"));
+            var doc = new HtmlDocument();
+            doc.LoadHtml(res.ToString());
+            new UserParser(this, false).Execute(doc);
         }
 
         /// <summary>
@@ -462,16 +463,16 @@ namespace epvpapi
         /// <summary>
         /// Performs an user lookup request and searches for users with the specified name
         /// </summary>
-        /// <param name="authenticatedSession"> Session used for sending the request </param>
+        /// <param name="session"> Session used for sending the request </param>
         /// <param name="name"> User name to search for </param>
         /// <returns> List of <c>User</c>s that were found </returns>
-        public static IEnumerable<User> Search<TUser>(AuthenticatedSession<TUser> authenticatedSession, string name) where TUser : User
+        public static IEnumerable<User> Search<TUser>(AuthenticatedSession<TUser> session, string name) where TUser : User
         {
-            authenticatedSession.ThrowIfInvalid();
-            var res = authenticatedSession.Post("http://www.elitepvpers.com/forum/ajax.php?do=usersearch",
+            session.ThrowIfInvalid();
+            var res = session.Post("http://www.elitepvpers.com/forum/ajax.php?do=usersearch",
                                     new List<KeyValuePair<string, string>>()
                                     {
-                                        new KeyValuePair<string, string>("securitytoken", authenticatedSession.SecurityToken),
+                                        new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
                                         new KeyValuePair<string, string>("do", "usersearch"),
                                         new KeyValuePair<string, string>("fragment", name)
                                     });
@@ -493,9 +494,9 @@ namespace epvpapi
         /// <param name="name"> The username of the user that will be looked up </param>
         /// <returns> The user that was found </returns>
         /// <exception cref="EpvpapiException"> Thrown if no user was found matching the specified username </exception>
-        public static User ByName<TUser>(AuthenticatedSession<TUser> authenticatedSession, string name) where TUser : User
+        public static User ByName<TUser>(AuthenticatedSession<TUser> session, string name) where TUser : User
         {
-            var results = epvpapi.User.Search(authenticatedSession, name)
+            var results = epvpapi.User.Search(session, name)
                          .Where(x => x.Name == name)
                          .ToList();
 

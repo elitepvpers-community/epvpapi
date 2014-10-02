@@ -24,18 +24,18 @@ namespace epvpapi
         /// <summary>
         /// Deletes the <c>SocialGroupPost</c>
         /// </summary>
-        /// <param name="authenticatedSession"> Session that is used for sending the request </param>
+        /// <param name="session"> Session that is used for sending the request </param>
         /// <param name="reason"> Reason for the deletion </param>
-        public void Delete<TUser>(AuthenticatedSession<TUser> authenticatedSession, string reason) where TUser : User
+        public void Delete<TUser>(AuthenticatedSession<TUser> session, string reason) where TUser : User
         {
-            if (authenticatedSession.User.GetHighestRank() < User.Rank.GlobalModerator && authenticatedSession.User != Thread.SocialGroup.Maintainer) throw new InsufficientAccessException("You don't have enough access rights to delete this social group post");
-            authenticatedSession.ThrowIfInvalid();
+            if (session.User.GetHighestRank() < User.Rank.GlobalModerator && session.User != Thread.SocialGroup.Maintainer) throw new InsufficientAccessException("You don't have enough access rights to delete this social group post");
+            session.ThrowIfInvalid();
 
-            authenticatedSession.Post("http://www.elitepvpers.com/forum/group_inlinemod.php",
+            session.Post("http://www.elitepvpers.com/forum/group_inlinemod.php",
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("s", String.Empty),
-                            new KeyValuePair<string, string>("securitytoken", authenticatedSession.SecurityToken),
+                            new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
                             new KeyValuePair<string, string>("groupid", Thread.SocialGroup.ID.ToString()),
                             new KeyValuePair<string, string>("messageids", ID.ToString()),
                             new KeyValuePair<string, string>("do", "doinlinedelete"),

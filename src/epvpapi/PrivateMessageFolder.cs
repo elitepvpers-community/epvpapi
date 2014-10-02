@@ -41,18 +41,18 @@ namespace epvpapi
         /// <summary>
         /// Gets all private messages that are stored in the specified folder within the speicifed boundaries
         /// </summary>
-        /// <param name="authenticatedSession"> Session used for sending the request </param>
+        /// <param name="session"> Session used for sending the request </param>
         /// <param name="pageCount"> Amount of pages to retrieve, one page may contain up to 100 messages </param>
         /// <param name="startIndex"> Index of the first page to request (1 for the first page, 2 for the second, ...) </param>
         /// <returns> All private messages that could be retrieved </returns>
-        public List<PrivateMessage> GetMessages<TUser>(AuthenticatedSession<TUser> authenticatedSession, uint pageCount = 1, uint startIndex = 1) where TUser : User
+        public List<PrivateMessage> GetMessages<TUser>(AuthenticatedSession<TUser> session, uint pageCount = 1, uint startIndex = 1) where TUser : User
         {
             var fetchedMessages = new List<PrivateMessage>();
 
             for (var i = startIndex; i < (startIndex + pageCount); ++i)
             {
                 // setting 'pp' to 100 will get you exactly 100 messages per page. This is the highest count that can be set.
-                var res = authenticatedSession.Get("http://www.elitepvpers.com/forum/private.php?folderid=" + ID + "&pp=100&sort=date&page=" + i);
+                var res = session.Get("http://www.elitepvpers.com/forum/private.php?folderid=" + ID + "&pp=100&sort=date&page=" + i);
                 var document = new HtmlDocument();
                 document.LoadHtml(res.ToString());
 
@@ -142,13 +142,13 @@ namespace epvpapi
                         // so we need to know wether the folder stores received or sent messages
                         if (ID == Inbox.ID)
                         {
-                            fetchedPrivateMessage.Recipients = new List<User>() { authenticatedSession.User };
+                            fetchedPrivateMessage.Recipients = new List<User>() { session.User };
                             fetchedPrivateMessage.Sender = sender;
                         }
                         else
                         {
                             fetchedPrivateMessage.Recipients = new List<User>() { sender };
-                            fetchedPrivateMessage.Sender = authenticatedSession.User;
+                            fetchedPrivateMessage.Sender = session.User;
                         }
 
                         fetchedMessages.Add(fetchedPrivateMessage);
