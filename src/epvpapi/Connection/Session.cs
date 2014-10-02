@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using epvpapi.Evaluation;
 using epvpapi.TBM;
 using HtmlAgilityPack;
 
@@ -234,7 +235,8 @@ namespace epvpapi.Connection
                             if (opponentNode != null)
                             {
                                 var opponent = opponentNode.Attributes.Contains("href")
-                                    ? new User(opponentNode.InnerText, epvpapi.User.FromUrl(opponentNode.Attributes["href"].Value))
+                                    ? new User(opponentNode.InnerText,
+                                        epvpapi.User.FromUrl(opponentNode.Attributes["href"].Value))
                                     : new User();
 
                                 if (queryStatus == Treasure.Query.Bought)
@@ -366,6 +368,7 @@ namespace epvpapi.Connection
                 if (userBarNode != null)
                 {
                     var userProfileLinkNode = userBarNode.SelectSingleNode("li[1]/a[1]");
+
                     User.ID = userProfileLinkNode.Attributes.Contains("href")
                         ? epvpapi.User.FromUrl(userProfileLinkNode.Attributes["href"].Value)
                         : 0;

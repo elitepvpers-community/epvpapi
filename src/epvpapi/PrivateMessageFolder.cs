@@ -12,33 +12,31 @@ namespace epvpapi
 {
     public class PrivateMessageFolder
     {
-        public enum Storage
-        {
-            Sent,
-            Received
-        }
-
+        /// <summary>
+        /// Unique identifier for identifying the folder in requests
+        /// </summary>
         public int ID { get; set; }
+
+        /// <summary>
+        /// Name of the folder. Pre-defined folders always have default names, custom folders can be named
+        /// </summary>
         public string Name { get; set; }
-        public Storage StorageType { get; set; }
 
         public static PrivateMessageFolder Outbox
         {
-            get { return new PrivateMessageFolder(-1, "Outbox", Storage.Sent); }
+            get { return new PrivateMessageFolder(-1, "Outbox"); }
         }
 
         public static PrivateMessageFolder Inbox
         {
-            get { return new PrivateMessageFolder(0, "Inbox", Storage.Received); }
+            get { return new PrivateMessageFolder(0, "Inbox"); }
         }
 
-        public PrivateMessageFolder(int id, string name = null, Storage storageType = Storage.Received)
+        public PrivateMessageFolder(int id, string name = null)
         {
             ID = id;
             Name = name;
-            StorageType = storageType;
         }
-
 
         /// <summary>
         /// Gets all private messages that are stored in the specified folder within the speicifed boundaries
@@ -142,7 +140,7 @@ namespace epvpapi
 
                         // Messages that were send are labeled with the user that received the message. If messages were received, they were labeled with the sender
                         // so we need to know wether the folder stores received or sent messages
-                        if (StorageType == Storage.Received)
+                        if (ID == Inbox.ID)
                         {
                             fetchedPrivateMessage.Recipients = new List<User>() { session.User };
                             fetchedPrivateMessage.Sender = sender;

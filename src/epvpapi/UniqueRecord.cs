@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace epvpapi
 {
-    public class UniqueRecord : UniqueObject
+    /// <summary>
+    /// Represents an unique record provided with an identifier and a record date
+    /// </summary>
+    public abstract class UniqueRecord : UniqueObject
     {
         /// <summary>
         /// Date and time of the record

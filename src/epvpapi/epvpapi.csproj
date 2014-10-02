@@ -59,7 +59,7 @@
     <Compile Include="BlogEntry.cs" />
     <Compile Include="EpvpapiException.cs" />
     <Compile Include="Evaluation\PrivateMessageParser.cs" />
-    <Compile Include="Evaluation\SectionThreadParser.cs" />
+    <Compile Include="Evaluation\SectionPostParser.cs" />
     <Compile Include="Evaluation\SectionParser.cs" />
     <Compile Include="Evaluation\UserParser.cs" />
     <Compile Include="Evaluation\ContentParser.cs" />

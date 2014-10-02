@@ -9,15 +9,16 @@ using HtmlAgilityPack;
 
 namespace epvpapi.Evaluation
 {
-    internal static class SectionThreadParser
+    internal class SectionPostParser : TargetableParser<SectionPost>, INodeParser
     {
-        internal class ReplyCreatorParser : TargetableParser<User>, INodeParser
+        private class CreatorParser : TargetableParser<User>, INodeParser
         {
             private class StatisticParser : TargetableParser<User>, INodeParser
             {
                 public StatisticParser(User target)
                     : base(target)
-                { }
+                {
+                }
 
                 public void Execute(HtmlNode coreNode)
                 {
@@ -51,10 +52,14 @@ namespace epvpapi.Evaluation
                     else if (innerText.Contains("Mediations"))
                     {
                         var positiveNode = coreNode.SelectSingleNode("span[1]");
-                        Target.TBMProfile.Mediations.Positive = (positiveNode != null) ? positiveNode.InnerText.To<uint>() : 0;
+                        Target.TBMProfile.Mediations.Positive = (positiveNode != null)
+                            ? positiveNode.InnerText.To<uint>()
+                            : 0;
 
                         var neutralNode = coreNode.SelectSingleNode("text()[2]");
-                        Target.TBMProfile.Mediations.Neutral = (neutralNode != null) ? neutralNode.InnerText.TrimStart('/').To<uint>() : 0;
+                        Target.TBMProfile.Mediations.Neutral = (neutralNode != null)
+                            ? neutralNode.InnerText.TrimStart('/').To<uint>()
+                            : 0;
                     }
                     else if (innerText.Contains("Join Date"))
                     {
@@ -63,25 +68,27 @@ namespace epvpapi.Evaluation
                         var match = new Regex(@"([a-zA-Z]{3})\s{1}([0-9]+)").Match(coreNode.InnerText);
                         if (match.Groups.Count == 3)
                             for (var j = 1; j <= 12; j++)
-                                if (CultureInfo.InvariantCulture.DateTimeFormat.GetMonthName(j).Contains(match.Groups[1].Value))
+                                if (
+                                    CultureInfo.InvariantCulture.DateTimeFormat.GetMonthName(j)
+                                        .Contains(match.Groups[1].Value))
                                     Target.JoinDate = new DateTime(match.Groups[2].Value.To<int>(), j, 1);
                     }
                     else if (innerText.Contains("Posts"))
                     {
                         var match = new Regex("(?:Posts): ([0-9]+(?:.|,)[0-9]+)").Match(coreNode.InnerText);
                         if (match.Groups.Count > 1)
-                            Target.Posts = (uint)double.Parse(match.Groups[1].Value);
+                            Target.Posts = (uint) double.Parse(match.Groups[1].Value);
                     }
                     else if (innerText.Contains("Received Thanks"))
                     {
                         var match = new Regex("(?:Received Thanks): ([0-9]+(?:.|,)[0-9]+)").Match(coreNode.InnerText);
                         if (match.Groups.Count > 1)
-                            Target.ThanksReceived = (uint)double.Parse(match.Groups[1].Value);
+                            Target.ThanksReceived = (uint) double.Parse(match.Groups[1].Value);
                     }
                 }
             }
 
-            public ReplyCreatorParser(User target)
+            public CreatorParser(User target)
                 : base(target)
             { }
 
@@ -95,8 +102,8 @@ namespace epvpapi.Evaluation
                         : 0;
 
                     var userNameNode = postCreatorNode.SelectSingleNode("span[1]") ??
-                        postCreatorNode.SelectSingleNode("text()[1]") ??
-                        postCreatorNode.SelectSingleNode("strike[1]"); // banned users
+                                       postCreatorNode.SelectSingleNode("text()[1]") ??
+                                       postCreatorNode.SelectSingleNode("strike[1]"); // banned users
 
                     Target.Name = (userNameNode != null) ? userNameNode.InnerText : "";
                     Target.Banned = (userNameNode != null) ? (userNameNode.Name == "strike") ? true : false : false;
@@ -114,7 +121,9 @@ namespace epvpapi.Evaluation
 
                     // node that contains posts, thanks, elite*gold, the join date... 
                     // if the user has set an avatar, the node will be set of by 1. Otherwise if no avatar was set, the avatar node is the stats container 
-                    var additionalStatsNode = (String.IsNullOrEmpty(Target.AvatarUrl)) ? coreNode.SelectSingleNode("div[5]") : coreNode.SelectSingleNode("div[6]"); 
+                    var additionalStatsNode = (String.IsNullOrEmpty(Target.AvatarUrl))
+                        ? coreNode.SelectSingleNode("div[5]")
+                        : coreNode.SelectSingleNode("div[6]");
                     if (additionalStatsNode != null)
                     {
                         var statsNodes = additionalStatsNode.ChildNodes.GetElementsByTagName("div");
@@ -127,6 +136,44 @@ namespace epvpapi.Evaluation
                         }
                     }
                 }
+            }
+        }
+
+        public SectionPostParser(SectionPost target) : base(target)
+        { }
+
+        public void Execute(HtmlNode coreNode)
+        {
+            var dateTimeNode = coreNode.SelectSingleNode("div[1]/div[1]/div[1]/table[1]/tr[1]/td[1]/text()[3]");
+            Target.Date = (dateTimeNode != null)
+                                ? dateTimeNode.InnerText.ToElitepvpersDateTime()
+                                : new DateTime();
+
+            var postRootNode = coreNode.SelectSingleNode("div[1]/div[1]/div[1]/table[1]/tr[2]");
+            if (postRootNode == null) return;
+
+            var userPartNode = postRootNode.SelectSingleNode("td[1]");
+            if (userPartNode != null)
+                new CreatorParser(Target.Sender).Execute(userPartNode);
+
+            HtmlNode messagePartNode;
+            // due to the (optional) title nodes users can set, another div will be inserted sometimes before the actual content
+            var titleNode = postRootNode.SelectSingleNode("td[2]/div[1]/strong[1]/text()[1]");
+            if (titleNode != null)
+            {
+                Target.Title = titleNode.InnerText;
+                messagePartNode = postRootNode.SelectSingleNode("td[2]/div[2]");
+            }
+            else
+                messagePartNode = postRootNode.SelectSingleNode("td[2]/div[1]");
+
+            if (messagePartNode != null)
+            {
+                var idMatch = new Regex("post_message_([0-9]+)").Match(messagePartNode.Id);
+                if (idMatch.Groups.Count > 1)
+                    Target.ID = idMatch.Groups[1].Value.To<uint>();
+
+                new ContentParser(Target.Content.Elements).Execute(messagePartNode);
             }
         }
     }

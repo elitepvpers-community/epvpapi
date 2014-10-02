@@ -89,7 +89,7 @@ namespace epvpapi
                          {
                              new KeyValuePair<string, string>("recipients", recipients),
                              new KeyValuePair<string, string>("bccrecipients", String.Empty),
-                             new KeyValuePair<string, string>("title", Title ?? "-"),
+                             new KeyValuePair<string, string>("title", String.IsNullOrEmpty(Title) ? "-" : Title),
                              new KeyValuePair<string, string>("message", Content.ToString()),
                              new KeyValuePair<string, string>("wysiwyg", "0"),
                              new KeyValuePair<string, string>("iconid", "0"),

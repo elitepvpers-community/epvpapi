@@ -450,10 +450,11 @@ namespace epvpapi
         /// </summary>
         /// <param name="url"> URL being parsed </param>
         /// <returns> Retrieved profile ID </returns>
+        /// <exception cref="ParsingFailedException"> Thrown if the specified link does not contain the profile ID and/or was malformatted </exception>
         public static uint FromUrl(string url)
         {
             var match = Regex.Match(url, @"(?:http://www.elitepvpers.com/(?:forum/)*)*(?:members|theblackmarket/profile)/([0-9]+)(?:-[a-zA-Z]+.html)*");
-            if(match.Groups.Count < 2) throw new ParsingFailedException("User could not be exported from the given URL");
+            if(match.Groups.Count < 2) throw new ParsingFailedException(String.Format("User could not be exported from the given url: {0}", url));
 
             return match.Groups[1].Value.To<uint>();
         }
@@ -466,6 +467,7 @@ namespace epvpapi
         /// <returns> List of <c>User</c>s that were found </returns>
         public static IEnumerable<User> Search<TUser>(Session<TUser> session, string name) where TUser : User
         {
+            session.ThrowIfInvalid();
             var res = session.Post("http://www.elitepvpers.com/forum/ajax.php?do=usersearch",
                                     new List<KeyValuePair<string, string>>()
                                     {
@@ -486,22 +488,21 @@ namespace epvpapi
         }
 
         /// <summary>
-        /// Gets a user object by username
+        /// Gets an <c>User</c> by the username 
         /// </summary>
-        /// <param name="name"> The username of the wanted user object </param>
-        /// <returns> User object or null </returns>
-        public static bool ByName<TUser>(Session<TUser> session, string name, out User foundUser) where TUser : User
+        /// <param name="name"> The username of the user that will be looked up </param>
+        /// <returns> The user that was found </returns>
+        /// <exception cref="EpvpapiException"> Thrown if no user was found matching the specified username </exception>
+        public static User ByName<TUser>(Session<TUser> session, string name) where TUser : User
         {
-            foundUser = default(User);
-
             var results = epvpapi.User.Search(session, name)
                          .Where(x => x.Name == name)
                          .ToList();
 
-            if (results.Count != 0)
-                foundUser = results[0];
+            if (results.Count == 0)
+                throw new EpvpapiException(String.Format("No user with the given name '{0}' was found", name));
 
-            return Convert.ToBoolean(results.Count);
+            return results[0];
         }
     }
 }

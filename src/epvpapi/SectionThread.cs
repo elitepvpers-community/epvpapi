@@ -96,7 +96,7 @@ namespace epvpapi
             session.Post("http://www.elitepvpers.com/forum/newthread.php?do=postthread&f=" + section.ID,
                         new List<KeyValuePair<string, string>>()
                         {
-                            new KeyValuePair<string, string>("subject", startPost.Title),
+                            new KeyValuePair<string, string>("subject", String.IsNullOrEmpty(startPost.Title) ? "-" : startPost.Title),
                             new KeyValuePair<string, string>("message", startPost.Content.ToString()),
                             new KeyValuePair<string, string>("wysiwyg", "0"),
                             new KeyValuePair<string, string>("taglist", String.Empty),
@@ -151,14 +151,11 @@ namespace epvpapi
         }
 
         /// <summary>
-        /// Closes the <c>SectionThread</c> if it is open
+        /// Opens or closes the <c>SectionThread</c>, depends on the current status. 
+        /// If the thread is opened, it will be closed. If it is closed, it will be opened
         /// </summary>
         /// <param name="session"> Session that is used for sending the request </param>
-        /// <remarks>
-        /// Switch function - If the thread is closed, it will be opened and vice versa when executing this function
-        /// Not tested yet!
-        /// </remarks>
-        public void Close<TUser>(Session<TUser> session) where TUser : User
+        public void ToggleStatus<TUser>(Session<TUser> session) where TUser : User
         {
             if (ID == 0) throw new ArgumentException("ID must not be empty");
             session.ThrowIfInvalid();
@@ -176,18 +173,6 @@ namespace epvpapi
             Closed = true;
         }
 
-        /// <summary>
-        /// Opens the <c>SectionThread</c> if it is closed
-        /// </summary>
-        /// <param name="session"> Session that is used for sending the request </param>
-        /// <remarks>
-        /// Not tested yet!
-        /// </remarks>
-        public void Open<TUser>(Session<TUser> session) where TUser : User
-        {
-            Close(session);
-            Closed = false;
-        }
 
         /// <summary>
         /// Rates a <c>SectionThread</c>
@@ -231,7 +216,7 @@ namespace epvpapi
             session.Post("http://www.elitepvpers.com/forum/newreply.php?do=postreply&t=" + ID,
                          new List<KeyValuePair<string, string>>() 
                          { 
-                             new KeyValuePair<string, string>("title", post.Title),
+                             new KeyValuePair<string, string>("title", String.IsNullOrEmpty(post.Title) ? "-" : post.Title),
                              new KeyValuePair<string, string>("message", post.Content.ToString()),
                              new KeyValuePair<string, string>("wysiwyg", "0"),
                              new KeyValuePair<string, string>("iconid", post.Icon.ToString()),
@@ -310,7 +295,7 @@ namespace epvpapi
                 pageCountRootNode = pageCountRootNode.SelectSingleNode("following-sibling::table[1]/tr[1]/td[2]/div[1]/table[1]/tr[1]/td[1]");
                 if (pageCountRootNode != null)
                 {
-                    Match countMatch = new Regex(@"\S+\s{1}[0-9]+\s{1}\S+\s{1}([0-9]+)").Match(pageCountRootNode.InnerText);
+                    var countMatch = new Regex(@"\S+\s{1}[0-9]+\s{1}\S+\s{1}([0-9]+)").Match(pageCountRootNode.InnerText);
                     if (countMatch.Groups.Count > 1)
                         PageCount = countMatch.Groups[1].Value.To<uint>();
                 }
@@ -344,40 +329,10 @@ namespace epvpapi
 
                 foreach (var postContainerNode in postsRootNode.ChildNodes.GetElementsByTagName("div"))
                 {
-                    var fetchedPost = new SectionPost(0, this);
-                    var dateTimeNode = postContainerNode.SelectSingleNode("div[1]/div[1]/div[1]/table[1]/tr[1]/td[1]/text()[3]");
-                    fetchedPost.Date = (dateTimeNode != null)
-                                        ? dateTimeNode.InnerText.ToElitepvpersDateTime()
-                                        : new DateTime();
+                    var parsedPost = new SectionPost(0, this);
+                    new SectionPostParser(parsedPost).Execute(postContainerNode);
 
-                    var postRootNode = postContainerNode.SelectSingleNode("div[1]/div[1]/div[1]/table[1]/tr[2]");
-                    if (postRootNode == null) continue;
-
-                    var userPartNode = postRootNode.SelectSingleNode("td[1]");
-                    if (userPartNode != null)
-                        new SectionThreadParser.ReplyCreatorParser(fetchedPost.Sender).Execute(userPartNode);
-
-                    HtmlNode messagePartNode;
-                    // due to the (optional) title nodes users can set, another div will be inserted sometimes before the actual content
-                    var titleNode = postRootNode.SelectSingleNode("td[2]/div[1]/strong[1]/text()[1]");
-                    if (titleNode != null)
-                    {
-                        fetchedPost.Title = titleNode.InnerText;
-                        messagePartNode = postRootNode.SelectSingleNode("td[2]/div[2]");
-                    }
-                    else
-                        messagePartNode = postRootNode.SelectSingleNode("td[2]/div[1]");
-
-                    if (messagePartNode != null)
-                    {
-                        var idMatch = new Regex("post_message_([0-9]+)").Match(messagePartNode.Id);
-                        if (idMatch.Groups.Count > 1)
-                            fetchedPost.ID = idMatch.Groups[1].Value.To<uint>();
-
-                        new ContentParser(fetchedPost.Content.Elements).Execute(messagePartNode);
-                    }
-
-                    retrievedReplies.Add(fetchedPost);
+                    retrievedReplies.Add(parsedPost);
                 }
 
                 if (i == 0 && retrievedReplies.Count != 0)

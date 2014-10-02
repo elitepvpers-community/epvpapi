@@ -12,11 +12,7 @@ namespace epvpapi
         public VisitorMessage(uint id = 0)
             : this(id, new User(), new Content())
         { }
-        
-        public VisitorMessage(Content content)
-            : this(new User(), content)
-        { }
-
+       
         public VisitorMessage(User receiver, Content content)
             : this(0, receiver, content)
         { }
@@ -33,7 +29,7 @@ namespace epvpapi
         /// <remarks>
         /// The ID of the recipient has to be given in order to send the message
         /// </remarks>
-        public void Send<TUser>(Session<TUser> session, Message.Settings settings = Message.Settings.ParseUrl) where TUser : User
+        public void Send<TUser>(Session<TUser> session, Settings settings = Settings.ParseUrl) where TUser : User
         {
             if (Receiver.ID == 0) throw new ArgumentException("Receiver ID must not be empty");
             session.ThrowIfInvalid();
@@ -50,7 +46,7 @@ namespace epvpapi
                             new KeyValuePair<string, string>("u", Receiver.ID.ToString()),
                             new KeyValuePair<string, string>("u2", String.Empty),
                             new KeyValuePair<string, string>("loggedinuser", String.Empty),
-                            new KeyValuePair<string, string>("parseurl", (settings & Message.Settings.ParseUrl).ToString()),
+                            new KeyValuePair<string, string>("parseurl", (settings & Settings.ParseUrl).ToString()),
                             new KeyValuePair<string, string>("lastcomment", "1381528657"),
                             new KeyValuePair<string, string>("allow_ajax_qc", "1"),
                             new KeyValuePair<string, string>("fromconverse", String.Empty),
