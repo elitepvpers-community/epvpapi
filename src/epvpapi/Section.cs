@@ -140,32 +140,59 @@ namespace epvpapi
             return "http://www.elitepvpers.com/forum/" + UrlName + "/";
         } 
 
-        private static Section _Main = new Section(206, "main"); 
-        public static Section Main { get { return _Main; } }
+        private static readonly Section _Main = new Section(206, "main");
+        public static Section Main
+        {
+            get { return _Main; }
+        }
 
-        private static Section _Suggestions = new Section(749, "suggestions");
-        public static Section Suggestions { get { return _Suggestions; } }
+        private static readonly Section _Suggestions = new Section(749, "suggestions");
+        public static Section Suggestions
+        {
+            get { return _Suggestions; }
+        }
 
-        private static Section _JoiningElitepvpers = new Section(210, "joining-e-pvp");
-        public static Section JoiningElitepvpers { get { return _JoiningElitepvpers; } }
+        private static readonly Section _JoiningElitepvpers = new Section(210, "joining-e-pvp");
+        public static Section JoiningElitepvpers
+        {
+            get { return _JoiningElitepvpers; }
+        }
 
-        private static Section _ContentTeamApplications = new Section(564, "content-team-applications");
-        public static Section ContentTeamApplications { get { return _ContentTeamApplications; } }
+        private static readonly Section _ContentTeamApplications = new Section(564, "content-team-applications");
+        public static Section ContentTeamApplications
+        {
+            get { return _ContentTeamApplications; }
+        }
 
-        private static Section _ComplaintArea = new Section(466, "complaint-area");
-        public static Section ComplaintArea { get { return _ComplaintArea; } }
+        private static readonly Section _ComplaintArea = new Section(466, "complaint-area");
+        public static Section ComplaintArea
+        {
+            get { return _ComplaintArea; }
+        }
 
-        private static Section _TBMRatingSupport = new Section(770, "tbm-rating-support");
-        public static Section TBMRatingSupport { get { return _TBMRatingSupport; } }
+        private static readonly Section _TBMRatingSupport = new Section(770, "tbm-rating-support");
+        public static Section TBMRatingSupport
+        {
+            get { return _TBMRatingSupport; }
+        }
 
-        private static Section _EliteGoldSupport = new Section(614, "elite-gold-support");
-        public static Section EliteGoldSupport { get { return _EliteGoldSupport; } }
+        private static readonly Section _EliteGoldSupport = new Section(614, "elite-gold-support");
+        public static Section EliteGoldSupport
+        {
+            get { return _EliteGoldSupport; }
+        }
 
-        private static Section _EliteGoldTrading = new Section(580, "elite-gold-trading");
-        public static Section EliteGoldTrading { get { return _EliteGoldTrading; } }
+        private static readonly Section _EliteGoldTrading = new Section(580, "elite-gold-trading");
+        public static Section EliteGoldTrading
+        {
+            get { return _EliteGoldTrading; }
+        }
 
-        private static Section _Trading = new Section(368, "trading");
-        public static Section Trading { get { return Trading; } }
+        private static readonly Section _Trading = new Section(368, "trading");
+        public static Section Trading
+        {
+            get { return _Trading; }
+        }
 
         public static List<Section> Sections = new List<Section>()
         {
