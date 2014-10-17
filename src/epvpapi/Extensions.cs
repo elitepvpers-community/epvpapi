@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace epvpapi
 {
-    public static class Extensions
+    internal static class Extensions
     {
         // -> http://stackoverflow.com/questions/249760/how-to-convert-unix-timestamp-to-datetime-and-vice-versa
         public static DateTime ToDateTime(this uint unixTimeStamp)
@@ -16,7 +16,6 @@ namespace epvpapi
             var dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             return dtDateTime.AddSeconds(unixTimeStamp).ToLocalTime();
         }
-
 
         /// <summary>
         /// Gets all child elements that are matching the specified name (attribute)
@@ -73,7 +72,6 @@ namespace epvpapi
             return parent.Where(node => node.Attributes
                                                    .Any(attribute => attribute.Name == "class" && attribute.Value == className));
         }
-
 
         // -> http://stackoverflow.com/questions/419019/split-list-into-sublists-with-linq
         public static List<List<T>> Split<T>(this List<T> source, uint elementsPerSplit)
