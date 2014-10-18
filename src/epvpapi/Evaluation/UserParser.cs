@@ -257,7 +257,7 @@ namespace epvpapi.Evaluation
                         else
                             recommendationsNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[1]");
 
-                        Target.Recommendations = (recommendationsNode != null) ? recommendationsNode.InnerText.To<uint>() : 0;
+                        Target.Recommendations = (recommendationsNode != null) ? (uint)recommendationsNode.InnerText.To<double>() : 0;
                     }
                     else if (legendCaption == "User Notes")
                     {
