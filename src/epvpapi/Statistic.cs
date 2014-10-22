@@ -42,7 +42,7 @@ namespace epvpapi
             doc.LoadHtml(res.ToString());
 
             var statsNode = doc.GetElementbyId("collapseobj_forumhome_stats");
-            if(statsNode == null) return;
+            if (statsNode == null) return;
 
             statsNode = statsNode.SelectSingleNode("tr[1]/td[2]/div[1]/div[1]");
             if (statsNode == null) return;

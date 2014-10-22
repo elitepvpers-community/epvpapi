@@ -244,7 +244,7 @@ namespace epvpapi.Evaluation
                         var thanksReceivedNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/span[1]");
                         if (thanksReceivedNode != null)
                         {
-                            Match match = Regex.Match(thanksReceivedNode.InnerText, @"\S+\s*([0-9.]+)"); // language independent
+                            Match match = Regex.Match(thanksReceivedNode.InnerText, "([0-9,]+)"); // language independent
                             if (match.Groups.Count > 1)
                                 Target.ThanksReceived = (uint)match.Groups[1].Value.To<double>();
                         }
