@@ -138,6 +138,7 @@ namespace epvpapi
         {
             var commonFormats = new List<string>
             {
+                "MM-dd-yyyy",
                 "MM-dd-yyyy HH:mm",
                 "MM/dd/yyyy HH:mm",
                 "dd.MM.yyyy HH:mm",
