@@ -69,30 +69,38 @@ namespace epvpapi.Evaluation
             {
                 if (coreNode == null) return;
 
-                var profilefieldlistNode = coreNode.SelectSingleNode("div[1]/ul[1]/li[1]/dl[1]");
-                if (profilefieldlistNode == null) return;
+                var rootNode = coreNode.SelectSingleNode("div[1]/ul[1]");
+                if (rootNode == null) return;
 
-                var fieldNodes = new List<HtmlNode>(profilefieldlistNode.ChildNodes.GetElementsByTagName("dt"));
-                var valueNodes = new List<HtmlNode>(profilefieldlistNode.ChildNodes.GetElementsByTagName("dd"));
-
-                if (fieldNodes.Count == valueNodes.Count)
+                var aboutRootNode = rootNode.SelectSingleNode("li[1]/dl[1]");
+                if (aboutRootNode != null)
                 {
-                    foreach (var fieldNode in fieldNodes)
-                    {
-                        var actualValue = valueNodes.ElementAt(fieldNodes.IndexOf(fieldNode)).InnerText;
+                    var aboutFieldNodes = new List<HtmlNode>(aboutRootNode.ChildNodes.GetElementsByTagName("dt"));
+                    var aboutValueNodes = new List<HtmlNode>(aboutRootNode.ChildNodes.GetElementsByTagName("dd"));
 
-                        if (fieldNode.InnerText == "Biography")
-                            Target.Biography = actualValue;
-                        else if (fieldNode.InnerText == "Location")
-                            Target.Location = actualValue;
-                        else if (fieldNode.InnerText == "Interests")
-                            Target.Interests = actualValue;
-                        else if (fieldNode.InnerText == "Occupation")
-                            Target.Occupation = actualValue;
-                        else if (fieldNode.InnerText == "Steam ID")
-                            Target.SteamID = actualValue;
+                    if (aboutFieldNodes.Count == aboutValueNodes.Count)
+                    {
+                        foreach (var fieldNode in aboutFieldNodes)
+                        {
+                            var actualValue = aboutValueNodes.ElementAt(aboutFieldNodes.IndexOf(fieldNode)).InnerText;
+
+                            if (fieldNode.InnerText == "Biography")
+                                Target.Biography = actualValue;
+                            else if (fieldNode.InnerText == "Location")
+                                Target.Location = actualValue;
+                            else if (fieldNode.InnerText == "Interests")
+                                Target.Interests = actualValue;
+                            else if (fieldNode.InnerText == "Occupation")
+                                Target.Occupation = actualValue;
+                            else if (fieldNode.InnerText == "Steam ID")
+                                Target.SteamID = actualValue;
+                        }
                     }
                 }
+
+                var signatureNode = rootNode.SelectSingleNode("li[2]/dl[1]/dd[1]");
+                if(signatureNode != null)
+                    new ContentParser(Target.Signature.Elements).Execute(signatureNode);
             }
         }
 
