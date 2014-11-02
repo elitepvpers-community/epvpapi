@@ -2,7 +2,7 @@
 
 namespace epvpapi
 {
-    public interface IInternUpdatable
+    public interface IInternalUpdatable
     {
         void Update<TUser>(AuthenticatedSession<TUser> session) where TUser : User;
     }

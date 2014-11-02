@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace epvpapi
 {
-    public class PrivateMessage : Post, IReportable, IInternUpdatable, IUniqueWebObject
+    public class PrivateMessage : Post, IReportable, IInternalUpdatable, IUniqueWebObject
     {  
         /// <summary>
         /// Additional options that can be set when posting messages

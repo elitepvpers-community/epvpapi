@@ -13,7 +13,7 @@ namespace epvpapi.TBM
     /// <summary>
     /// Represents a treasure containing user-defined content that can be purchased with elite*gold
     /// </summary>
-    public class Treasure : UniqueObject, IUniqueWebObject, IInternUpdatable, IDeletable
+    public class Treasure : UniqueObject, IUniqueWebObject, IInternalUpdatable, IDeletable
     {
         public enum Query
         {

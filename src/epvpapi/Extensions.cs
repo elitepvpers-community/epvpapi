@@ -143,6 +143,7 @@ namespace epvpapi
                 "MM/dd/yyyy HH:mm",
                 "dd.MM.yyyy HH:mm",
                 "dd.MM.yyyy, HH:mm",
+                "MM-dd-yyyy, HH:mm",
                 "MM/dd/yyyy, HH:mm",
                 "MM/dd/yyyy",
                 "dd/MM/yyyy",

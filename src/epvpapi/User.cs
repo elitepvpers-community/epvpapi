@@ -12,7 +12,7 @@ namespace epvpapi
     /// <summary>
     /// Represents an user in elitepvpers
     /// </summary>
-    public class User : UniqueObject, IUpdatable, IInternUpdatable, IUniqueWebObject
+    public class User : UniqueObject, IUpdatable, IInternalUpdatable, IUniqueWebObject
     {
         /// <summary>
         /// Available usergroups an user can have 
