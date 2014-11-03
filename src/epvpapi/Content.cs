@@ -206,6 +206,18 @@ namespace epvpapi
                 { }
             }
 
+            public class Linebreak : Element
+            {
+                public override string Plain
+                {
+                    get { return "\n"; }
+                }
+
+                public Linebreak():
+                    base("")
+                { }
+            }
+
             /// <summary>
             /// Represents a reference to another url
             /// </summary>
