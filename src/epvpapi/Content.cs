@@ -252,6 +252,19 @@ namespace epvpapi
                 { }
             }
 
+            public class FontSize : Element
+            {
+                public uint Size { get; set; }
+
+                public override string Plain
+                {
+                    get { return String.Format("[{0}={1}]{2}[/{0}]", Tag, Size, String.Join(String.Empty, Childs.Select(childContent => childContent.Plain))); }
+                }
+
+                public FontSize() :
+                    base("SIZE")
+                { }
+            }
 
             public class Quote : Element
             {

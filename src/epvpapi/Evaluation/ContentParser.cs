@@ -89,6 +89,16 @@ namespace epvpapi.Evaluation
 
                         break;
                     }
+                    case "font":
+                    {
+                        var parsedFontSize = ParseElement<Content.Element.FontSize>(subNode);
+                        if (subNode.Attributes.Any(attribute => attribute.Name == "size"))
+                            parsedFontSize.Size = subNode.Attributes["size"].Value.To<uint>();
+
+                        Target.Add(parsedFontSize);
+
+                        break;
+                    }
                     case "#text":
                     {
                         Target.Add(new Content.Element.PlainText()
@@ -136,13 +146,6 @@ namespace epvpapi.Evaluation
                         break;
                     }
                 }
-       
-                /*
-                // every code node got the specified style attributes
-                foreach (var codeNode in coreNode.ChildNodes.GetElementsByAttribute("style", "margin:20px; margin-top:5px"))
-                    Target.AddRange(ParseElement<Content.Element.Code>(codeNode.ChildNodes
-                        .GetElementsByAttribute("dir", "ltr")));*/
-
             }
         }   
     }
