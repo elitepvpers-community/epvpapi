@@ -20,7 +20,6 @@ namespace epvpapi
             /// Tag of the element that triggers the interpretation
             /// </summary>
             public string Tag { get; set; }
-            public string Value { get; set; }
 
             /// <summary>
             /// Elements being wrapped by this element
@@ -33,32 +32,17 @@ namespace epvpapi
             /// </summary>
             public virtual string Plain
             {
-                get { return String.Format("[{0}]{1}{2}[/{0}]", Tag, Value, String.Join(String.Empty, Childs.Select(childContent => childContent.Plain))); }
+                get { return String.Format("[{0}]{1}[/{0}]", Tag, String.Join(String.Empty, Childs.Select(childContent => childContent.Plain))); }
             }
 
-            public Element(string tag = null, string value = null)
+            public Element(string tag = ""):
+                this(tag, new List<Element>())
+            { }
+
+            public Element(string tag, List<Element> childs)
             {
                 Tag = tag;
-                Value = value;
-                Childs = new List<Element>();
-            }
-
-            /// <summary>
-            /// Tries to parse the plain element code. For example, a spoiler may be formatted this way:
-            /// [spoiler]This is a spoiler[/spoiler] where the code parses the tag (spoiler) and the value within the tags
-            /// </summary>
-            /// <param name="input"> Text to parse </param>
-            /// <param name="contentElement"> Element representing the parsed results </param>
-            /// <returns> true if the input was parsed, false if the input couldn't be parsed </returns>
-            public static bool TryParse(string input, out Element contentElement)
-            {
-                contentElement = new Element();
-                var match = new Regex(@"(?:\[([a-zA-Z]+)\]){1}(.+)(?:\[\/\1\]){1}").Match(input);
-                // 0 - everything, 1 - Tag, 2 - value
-                if (match.Groups.Count != 3) return false;
-
-                contentElement = new Element(match.Groups[1].Value, match.Groups[2].Value);
-                return true;
+                Childs = childs;
             }
 
             /// <summary>
@@ -85,6 +69,8 @@ namespace epvpapi
             /// </summary>
             public class PlainText : Element
             {
+                public string Value { get; set; }
+
                 public override string Plain
                 {
                     get { return (string) Value; }
@@ -95,9 +81,10 @@ namespace epvpapi
                 { }
 
 
-                public PlainText(string value) :
-                    base("", value)
-                { }
+                public PlainText(string value)
+                {
+                    Value = value;
+                }
             }
 
             /// <summary>
@@ -106,11 +93,7 @@ namespace epvpapi
             public class ItalicText : Element
             {
                 public ItalicText() :
-                    this("")
-                { }
-
-                public ItalicText(string value) :
-                    base("I", value)
+                    base("I")
                 { }
             }
 
@@ -120,11 +103,7 @@ namespace epvpapi
             public class UnderlinedText : Element
             {
                 public UnderlinedText() :
-                    this("")
-                { }
-
-                public UnderlinedText(string value) :
-                    base("U", value)
+                    base("U")
                 { }
             }
 
@@ -134,11 +113,7 @@ namespace epvpapi
             public class BoldText : Element
             {
                 public BoldText() :
-                    this("")
-                { }
-
-                public BoldText(string value) :
-                    base("B", value)
+                    base("B")
                 { }
             }
 
@@ -148,11 +123,7 @@ namespace epvpapi
             public class StruckThroughText : Element
             {
                 public StruckThroughText() :
-                    this("")
-                { }
-
-                public StruckThroughText(string value) :
-                    base("STRIKE", value)
+                    base("STRIKE")
                 { }
             }
 
@@ -162,11 +133,7 @@ namespace epvpapi
             public class CenteredText : Element
             {
                 public CenteredText() :
-                    this("")
-                { }
-
-                public CenteredText(string value) :
-                    base("CENTER", value)
+                    base("CENTER")
                 { }
             }
 
@@ -176,11 +143,7 @@ namespace epvpapi
             public class LeftAlignedText : Element
             {
                 public LeftAlignedText() :
-                    this("")
-                { }
-
-                public LeftAlignedText(string value) :
-                    base("LEFT", value)
+                    base("LEFT")
                 { }
             }
 
@@ -190,11 +153,7 @@ namespace epvpapi
             public class RightAlignedText : Element
             {
                 public RightAlignedText() :
-                    this("")
-                { }
-
-                public RightAlignedText(string value) :
-                    base("RIGHT", value)
+                    base("RIGHT")
                 { }
             }
 
@@ -204,11 +163,7 @@ namespace epvpapi
             public class JustifiedText : Element
             {
                 public JustifiedText() :
-                    this("")
-                { }
-
-                public JustifiedText(string value) :
-                    base("JUSTIFY", value)
+                    base("JUSTIFY")
                 { }
             }
 
@@ -218,11 +173,7 @@ namespace epvpapi
             public class IndentedText : Element
             {
                 public IndentedText() :
-                    this("")
-                { }
-
-                public IndentedText(string value) :
-                    base("INDENT", value)
+                    base("INDENT")
                 { }
             }
 
@@ -234,11 +185,7 @@ namespace epvpapi
                 public string Title { get; set; }
 
                 public Spoiler() :
-                    this("")
-                { }
-
-                public Spoiler(string value) :
-                    base("spoiler", value)
+                    base("spoiler")
                 { }
             }
 
@@ -247,12 +194,15 @@ namespace epvpapi
             /// </summary>
             public class Image : Element
             {
-                public Image() :
-                    this("")
-                { }
+                public string Url { get; set; }
 
-                public Image(string value) :
-                    base("img", value)
+                public override string Plain
+                {
+                    get { return String.Format("[{0}]{1}[/{0}]", Tag, Url); }
+                }
+
+                public Image() :
+                    base("img")
                 { }
             }
 
@@ -261,12 +211,15 @@ namespace epvpapi
             /// </summary>
             public class Link : Element
             {
-                public Link() :
-                    this("")
-                { }
+                public string Url { get; set; }
 
-                public Link(string value) :
-                    base("url", value)
+                public override string Plain
+                {
+                    get { return String.Format("[{0}={1}]{2}[/{0}]", Tag, Url, String.Join(String.Empty, Childs.Select(childContent => childContent.Plain))); }
+                }
+
+                public Link() :
+                    base("url")
                 { }
             }
 
@@ -275,23 +228,45 @@ namespace epvpapi
             /// </summary>
             public class Code : Element
             {
-                public Code() :
-                    this("")
-                { }
+                public string Content { get; set; }
 
-                public Code(string value) :
-                    base("CODE", value)
+                public override string Plain
+                {
+                    get { return String.Format("[{0}]{1}[/{0}]", Tag, Content); }
+                }
+
+                public Code() :
+                    base("CODE")
                 { }
             }
 
+            /// <summary>
+            /// Represents the container for formatting content to be displayed in another font size
+            /// </summary>
+            public class FontSize : Element
+            {
+                public uint Size { get; set; }
 
+                public override string Plain
+                {
+                    get { return String.Format("[{0}={1}]{2}[/{0}]", Tag, Size, String.Join(String.Empty, Childs.Select(childContent => childContent.Plain))); }
+                }
+
+                public FontSize() :
+                    base("SIZE")
+                { }
+            }
+
+            /// <summary>
+            /// Represents quote containers displaying information about the user and content being quoted
+            /// </summary>
             public class Quote : Element
             {
                 public User Author { get; set; }
 
                 public override string Plain
                 {
-                    get { return String.Format("[{0}={1}]{2}{3}[/{0}]", Tag, Author.Name, Value, String.Join(String.Empty, Childs.Select(childContent => childContent.Plain))); }
+                    get { return String.Format("[{0}={1}]{2}[/{0}]", Tag, Author.Name, String.Join(String.Empty, Childs.Select(childContent => childContent.Plain))); }
                 }
 
                 public Quote(User author):
@@ -354,7 +329,7 @@ namespace epvpapi
         /// <summary>
         /// Retrieves all bold text <c>Element</c>s contained by the <c>Elements</c> collection 
         /// </summary>
-        public List<Element.BoldText> BoldText
+        public List<Element.BoldText> BoldTexts
         {
             get { return Filter<Element.BoldText>(); }
         }
@@ -362,7 +337,7 @@ namespace epvpapi
         /// <summary>
         /// Retrieves all italic text <c>Element</c>s contained by the <c>Elements</c> collection 
         /// </summary>
-        public List<Element.ItalicText> ItalicText
+        public List<Element.ItalicText> ItalicTexts
         {
             get { return Filter<Element.ItalicText>(); }
         }
@@ -370,7 +345,7 @@ namespace epvpapi
         /// <summary>
         /// Retrieves all underlined text <c>Element</c>s contained by the <c>Elements</c> collection 
         /// </summary>
-        public List<Element.UnderlinedText> UnderlinedText
+        public List<Element.UnderlinedText> UnderlinedTexts
         {
             get { return Filter<Element.UnderlinedText>(); }
         }
@@ -378,9 +353,65 @@ namespace epvpapi
         /// <summary>
         /// Retrieves all struck through text <c>Element</c>s contained by the <c>Elements</c> collection 
         /// </summary>
-        public List<Element.StruckThroughText> StruckThroughText
+        public List<Element.StruckThroughText> StruckThroughTexts
         {
             get { return Filter<Element.StruckThroughText>(); }
+        }
+
+        /// <summary>
+        /// Retrieves all indented text <c>Element</c>s contained by the <c>Elements</c> collection 
+        /// </summary>
+        public List<Element.IndentedText> IndentedTexts
+        {
+            get { return Filter<Element.IndentedText>(); }
+        }
+
+        /// <summary>
+        /// Retrieves all centered text <c>Element</c>s contained by the <c>Elements</c> collection 
+        /// </summary>
+        public List<Element.CenteredText> CenteredTexts
+        {
+            get { return Filter<Element.CenteredText>(); }
+        }
+
+        /// <summary>
+        /// Retrieves all left aligned text <c>Element</c>s contained by the <c>Elements</c> collection 
+        /// </summary>
+        public List<Element.LeftAlignedText> LeftAlignedTexts
+        {
+            get { return Filter<Element.LeftAlignedText>(); }
+        }
+
+        /// <summary>
+        /// Retrieves all right aligned text <c>Element</c>s contained by the <c>Elements</c> collection 
+        /// </summary>
+        public List<Element.RightAlignedText> RightAlignedTexts
+        {
+            get { return Filter<Element.RightAlignedText>(); }
+        }
+
+        /// <summary>
+        /// Retrieves all justified text <c>Element</c>s contained by the <c>Elements</c> collection 
+        /// </summary>
+        public List<Element.JustifiedText> JustifiedTexts
+        {
+            get { return Filter<Element.JustifiedText>(); }
+        }
+
+        /// <summary>
+        /// Retrieves all font size <c>Element</c>s contained by the <c>Elements</c> collection 
+        /// </summary>
+        public List<Element.FontSize> FontSizes
+        {
+            get { return Filter<Element.FontSize>(); }
+        }
+
+        /// <summary>
+        /// Retrieves all code <c>Element</c>s contained by the <c>Elements</c> collection 
+        /// </summary>
+        public List<Element.Code> Codes
+        {
+            get { return Filter<Element.Code>(); }
         }
 
         public Content(List<Element> elements)

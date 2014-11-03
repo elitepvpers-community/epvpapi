@@ -55,6 +55,11 @@ namespace epvpapi
             return parent.Where(node => node.Name == tagName);
         }
 
+        public static string Class(this HtmlNode node)
+        {
+            return node.Attributes.Where(attribute => attribute.Name == "class").Select(attribute => attribute.Value).FirstOrDefault();
+        }
+
         public static IEnumerable<HtmlNode> GetElementsByAttribute(this IEnumerable<HtmlNode> parent, string attributeName,
                                                                     string attributeValue)
         {

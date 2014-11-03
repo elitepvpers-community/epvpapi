@@ -365,6 +365,12 @@ namespace epvpapi
         /// </summary>
         public string AvatarUrl { get; set; }
 
+        /// <summary>
+        /// Represents the custom signature that the user has set
+        /// </summary>
+        public Content Signature { get; set; }
+
+
         public User(uint id = 0)
             : this(null, id)
         { }
@@ -382,6 +388,7 @@ namespace epvpapi
             LastVisitorMessage = new DateTime();
             JoinDate = new DateTime();
             TBMProfile = new Profile(id);
+            Signature = new Content();
         }
 
         /// <summary>
