@@ -15,7 +15,7 @@ namespace epvpapi.Evaluation
             : base(target)
         { }
 
-        private static IEnumerable<T> ParseText<T>(IEnumerable<HtmlNode> nodeCollection) where T : Content.Element, new()
+        private static IEnumerable<T> ParseElement<T>(IEnumerable<HtmlNode> nodeCollection) where T : Content.Element, new()
         {
             foreach (var node in nodeCollection)
             {
@@ -23,36 +23,31 @@ namespace epvpapi.Evaluation
                 new ContentParser(childNodes).Execute(node);
                 var parsedElement = new T()
                 {
-                    Value = node.InnerText.Strip(),
-                    Childs = new List<Content.Element>(childNodes.Where(childNode => node.InnerText != childNode.Value))
+                    Childs = childNodes
                 };
 
                 yield return parsedElement;
             }
         }
 
-        private static IEnumerable<T> ParseText<T>(HtmlNode coreNode) where T : Content.Element, new()
+        private static IEnumerable<Content.Element.PlainText> ParseText(IEnumerable<HtmlNode> nodeCollection)
         {
-            return ParseText<T>(new List<HtmlNode> { coreNode });
-        }
-
-        private static IEnumerable<T> ParseAttribute<T>(IEnumerable<HtmlNode> nodeCollection, string attributeName) where T : Content.Element, new()
-        {
-            foreach (var node in nodeCollection.Where(n => n.Attributes.Contains(attributeName)))
+            foreach (var node in nodeCollection)
             {
                 var childNodes = new List<Content.Element>();
-                new ContentParser(childNodes).Execute(node);
-                var parsedElement = new T()
+                var parsedElement = new Content.Element.PlainText()
                 {
-                    Value = node.Attributes[attributeName].Value,
-                    // Since every html tag provides a text node, we need to check whether the nodes are already covered as another elment
-                    Childs = new List<Content.Element>(childNodes.Where(childNode => node.InnerText != childNode.Value)) 
+                    Value = node.InnerText.Strip()
                 };
 
                 yield return parsedElement;
             }
         }
 
+        private static IEnumerable<T> ParseElement<T>(HtmlNode coreNode) where T : Content.Element, new()
+        {
+            return ParseElement<T>(new List<HtmlNode> { coreNode });
+        }
 
         public void Execute(HtmlNode coreNode)
         {
@@ -69,7 +64,7 @@ namespace epvpapi.Evaluation
                 if (quoteContentNode == null) continue;
                 var quoteAuthorNode = quoteNode.SelectSingleNode("div[1]/strong[1]");
 
-                foreach (var parsedQuoteElement in ParseText<Content.Element.Quote>(quoteContentNode))
+                foreach (var parsedQuoteElement in ParseElement<Content.Element.Quote>(quoteContentNode))
                 {
                     parsedQuoteElement.Author = (quoteAuthorNode != null)
                         ? new User(quoteAuthorNode.InnerText)
@@ -81,7 +76,7 @@ namespace epvpapi.Evaluation
 
             // every code node got the specified style attributes
             foreach (var codeNode in coreNode.ChildNodes.GetElementsByAttribute("style", "margin:20px; margin-top:5px"))
-                Target.AddRange(ParseText<Content.Element.Code>(codeNode.ChildNodes
+                Target.AddRange(ParseElement<Content.Element.Code>(codeNode.ChildNodes
                     .GetElementsByAttribute("dir", "ltr")));
 
             
@@ -92,28 +87,51 @@ namespace epvpapi.Evaluation
                 var spoilerTextNode = spoilerNode.SelectSingleNode("div[1]/span[1]/a[1]/span[2]");
                 if (spoilerContentNode == null || spoilerTextNode == null) continue;   
 
-                foreach (var parsedSpoilerElement in ParseText<Content.Element.Spoiler>(spoilerContentNode))
+                foreach (var parsedSpoilerElement in ParseElement<Content.Element.Spoiler>(spoilerContentNode))
                 {
                     parsedSpoilerElement.Title = spoilerTextNode.InnerText;
                     Target.Add(parsedSpoilerElement);
                 }
-                
             }
 
-            Target.AddRange(ParseText<Content.Element.BoldText>(coreNode.ChildNodes.GetElementsByTagName("b")));
-            Target.AddRange(ParseText<Content.Element.ItalicText>(coreNode.ChildNodes.GetElementsByTagName("i")));
-            Target.AddRange(ParseText<Content.Element.UnderlinedText>(coreNode.ChildNodes.GetElementsByTagName("u")));
-            Target.AddRange(ParseText<Content.Element.StruckThroughText>(coreNode.ChildNodes.GetElementsByTagName("strike")));
-            Target.AddRange(ParseText<Content.Element.CenteredText>(coreNode.ChildNodes.GetElementsByClassName("align-center")));
-            Target.AddRange(ParseText<Content.Element.LeftAlignedText>(coreNode.ChildNodes.GetElementsByClassName("align-left")));
-            Target.AddRange(ParseText<Content.Element.RightAlignedText>(coreNode.ChildNodes.GetElementsByClassName("align-right")));
-            Target.AddRange(ParseText<Content.Element.JustifiedText>(coreNode.ChildNodes.GetElementsByClassName("align-justify")));
-            Target.AddRange(ParseText<Content.Element.IndentedText>(coreNode.ChildNodes.GetElementsByTagName("blockquote")));
-            Target.AddRange(ParseText<Content.Element.PlainText>(coreNode.ChildNodes.GetElementsByTagName("#text").Where(textNode => textNode.InnerText.Strip() != "")));
-            // get all images within the specified core node and extract the url in the src attribute (image link)
-            Target.AddRange(ParseAttribute<Content.Element.Image>(coreNode.ChildNodes.GetElementsByTagName("img"), "src"));
             // get all links within the specified core node and extract the url in the href attribute
-            Target.AddRange(ParseAttribute<Content.Element.Link>(coreNode.ChildNodes.GetElementsByTagName("a"), "href"));
+            foreach (var linkNode in coreNode.ChildNodes.GetElementsByTagName("a").Where(n => n.Attributes.Contains("href")))
+            {
+                var childNodes = new List<Content.Element>();
+                new ContentParser(childNodes).Execute(linkNode);
+                var parsedElement = new Content.Element.Link()
+                {
+                    Url = linkNode.Attributes["href"].Value,
+                    Childs = childNodes
+                };
+
+                Target.Add(parsedElement);
+            }
+
+            // get all images within the specified core node and extract the url in the src attribute (image link)
+            foreach (var imgNode in coreNode.ChildNodes.GetElementsByTagName("img").Where(n => n.Attributes.Contains("src")))
+            {
+                var childNodes = new List<Content.Element>();
+                new ContentParser(childNodes).Execute(imgNode);
+                var parsedElement = new Content.Element.Image()
+                {
+                    Url = imgNode.Attributes["src"].Value,
+                    Childs = childNodes
+                };
+
+                Target.Add(parsedElement);
+            }
+
+            Target.AddRange(ParseText(coreNode.ChildNodes.GetElementsByTagName("#text").Where(textNode => textNode.InnerText.Strip() != "")));
+            Target.AddRange(ParseElement<Content.Element.BoldText>(coreNode.ChildNodes.GetElementsByTagName("b")));
+            Target.AddRange(ParseElement<Content.Element.ItalicText>(coreNode.ChildNodes.GetElementsByTagName("i")));
+            Target.AddRange(ParseElement<Content.Element.UnderlinedText>(coreNode.ChildNodes.GetElementsByTagName("u")));
+            Target.AddRange(ParseElement<Content.Element.StruckThroughText>(coreNode.ChildNodes.GetElementsByTagName("strike")));
+            Target.AddRange(ParseElement<Content.Element.CenteredText>(coreNode.ChildNodes.GetElementsByClassName("align-center")));
+            Target.AddRange(ParseElement<Content.Element.LeftAlignedText>(coreNode.ChildNodes.GetElementsByClassName("align-left")));
+            Target.AddRange(ParseElement<Content.Element.RightAlignedText>(coreNode.ChildNodes.GetElementsByClassName("align-right")));
+            Target.AddRange(ParseElement<Content.Element.JustifiedText>(coreNode.ChildNodes.GetElementsByClassName("align-justify")));
+            Target.AddRange(ParseElement<Content.Element.IndentedText>(coreNode.ChildNodes.GetElementsByTagName("blockquote")));
         }   
     }
 }
