@@ -35,36 +35,12 @@ namespace epvpapi.Evaluation
             {
                 switch(subNode.Name)
                 {
-                    case "b":
-                    {
-                        Target.Add(ParseElement<Content.Element.BoldText>(subNode));
-                        break;
-                    }
-                    case "i":
-                    {
-                        Target.Add(ParseElement<Content.Element.ItalicText>(subNode));
-                        break;
-                    }
-                    case "u":
-                    {
-                        Target.Add(ParseElement<Content.Element.UnderlinedText>(subNode));
-                        break;
-                    }
-                    case "STRIKE":
-                    {
-                        Target.Add(ParseElement<Content.Element.StruckThroughText>(subNode));
-                        break;
-                    }
-                    case "blockquote":
-                    {
-                        Target.Add(ParseElement<Content.Element.IndentedText>(subNode));
-                        break;
-                    }
-                    case "br":
-                    {
-                        Target.Add(ParseElement<Content.Element.Linebreak>(subNode));
-                        break;
-                    }
+                    case "b": { Target.Add(ParseElement<Content.Element.BoldText>(subNode)); break; }
+                    case "i": { Target.Add(ParseElement<Content.Element.ItalicText>(subNode)); break; }
+                    case "u": { Target.Add(ParseElement<Content.Element.UnderlinedText>(subNode)); break; }
+                    case "STRIKE": { Target.Add(ParseElement<Content.Element.StruckThroughText>(subNode)); break; }
+                    case "blockquote": { Target.Add(ParseElement<Content.Element.IndentedText>(subNode)); break; }
+                    case "br": { Target.Add(ParseElement<Content.Element.Linebreak>(subNode)); break; }
                     case "a":
                     {
                         if (subNode.Attributes.Any(attribute => attribute.Name == "href"))
@@ -103,15 +79,12 @@ namespace epvpapi.Evaluation
                     {
                         if (subNode.Attributes.Any(attribute => attribute.Name == "style" && attribute.Value == "margin:20px; margin-top:5px"))
                         {
-                            var childNodes = new List<Content.Element>();
-                            new ContentParser(childNodes).Execute(subNode);
-                            var parsedElement = new Content.Element.Image()
+                            var codeBoxNode = subNode.SelectSingleNode("pre[1]");
+                            if(codeBoxNode != null)
                             {
-                                Url = subNode.Attributes["src"].Value,
-                                Childs = childNodes
-                            };
-
-                            Target.Add(parsedElement);
+                                var codeBoxContent = String.Join("", codeBoxNode.ChildNodes.Select(childNode => childNode.InnerText));
+                                Target.Add(new Content.Element.Code() { Content = codeBoxContent });
+                            }
                         }
 
                         break;
@@ -129,26 +102,10 @@ namespace epvpapi.Evaluation
 
                 switch(subNode.Class())
                 {
-                    case "align-center":
-                    {
-                        Target.Add(ParseElement<Content.Element.CenteredText>(subNode));
-                        break;
-                    }
-                    case "align-left":
-                    {
-                        Target.Add(ParseElement<Content.Element.LeftAlignedText>(subNode));
-                        break;
-                    }
-                    case "align-right":
-                    {
-                        Target.Add(ParseElement<Content.Element.RightAlignedText>(subNode));
-                        break;
-                    }
-                    case "align-justify":
-                    {
-                        Target.Add(ParseElement<Content.Element.JustifiedText>(subNode));
-                        break;
-                    }
+                    case "align-center": { Target.Add(ParseElement<Content.Element.CenteredText>(subNode)); break; }
+                    case "align-left": { Target.Add(ParseElement<Content.Element.LeftAlignedText>(subNode)); break; }
+                    case "align-right": { Target.Add(ParseElement<Content.Element.RightAlignedText>(subNode)); break; }
+                    case "align-justify": { Target.Add(ParseElement<Content.Element.JustifiedText>(subNode)); break; }
                     case "bbcode-quote":
                     {
                         var quoteNode = subNode.SelectSingleNode("table[1]/tr[1]/td[1]");

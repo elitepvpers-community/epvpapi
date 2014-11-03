@@ -240,6 +240,13 @@ namespace epvpapi
             /// </summary>
             public class Code : Element
             {
+                public string Content { get; set; }
+
+                public override string Plain
+                {
+                    get { return String.Format("[{0}]{1}[/{0}]", Tag, Content); }
+                }
+
                 public Code() :
                     base("CODE")
                 { }
