@@ -206,18 +206,6 @@ namespace epvpapi
                 { }
             }
 
-            public class Linebreak : Element
-            {
-                public override string Plain
-                {
-                    get { return "\n"; }
-                }
-
-                public Linebreak():
-                    base("")
-                { }
-            }
-
             /// <summary>
             /// Represents a reference to another url
             /// </summary>
@@ -252,6 +240,9 @@ namespace epvpapi
                 { }
             }
 
+            /// <summary>
+            /// Represents the container for formatting content to be displayed in another font size
+            /// </summary>
             public class FontSize : Element
             {
                 public uint Size { get; set; }
@@ -266,6 +257,9 @@ namespace epvpapi
                 { }
             }
 
+            /// <summary>
+            /// Represents quote containers displaying information about the user and content being quoted
+            /// </summary>
             public class Quote : Element
             {
                 public User Author { get; set; }
@@ -335,7 +329,7 @@ namespace epvpapi
         /// <summary>
         /// Retrieves all bold text <c>Element</c>s contained by the <c>Elements</c> collection 
         /// </summary>
-        public List<Element.BoldText> BoldText
+        public List<Element.BoldText> BoldTexts
         {
             get { return Filter<Element.BoldText>(); }
         }
@@ -343,7 +337,7 @@ namespace epvpapi
         /// <summary>
         /// Retrieves all italic text <c>Element</c>s contained by the <c>Elements</c> collection 
         /// </summary>
-        public List<Element.ItalicText> ItalicText
+        public List<Element.ItalicText> ItalicTexts
         {
             get { return Filter<Element.ItalicText>(); }
         }
@@ -351,7 +345,7 @@ namespace epvpapi
         /// <summary>
         /// Retrieves all underlined text <c>Element</c>s contained by the <c>Elements</c> collection 
         /// </summary>
-        public List<Element.UnderlinedText> UnderlinedText
+        public List<Element.UnderlinedText> UnderlinedTexts
         {
             get { return Filter<Element.UnderlinedText>(); }
         }
@@ -359,9 +353,65 @@ namespace epvpapi
         /// <summary>
         /// Retrieves all struck through text <c>Element</c>s contained by the <c>Elements</c> collection 
         /// </summary>
-        public List<Element.StruckThroughText> StruckThroughText
+        public List<Element.StruckThroughText> StruckThroughTexts
         {
             get { return Filter<Element.StruckThroughText>(); }
+        }
+
+        /// <summary>
+        /// Retrieves all indented text <c>Element</c>s contained by the <c>Elements</c> collection 
+        /// </summary>
+        public List<Element.IndentedText> IndentedTexts
+        {
+            get { return Filter<Element.IndentedText>(); }
+        }
+
+        /// <summary>
+        /// Retrieves all centered text <c>Element</c>s contained by the <c>Elements</c> collection 
+        /// </summary>
+        public List<Element.CenteredText> CenteredTexts
+        {
+            get { return Filter<Element.CenteredText>(); }
+        }
+
+        /// <summary>
+        /// Retrieves all left aligned text <c>Element</c>s contained by the <c>Elements</c> collection 
+        /// </summary>
+        public List<Element.LeftAlignedText> LeftAlignedTexts
+        {
+            get { return Filter<Element.LeftAlignedText>(); }
+        }
+
+        /// <summary>
+        /// Retrieves all right aligned text <c>Element</c>s contained by the <c>Elements</c> collection 
+        /// </summary>
+        public List<Element.RightAlignedText> RightAlignedTexts
+        {
+            get { return Filter<Element.RightAlignedText>(); }
+        }
+
+        /// <summary>
+        /// Retrieves all justified text <c>Element</c>s contained by the <c>Elements</c> collection 
+        /// </summary>
+        public List<Element.JustifiedText> JustifiedTexts
+        {
+            get { return Filter<Element.JustifiedText>(); }
+        }
+
+        /// <summary>
+        /// Retrieves all font size <c>Element</c>s contained by the <c>Elements</c> collection 
+        /// </summary>
+        public List<Element.FontSize> FontSizes
+        {
+            get { return Filter<Element.FontSize>(); }
+        }
+
+        /// <summary>
+        /// Retrieves all code <c>Element</c>s contained by the <c>Elements</c> collection 
+        /// </summary>
+        public List<Element.Code> Codes
+        {
+            get { return Filter<Element.Code>(); }
         }
 
         public Content(List<Element> elements)

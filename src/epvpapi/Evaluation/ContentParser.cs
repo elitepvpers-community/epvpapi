@@ -40,7 +40,7 @@ namespace epvpapi.Evaluation
                     case "u": { Target.Add(ParseElement<Content.Element.UnderlinedText>(subNode)); break; }
                     case "STRIKE": { Target.Add(ParseElement<Content.Element.StruckThroughText>(subNode)); break; }
                     case "blockquote": { Target.Add(ParseElement<Content.Element.IndentedText>(subNode)); break; }
-                    case "br": { Target.Add(ParseElement<Content.Element.Linebreak>(subNode)); break; }
+                    case "br": { Target.Add(new Content.Element.PlainText(Environment.NewLine)); break; }
                     case "a":
                     {
                         if (subNode.Attributes.Any(attribute => attribute.Name == "href"))
@@ -101,10 +101,11 @@ namespace epvpapi.Evaluation
                     }
                     case "#text":
                     {
-                        Target.Add(new Content.Element.PlainText()
-                        {
-                            Value = subNode.InnerText.Strip()
-                        });                 
+                        if(!String.IsNullOrEmpty(subNode.InnerText.Strip()))
+                            Target.Add(new Content.Element.PlainText()
+                            {
+                                Value = subNode.InnerText.Strip()
+                            });                 
 
                         break;
                     }
