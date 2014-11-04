@@ -2,6 +2,15 @@ Introduction
 ===
 This library is currently a work-in-progress and almost reached alpha status, please let us know if something does not work as expected or if you find a documentation article is lacking information.
 
+Getting started
+===
+
+There are currently 3 ways to get started:
+
+* Clone the repository and compile the latest code (experimental)
+* Download one of the stable [releases](https://github.com/Mostey/epvpapi/releases) and compile the code
+* Use our [NuGet package](https://www.nuget.org/packages/epvpapi) (compiling is not required)
+
 
 References
 ===
