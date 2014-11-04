@@ -289,9 +289,11 @@ namespace epvpapi.Connection
             /// <param name="signatureContent"> Content to set as signature </param>
             public void SetSignature(Content signatureContent)
             {
+            
                 var content = new MultipartFormDataContent
                 {
-                    { new StringContent(signatureContent.ToString()), "message" },
+                    // Encoding (SBCSCodePageEncoding) is important and required to transmit german characters such as Ä, Ü, Ö...
+                    { new StringContent(signatureContent.ToString(), System.Text.Encoding.GetEncoding("ISO-8859-1")), "message" }, 
                     { new StringContent("0"), "wysiwyg" },
                     { new StringContent("http://www.elitepvpers.com/forum/usercp.php"), "url" },
                     { new StringContent(String.Empty), "s" },
