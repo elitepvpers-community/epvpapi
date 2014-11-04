@@ -1,6 +1,6 @@
 Introduction
 ===
-This library is currently a work-in-progress and almost reached alpha status, please let us know if something does not work as expected or if you find a documentation article is lacking information.
+This library is currently a work-in-progress, please let us know if something does not work as expected or if you think a documentation article is lacking information.
 
 Getting started
 ===
