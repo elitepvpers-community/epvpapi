@@ -282,7 +282,28 @@ namespace epvpapi.Connection
 
                 AuthenticatedSession.PostMultipartFormData(new Uri("http://www.elitepvpers.com/forum/profile.php?do=updateavatar"), content);
             }
+
+            /// <summary>
+            /// Sets the signature content
+            /// </summary>
+            /// <param name="signatureContent"> Content to set as signature </param>
+            public void SetSignature(Content signatureContent)
+            {
+                var content = new MultipartFormDataContent
+                {
+                    { new StringContent(signatureContent.ToString()), "message" },
+                    { new StringContent("0"), "wysiwyg" },
+                    { new StringContent("http://www.elitepvpers.com/forum/usercp.php"), "url" },
+                    { new StringContent(String.Empty), "s" },
+                    { new StringContent(AuthenticatedSession.SecurityToken), "securitytoken" },
+                    { new StringContent("updatesignature"), "do" },
+                    { new StringContent("52428800"), "MAX_FILE_SIZE" }
+                };
+
+                AuthenticatedSession.PostMultipartFormData(new Uri("http://www.elitepvpers.com/forum/profile.php?do=updatesignature"), content);
+            }
         }
+
 
         /// <summary>
         /// Profile representing the logged-in user being bound to the session
