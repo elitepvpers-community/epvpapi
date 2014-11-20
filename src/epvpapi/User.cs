@@ -370,6 +370,11 @@ namespace epvpapi
         /// </summary>
         public Content Signature { get; set; }
 
+        /// <summary>
+        /// Amount of friends the user has added
+        /// </summary>
+        public uint Friends { get; set; }
+
 
         public User(uint id = 0)
             : this(null, id)

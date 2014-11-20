@@ -134,6 +134,26 @@ namespace epvpapi.Evaluation
             }
         }
 
+        internal class FriendListParser : TargetableParser<User>, INodeParser
+        {
+            public FriendListParser(User target) : 
+                base(target)
+            { }
+
+            public void Execute(HtmlNode coreNode)
+            {
+                if (coreNode == null) return;
+
+                var friendCountNode = coreNode.SelectSingleNode("../div[1]");
+                if (friendCountNode != null)
+                {
+                    var match = Regex.Match(friendCountNode.InnerText, @"Showing [0-9]+ of ([0-9]+) Friend\(s\)");
+                    if (match.Groups.Count > 1)
+                        Target.Friends = match.Groups[1].Value.To<double>().To<uint>();
+                }
+            }
+        }
+
 
         internal class LastActivityParser : TargetableParser<User>, INodeParser
         {
@@ -380,6 +400,7 @@ namespace epvpapi.Evaluation
             new StatisticsParser(Target, IsSessionUser).Execute(document.GetElementbyId("collapseobj_stats"));
             new MiniStatsParser(Target).Execute(document.GetElementbyId("collapseobj_stats_mini"));
             new LastVisitorsParser(Target).Execute(document.GetElementbyId("collapseobj_visitors"));
+            new FriendListParser(Target).Execute(document.GetElementbyId("friends_list"));
         }
     }
 }
