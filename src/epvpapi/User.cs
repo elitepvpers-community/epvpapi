@@ -181,7 +181,7 @@ namespace epvpapi
                 
                 foreach(var reflectedUsergroup in availableUsergroups)
                 {
-                    Rank usergroup = (reflectedUsergroup.GetValue(null) as Rank);
+                    Rank usergroup = (reflectedUsergroup.GetValue(null, null) as Rank);
                     if (usergroup.File == match.Groups[1].Value)
                     {
                         group = usergroup;
