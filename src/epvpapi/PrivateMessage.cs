@@ -41,6 +41,7 @@ namespace epvpapi
         /// </summary>
         public bool Unread { get; set; }
 
+
         public PrivateMessage(uint id)
             : this(id, new Content(), new List<User>())
         { }
@@ -95,9 +96,9 @@ namespace epvpapi
                                 new KeyValuePair<string, string>("pmid", String.Empty),
                                 new KeyValuePair<string, string>("forward", String.Empty),
                                 new KeyValuePair<string, string>("sbutton", "submit"),
-                                new KeyValuePair<string, string>("savecopy", (settings & Settings.SaveCopy).ToString()),
-                                new KeyValuePair<string, string>("signature", (settings & Settings.ShowSignature).ToString()),
-                                new KeyValuePair<string, string>("parseurl", (settings & Settings.ParseUrl).ToString())
+                                new KeyValuePair<string, string>("savecopy", settings.HasFlag(Settings.SaveCopy) ? "1" : "0"),
+                                new KeyValuePair<string, string>("signature", settings.HasFlag(Settings.ShowSignature) ? "1" : "0"),
+                                new KeyValuePair<string, string>("parseurl", settings.HasFlag(Settings.ParseUrl) ? "1" : "0")
                             });
             }
         }
