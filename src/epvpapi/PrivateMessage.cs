@@ -76,34 +76,30 @@ namespace epvpapi
             if (session.User.Posts <= 20 && !session.User.HasRank(User.Rank.Premium) && !session.User.HasRank(User.Rank.EliteGoldTrader))
                 throw new InsufficientAccessException("More than 20 posts or the premium / elite*gold trader badge is required for sending private messages without captchas");
 
-            var recipients = "";
-            foreach(var recipient in Recipients)
+            foreach (var splittedRecipientList in Recipients.Split(5))
             {
-                recipients += recipient.Name;
-                if (recipient != Recipients.Last())
-                    recipients += ";";
-            }
+                var recipients = String.Join(";", splittedRecipientList.Select(recipient => recipient.Name));
 
-            session.Post("http://www.elitepvpers.com/forum/private.php?do=insertpm&pmid=",
-                         new List<KeyValuePair<string, string>>()
-                         {
-                             new KeyValuePair<string, string>("recipients", recipients),
-                             new KeyValuePair<string, string>("bccrecipients", String.Empty),
-                             new KeyValuePair<string, string>("title", String.IsNullOrEmpty(Title) ? "-" : Title),
-                             new KeyValuePair<string, string>("message", Content.ToString()),
-                             new KeyValuePair<string, string>("wysiwyg", "0"),
-                             new KeyValuePair<string, string>("iconid", "0"),
-                             new KeyValuePair<string, string>("s", String.Empty),
-                             new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
-                             new KeyValuePair<string, string>("do", "insertpm"),
-                             new KeyValuePair<string, string>("pmid", String.Empty),
-                             new KeyValuePair<string, string>("forward", String.Empty),
-                             new KeyValuePair<string, string>("sbutton", "submit"),
-                             new KeyValuePair<string, string>("savecopy", (settings & Settings.SaveCopy).ToString()),
-                             new KeyValuePair<string, string>("signature", (settings & Settings.ShowSignature).ToString()),
-                             new KeyValuePair<string, string>("parseurl", (settings & Settings.ParseUrl).ToString())
-                         });
-    
+                session.Post("http://www.elitepvpers.com/forum/private.php?do=insertpm&pmid=",
+                            new List<KeyValuePair<string, string>>()
+                            {
+                                new KeyValuePair<string, string>("recipients", recipients),
+                                new KeyValuePair<string, string>("bccrecipients", String.Empty),
+                                new KeyValuePair<string, string>("title", String.IsNullOrEmpty(Title) ? "-" : Title),
+                                new KeyValuePair<string, string>("message", Content.ToString()),
+                                new KeyValuePair<string, string>("wysiwyg", "0"),
+                                new KeyValuePair<string, string>("iconid", "0"),
+                                new KeyValuePair<string, string>("s", String.Empty),
+                                new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
+                                new KeyValuePair<string, string>("do", "insertpm"),
+                                new KeyValuePair<string, string>("pmid", String.Empty),
+                                new KeyValuePair<string, string>("forward", String.Empty),
+                                new KeyValuePair<string, string>("sbutton", "submit"),
+                                new KeyValuePair<string, string>("savecopy", (settings & Settings.SaveCopy).ToString()),
+                                new KeyValuePair<string, string>("signature", (settings & Settings.ShowSignature).ToString()),
+                                new KeyValuePair<string, string>("parseurl", (settings & Settings.ParseUrl).ToString())
+                            });
+            }
         }
 
         /// <summary>

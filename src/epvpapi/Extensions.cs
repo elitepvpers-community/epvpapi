@@ -48,12 +48,12 @@ namespace epvpapi
         /// <summary>
         /// Gets all child elements of the specified tag name
         /// </summary>
-        /// <param name="parent"> Node acting as the starting point </param>
+        /// <param name="parents"> Node acting as the starting point </param>
         /// <param name="tagName"> Tag name to search for </param>
         /// <returns> <c>IEnumarable</c> of <c>HtmlNode</c>s that were found </returns>
-        public static IEnumerable<HtmlNode> GetElementsByTagName(this IEnumerable<HtmlNode> parent, string tagName)
+        public static IEnumerable<HtmlNode> GetElementsByTagName(this IEnumerable<HtmlNode> parents, string tagName)
         {
-            return parent.Where(node => node.Name == tagName);
+            return parents.Where(node => node.Name == tagName);
         }
 
         public static string Class(this HtmlNode node)

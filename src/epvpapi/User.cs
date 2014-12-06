@@ -174,14 +174,14 @@ namespace epvpapi
             public static bool FromUrl(string url, out Rank group)
             {
                 group = new Rank();
-                Match match = Regex.Match(url, @"http://cdn.elitepvpers.org/forum/images/teamicons/relaunch/(\S+)");
+                var match = Regex.Match(url, @"(?:http|https)+:\/\/(?:cdn|www)+\.elitepvpers\.(?:org|com)+\/forum\/images\/teamicons\/relaunch\/(\S+)");
                 if (match.Groups.Count < 2) return false;
 
                 var availableUsergroups = typeof(Rank).GetProperties().Where(property => property.PropertyType == typeof(Rank));
                 
                 foreach(var reflectedUsergroup in availableUsergroups)
                 {
-                    Rank usergroup = (reflectedUsergroup.GetValue(null, null) as Rank);
+                    var usergroup = (reflectedUsergroup.GetValue(null, null) as Rank);
                     if (usergroup.File == match.Groups[1].Value)
                     {
                         group = usergroup;
