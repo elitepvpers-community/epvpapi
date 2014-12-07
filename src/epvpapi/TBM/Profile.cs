@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using epvpapi.Connection;
 using epvpapi.Evaluation;
-using HtmlAgilityPack;
 using Newtonsoft.Json;
 
 namespace epvpapi.TBM
@@ -44,7 +42,7 @@ namespace epvpapi.TBM
                 typeParameter = "sent";
 
             var res = session.Get("http://www.elitepvpers.com/theblackmarket/api/transactions.php?u=" + session.User.ID +
-                                    "&type=" + typeParameter + "&secretword=" + GetSecretWord(session));
+                                    "&type=" + typeParameter + "&secretword=" + SecretWord);
 
             var responseContent = res.ToString();
             if(String.IsNullOrEmpty(responseContent))
@@ -84,24 +82,6 @@ namespace epvpapi.TBM
             {
                 throw new ParsingFailedException("Could not parse received Transactions", exception);
             }
-        }
-
-        public string GetSecretWord<TUser>(AuthenticatedSession<TUser> session) where TUser : User
-        {
-            var res = session.Get("http://www.elitepvpers.com/theblackmarket/api/secretword/");
-            var responseContent = res.ToString();
-            if (String.IsNullOrEmpty(responseContent))
-                throw new InvalidAuthenticationException("Error occured while getting the secret word.");
-
-            var doc = new HtmlDocument();
-            doc.LoadHtml(res.ToString());
-
-            var inputs = doc.DocumentNode.Descendants("input").Where(n => n.Attributes["name"] != null && n.Attributes["name"].Value == "secretword").ToArray();
-
-            if(inputs.Length!=1)
-                throw new RequestFailedException("Error occured while getting secret word.");
-
-            return inputs[0].GetAttributeValue("value","");
         }
 
         public string GetUrl()
