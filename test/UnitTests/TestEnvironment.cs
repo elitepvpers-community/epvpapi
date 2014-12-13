@@ -14,7 +14,7 @@ namespace UnitTests
     {
         public struct Credentials
         {
-            public uint ID { get; set; }
+            public int ID { get; set; }
             public string Name { get; set; }
             public string MD5Hash { get; set; }
             public string SecretWord { get; set; }
@@ -34,7 +34,7 @@ namespace UnitTests
                     if (splittedContents.Count() == 4)
                     {
                         credentials.Name = splittedContents.First();
-                        credentials.ID = Convert.ToUInt32(splittedContents[1]);
+                        credentials.ID = Convert.ToInt32(splittedContents[1]);
                         credentials.MD5Hash = splittedContents[2];
                         credentials.SecretWord = splittedContents[3];
                     }
