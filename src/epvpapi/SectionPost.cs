@@ -34,13 +34,13 @@ namespace epvpapi
             : this(0, new SectionThread(new Section(0, "")), content, title)
         {  }
 
-        public SectionPost(uint id, SectionThread thread, string title = null)
+        public SectionPost(int id, SectionThread thread, string title = null)
             : this(id, thread, new Content(), title)
         {
             Thread = thread;
         }
 
-        public SectionPost(uint id, SectionThread thread, Content content, string title = null)
+        public SectionPost(int id, SectionThread thread, Content content, string title = null)
             : base(id, content, title)
         {
             Thread = thread;

@@ -13,7 +13,7 @@ namespace epvpapi
         /// </summary>
         public User Receiver { get; set; }
 
-        public UnicastMessage(uint id = 0)
+        public UnicastMessage(int id = 0)
             : this(id, new User(), new Content())
         { }
 
@@ -25,7 +25,7 @@ namespace epvpapi
             : this(0, receiver, content)
         { }
 
-        public UnicastMessage(uint id, User receiver, Content content)
+        public UnicastMessage(int id, User receiver, Content content)
             : base(id)
         {
             Content = content;       

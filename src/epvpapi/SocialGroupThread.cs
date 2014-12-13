@@ -17,7 +17,7 @@ namespace epvpapi
         /// </summary>
         public List<SocialGroupPost> Posts { get; set; }
 
-        public SocialGroupThread(uint id, SocialGroup socialGroup)
+        public SocialGroupThread(int id, SocialGroup socialGroup)
             : base(id)
         {
             SocialGroup = socialGroup;

@@ -39,7 +39,7 @@ namespace epvpapi.TBM
             Sent = 0x02
         }
 
-        public Transaction(uint id)
+        public Transaction(int id)
             : base(id)
         {
             Sender = new User();

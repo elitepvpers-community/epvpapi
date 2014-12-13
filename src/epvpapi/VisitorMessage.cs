@@ -9,7 +9,7 @@ namespace epvpapi
     /// </summary>
     public class VisitorMessage : UnicastMessage, IUniqueWebObject
     {
-        public VisitorMessage(uint id = 0)
+        public VisitorMessage(int id = 0)
             : this(id, new User(), new Content())
         { }
        
@@ -17,7 +17,7 @@ namespace epvpapi
             : this(0, receiver, content)
         { }
 
-        public VisitorMessage(uint id, User receiver, Content content)
+        public VisitorMessage(int id, User receiver, Content content)
             : base(id, receiver, content)
         { }
 

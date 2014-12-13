@@ -376,13 +376,13 @@ namespace epvpapi
         public uint Friends { get; set; }
 
 
-        public User(uint id = 0)
+        public User(int id = 0)
             : this(null, id)
         { }
 
         /// <param name="name"> Name of the user </param>
         /// <param name="id"> ID of the user (profile ID)</param>
-        public User(string name, uint id = 0)
+        public User(string name, int id = 0)
             : base(id)
         {
             Name = name;
@@ -464,12 +464,12 @@ namespace epvpapi
         /// <param name="url"> URL being parsed </param>
         /// <returns> Retrieved profile ID </returns>
         /// <exception cref="ParsingFailedException"> Thrown if the specified link does not contain the profile ID and/or was malformatted </exception>
-        public static uint FromUrl(string url)
+        public static int FromUrl(string url)
         {
             var match = Regex.Match(url, @"(?:http://www.elitepvpers.com/(?:forum/)*)*(?:members|theblackmarket/profile)/([0-9]+)(?:-[a-zA-Z]+.html)*");
             if(match.Groups.Count < 2) throw new ParsingFailedException(String.Format("User could not be exported from the given url: {0}", url));
 
-            return match.Groups[1].Value.To<uint>();
+            return match.Groups[1].Value.To<int>();
         }
 
         /// <summary>
@@ -496,7 +496,7 @@ namespace epvpapi
             return (rootNode != null)
                     ? (from userNode in rootNode.ChildNodes.GetElementsByTagName("user")
                         where userNode.Attributes.Contains("userid")
-                       select new User(userNode.InnerText, userNode.Attributes["userid"].Value.To<uint>())).ToList()
+                       select new User(userNode.InnerText, userNode.Attributes["userid"].Value.To<int>())).ToList()
                     : new List<User>();
         }
 

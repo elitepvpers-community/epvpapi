@@ -6,7 +6,7 @@
         public bool Deleted { get; set; }
         public uint ReplyCount { get; set; }
 
-        public Thread(uint id)
+        public Thread(int id)
             : base(id)
         {
             Creator = new User();

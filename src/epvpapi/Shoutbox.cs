@@ -16,14 +16,14 @@ namespace epvpapi
         /// <summary>
         /// Themed chat-channel of the shoutbox where messages can be stored, send and received. 
         /// </summary>
-        public class Channel
+        public class Channel : UniqueObject
         {
             /// <summary>
             /// Single shout send by an user
             /// </summary>
             public class Shout : Message
             {
-                 public Shout(uint id = 0)
+                 public Shout(int id = 0)
                     : this(id, new Content())
                 { }
 
@@ -31,17 +31,16 @@ namespace epvpapi
                     : this(0, content)
                 { }
 
-                public Shout(uint id, Content content)
+                public Shout(int id, Content content)
                     : base(id, content)
                 { }
             }
 
-            public uint ID { get; set; }
             public string Name { get; set; }
 
-            public Channel(uint id, string name)
+            public Channel(int id, string name):
+                base(id)
             {
-                ID = id;
                 Name = name;
             }
 

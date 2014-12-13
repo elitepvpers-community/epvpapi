@@ -42,7 +42,7 @@ namespace epvpapi
         public bool Unread { get; set; }
 
 
-        public PrivateMessage(uint id)
+        public PrivateMessage(int id)
             : this(id, new Content(), new List<User>())
         { }
 
@@ -54,7 +54,7 @@ namespace epvpapi
             : this(0, content, recipients, title)
         { }
 
-        public PrivateMessage(uint id, Content content, List<User> recipients, string title = null)
+        public PrivateMessage(int id, Content content, List<User> recipients, string title = null)
             : base(id, content, title)
         {
             Recipients = recipients;

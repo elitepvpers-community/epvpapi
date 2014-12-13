@@ -145,7 +145,7 @@ namespace epvpapi.Connection
                         || node.SelectSingleNode("td[@class='tfoot']") != null)
                         continue;
 
-                    var threadId = new Regex("<td class=\"alt1\" id=\"td_threadtitle_(.*?)\"").Match(node.InnerHtml).Groups[1].Value.To<uint>();
+                    var threadId = new Regex("<td class=\"alt1\" id=\"td_threadtitle_(.*?)\"").Match(node.InnerHtml).Groups[1].Value.To<int>();
                     var threadSection = new Regex("<a href=\"(.*?)/.*?\" id=\"thread_title_.*?\">.*?</a>").Match(node.InnerHtml).Groups[1].Value;
                     var section = Section.Sections.Where(n => n.UrlName == threadSection).FirstOrDefault();
 
@@ -196,7 +196,7 @@ namespace epvpapi.Connection
                         var listedTreasure = new Treasure
                         {
                             // first column is the id with a trailing #
-                            ID = (idNode != null) ? Convert.ToUInt32(idNode.InnerText.TrimStart('#')) : 0,
+                            ID = (idNode != null) ? idNode.InnerText.TrimStart('#').To<int>() : 0,
 
                             // second column is the treasure title
                             Title = (titleNode != null) ? titleNode.InnerText : "",

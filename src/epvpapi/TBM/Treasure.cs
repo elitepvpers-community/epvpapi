@@ -82,7 +82,7 @@ namespace epvpapi.TBM
             this(0, title, content, cost)
         { }
 
-        public Treasure(uint id = 0, string title = null, string content = null, uint cost = 0):
+        public Treasure(int id = 0, string title = null, string content = null, uint cost = 0):
             base(id)
         {
             Title = title;

@@ -16,7 +16,7 @@ namespace epvpapi.TBM
         /// </summary>
         public string SecretWord { get; set; }
 
-        public Profile(uint id = 0):
+        public Profile(int id = 0):
             base(id)
         {
             Ratings = new Ratings();
@@ -54,7 +54,7 @@ namespace epvpapi.TBM
                 dynamic transactions = JsonConvert.DeserializeObject(responseContent);
                 foreach (var jsonTransaction in transactions)
                 {
-                    var transaction = new Transaction((jsonTransaction.eg_transactionid as object).To<uint>())
+                    var transaction = new Transaction((jsonTransaction.eg_transactionid as object).To<int>())
                     {
                         Note = jsonTransaction.note,
                         EliteGold = (jsonTransaction.amount as object).To<int>(),
@@ -64,13 +64,13 @@ namespace epvpapi.TBM
                     if (query.HasFlag(Transaction.Query.Received))
                     {
                         transaction.Receiver = session.User;
-                        transaction.Sender = new User((jsonTransaction.eg_fromusername as object).To<string>(), (jsonTransaction.eg_from as object).To<uint>());
+                        transaction.Sender = new User((jsonTransaction.eg_fromusername as object).To<string>(), (jsonTransaction.eg_from as object).To<int>());
                     }
 
                     if (query.HasFlag(Transaction.Query.Sent))
                     {
                         transaction.Sender = session.User;
-                        transaction.Receiver = new User((jsonTransaction.eg_tousername as object).To<string>(), (jsonTransaction.eg_to as object).To<uint>());
+                        transaction.Receiver = new User((jsonTransaction.eg_tousername as object).To<string>(), (jsonTransaction.eg_to as object).To<int>());
                     }
 
                     receivedTransactions.Add(transaction);

@@ -68,7 +68,7 @@ namespace epvpapi
             : this(0, section)
         { }
 
-        public SectionThread(uint id, Section section)
+        public SectionThread(int id, Section section)
             : base(id)
         {
             Section = section;
@@ -358,12 +358,12 @@ namespace epvpapi
         /// </summary>
         /// <param name="url"> URL being parsed </param>
         /// <returns> Retrieved thread ID </returns>
-        public static uint FromUrl(string url)
+        public static int FromUrl(string url)
         {
             var match = Regex.Match(url, @"http://www.elitepvpers.com/forum/\S+/(\d+)-\S+.html");
             if (match.Groups.Count < 2) throw new ParsingFailedException("User could not be exported from the given URL");
 
-            return match.Groups[1].Value.To<uint>();
+            return match.Groups[1].Value.To<int>();
         }
     }
 }

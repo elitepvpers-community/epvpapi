@@ -34,7 +34,7 @@ namespace epvpapi
             public uint Hits { get; set; }
             public Section Section { get; set; }
 
-            public Announcement(Section section, uint id = 0)
+            public Announcement(Section section, int id = 0)
                 : base(id)
             {
                 Section = section;
@@ -54,7 +54,7 @@ namespace epvpapi
         /// </summary>
         public List<Announcement> Announcements { get; set; } 
 
-        public Section(uint id, string urlName)
+        public Section(int id, string urlName)
             : base(id)
         {
             UrlName = urlName;

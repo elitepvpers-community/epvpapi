@@ -59,7 +59,7 @@ namespace epvpapi
         public Access AccessMode { get; set; }
 
 
-        public SocialGroup(uint id)
+        public SocialGroup(int id)
             : base(id)
         {
             Members = new List<User>();

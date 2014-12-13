@@ -10,7 +10,7 @@ namespace epvpapi
         /// </summary>
         public string Title { get; set; }
 
-        public Post(uint id = 0)
+        public Post(int id = 0)
             : this(id, new Content())
         { }
         
@@ -18,7 +18,7 @@ namespace epvpapi
             : this(0, content)
         { }
 
-        public Post(uint id, Content content, string title = null)
+        public Post(int id, Content content, string title = null)
             : base(id, content)
         {
             Title = title;

@@ -16,7 +16,7 @@ namespace epvpapi
         /// </summary>
         public DateTime Date { get; set; }
 
-        public UniqueRecord(uint id = 0):
+        public UniqueRecord(int id = 0):
             base(id)
         {
             Date = new DateTime();

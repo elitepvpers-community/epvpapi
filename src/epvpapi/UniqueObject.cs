@@ -8,10 +8,10 @@
         /// <summary>
         /// Unique identifier
         /// </summary>
-        public uint ID { get; set; }
+        public int ID { get; set; }
 
         /// <param name="id"> Unique identifier </param>
-        public UniqueObject(uint id = 0)
+        public UniqueObject(int id = 0)
         {
             ID = id;
         }

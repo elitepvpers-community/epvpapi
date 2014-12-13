@@ -92,7 +92,7 @@ namespace epvpapi
                     {
                         var tdBaseNode = subNode.SelectSingleNode("td[3]");
                         if (tdBaseNode == null) continue;
-                        var pmID = new string(tdBaseNode.Id.Skip(1).ToArray()).To<uint>(); // skip the first character that is always prefixed before the actual id
+                        var pmID = new string(tdBaseNode.Id.Skip(1).ToArray()).To<int>(); // skip the first character that is always prefixed before the actual id
 
                         var dateNode = tdBaseNode.SelectSingleNode("div[1]/span[1]");
                         string date = (dateNode != null) ? dateNode.InnerText : "";

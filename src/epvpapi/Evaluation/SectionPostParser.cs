@@ -171,7 +171,7 @@ namespace epvpapi.Evaluation
             {
                 var idMatch = new Regex("post_message_([0-9]+)").Match(messagePartNode.Id);
                 if (idMatch.Groups.Count > 1)
-                    Target.ID = idMatch.Groups[1].Value.To<uint>();
+                    Target.ID = idMatch.Groups[1].Value.To<int>();
 
                 new ContentParser(Target.Content.Elements).Execute(messagePartNode);
             }

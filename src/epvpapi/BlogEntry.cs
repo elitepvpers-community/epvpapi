@@ -40,7 +40,7 @@ namespace epvpapi
         public List<string> Tags { get; set; }
         public Blog Blog { get; set; }
 
-        public BlogEntry(uint id, Content content, string title = null)
+        public BlogEntry(int id, Content content, string title = null)
             : base(id, content, title)
         {
             Tags = new List<string>();
@@ -50,7 +50,7 @@ namespace epvpapi
             : this(0, content, title)
         { }
 
-        public BlogEntry(uint id)
+        public BlogEntry(int id)
             : this(id, new Content())
         { }
 

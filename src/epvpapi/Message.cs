@@ -27,7 +27,7 @@ namespace epvpapi
 
         public Content Content { get; set; }
 
-        public Message(uint id = 0)
+        public Message(int id = 0)
             : this(id, new Content())
         { }
 
@@ -35,7 +35,7 @@ namespace epvpapi
             : this(0, content)
         { }
 
-        public Message(uint id, Content content)
+        public Message(int id, Content content)
             : base(id)
         {
             Content = content;       
