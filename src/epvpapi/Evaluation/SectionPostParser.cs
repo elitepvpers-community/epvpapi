@@ -144,7 +144,7 @@ namespace epvpapi.Evaluation
 
         public void Execute(HtmlNode coreNode)
         {
-            var dateTimeNode = coreNode.SelectSingleNode("div[1]/div[1]/div[1]/table[1]/tr[1]/td[1]/text()[3]");
+            var dateTimeNode = coreNode.SelectSingleNode("div[1]/div[1]/div[1]/table[1]/tr[1]/td[1]/span[1]/text()[1]");
             Target.Date = (dateTimeNode != null)
                                 ? dateTimeNode.InnerText.ToElitepvpersDateTime()
                                 : new DateTime();
