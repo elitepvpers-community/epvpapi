@@ -28,7 +28,7 @@ namespace epvpapi
         /// <param name="reason"> Reason for the deletion </param>
         public void Delete<TUser>(AuthenticatedSession<TUser> session, string reason) where TUser : User
         {
-            if (session.User.GetHighestRank() < User.Rank.GlobalModerator && session.User != Thread.SocialGroup.Maintainer) throw new InsufficientAccessException("You don't have enough access rights to delete this social group post");
+            if (session.User.GetHighestRank() < Usergroup.GlobalModerator && session.User != Thread.SocialGroup.Maintainer) throw new InsufficientAccessException("You don't have enough access rights to delete this social group post");
             session.ThrowIfInvalid();
 
             session.Post("http://www.elitepvpers.com/forum/group_inlinemod.php",

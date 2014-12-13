@@ -69,12 +69,12 @@ namespace epvpapi
         /// The names of the recipients have to be given in order to send the message.
         /// Messages with a blank title will not be send. Therefore, '-' will be used as title if nothing was specified.
         /// Certain requirements must be fulfilled in order to send messages automatically without entering a captcha:
-        /// - More than 20 posts OR the <c>User.Rank.Premium</c> rank OR the <c>User.Rank.EliteGoldTrader</c> rank
+        /// - More than 20 posts OR the <c>User.Usergroup.Premium</c> rank OR the <c>User.Usergroup.EliteGoldTrader</c> rank
         /// </remarks>
         public void Send<TUser>(AuthenticatedSession<TUser> session, Settings settings = Settings.ParseUrl | Settings.ShowSignature) where TUser : User
         {
             session.ThrowIfInvalid();
-            if (session.User.Posts <= 20 && !session.User.HasRank(User.Rank.Premium) && !session.User.HasRank(User.Rank.EliteGoldTrader))
+            if (session.User.Posts <= 20 && !session.User.HasRank(Usergroup.Premium) && !session.User.HasRank(Usergroup.EliteGoldTrader))
                 throw new InsufficientAccessException("More than 20 posts or the premium / elite*gold trader badge is required for sending private messages without captchas");
 
             foreach (var splittedRecipientList in Recipients.Split(5))

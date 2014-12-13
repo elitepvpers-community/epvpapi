@@ -14,215 +14,6 @@ namespace epvpapi
     /// </summary>
     public class User : UniqueObject, IUpdatable, IInternalUpdatable, IUniqueWebObject
     {
-        /// <summary>
-        /// Available usergroups an user can have 
-        /// </summary>
-        public class Rank
-        {
-            /// <summary>
-            /// Name of the Rank
-            /// </summary>
-            public string Name { get; set; }
-            /// <summary>
-            /// Filename and extension of the rank badge
-            /// </summary>
-            public string File { get; set; }
-
-            /// <summary>
-            /// Absolute path to the rank badge file
-            /// </summary>
-            public string Path { get; set; }
-            
-            /// <summary>
-            /// Rights representing privileges that users owning the rank are obtaining
-            /// </summary>
-            public Rights AccessRights { get; set; }
-
-            [Flags]
-            public enum Rights
-            {
-                /// <summary>
-                /// Access to private forums which are not accessible for normal users
-                /// </summary>
-                PrivateForumAccess = 1,
-
-                /// <summary>
-                /// Partial moderation rights for moderating one or more sections
-                /// </summary>
-                Moderation = 2,
-                
-                /// <summary>
-                /// Global moderation rights for moderating all sections
-                /// </summary>
-                GlobalModeration = 4,
-
-                /// <summary>
-                /// Highest privilege, maintaining the forum 
-                /// </summary>
-                ForumManagement = 8
-            }
-
-            public static Rank Premium
-            {
-                get { return new Rank("Premium", "premium.png", Rights.PrivateForumAccess); }
-            }
-
-            public static Rank Level2
-            {
-                get { return new Rank("Level 2", "level2.png", Rights.PrivateForumAccess); }
-            }
-
-            public static Rank Level3
-            {
-                get { return new Rank("Level 3", "level3.png", Rights.PrivateForumAccess); }
-            }
-
-            public static Rank Moderator
-            {
-                get { return new Rank("Moderator", "moderator.png", Rights.Moderation | Rights.PrivateForumAccess); }
-            }
-
-            public static Rank GlobalModerator
-            {
-                get { return new Rank("Global Moderator", "globalmod.png", Rights.Moderation | Rights.GlobalModeration | Rights.PrivateForumAccess); }
-            }
-
-            public static Rank Administrator
-            {
-                get { return new Rank("Administrator", "coadmin.png", Rights.Moderation | Rights.GlobalModeration | Rights.PrivateForumAccess | Rights.ForumManagement); }
-            }
-
-            public static Rank EliteGoldTrader
-            {
-                get { return new Rank("elite*gold Trader", "egtrader.png"); }
-            }
-
-            public static Rank FormerVolunteer
-            {
-                get { return new Rank("Former Volunteer", "formervolunteer.png"); }
-            }
-
-            public static Rank FormerStaff
-            {
-                get { return new Rank("Former Staff", "formerstaff.png"); }
-            }
-
-            public static Rank Guardian
-            {
-                get { return new Rank("Guardian", "guard.png"); }
-            }
-
-            public static Rank Translator
-            {
-                get { return new Rank("Translator", "translator.png", Rights.PrivateForumAccess); }
-            }
-
-            public static Rank Editor
-            {
-                get { return new Rank("Editor", "editor.png", Rights.PrivateForumAccess); }
-            }
-
-            public static Rank EventPlanner
-            {
-                get { return new Rank("Event Planner", "eventplanner.png", Rights.PrivateForumAccess); }
-            }
-
-            public static Rank Podcaster
-            {
-                get { return new Rank("Podcaster", "podcaster.png", Rights.PrivateForumAccess); }
-            }
-
-            public static Rank Broadcaster
-            {
-                get { return new Rank("Broadcaster", "broadcaster.png", Rights.PrivateForumAccess); }
-            }
-
-            public static Rank IDVerified
-            {
-                get { return new Rank("ID Verified", "idverified.png"); }
-            }
-
-            public static Rank Founder
-            {
-                get { return new Rank("Founder", "founder.png"); }
-            }
-
-            private static string _DefaultDirectory = "http://cdn.elitepvpers.org/forum/images/teamicons/relaunch/";
-            public static string DefaultDirectory
-            {
-                get { return _DefaultDirectory; }
-            }
-
-            public Rank(string name = null, string file = null, Rights accessRights = 0) :
-                this(name, file, DefaultDirectory + file, accessRights)
-            { }
-
-            public Rank(string name, string file, string path, Rights accessRights)
-            {
-                Name = name;
-                File = file;
-                Path = path;
-                AccessRights = accessRights;
-            }
-
-            /// <summary>
-            /// Parses an url to a given badge file and returns the associated <c>Rank</c> object matching the file
-            /// </summary>
-            /// <param name="url"> URL to parse </param>
-            /// <param name="group"> <c>Rank</c> object where the parsed result will be stored </param>
-            /// <returns> true on success, false on failure </returns>
-            public static bool FromUrl(string url, out Rank group)
-            {
-                group = new Rank();
-                var match = Regex.Match(url, @"(?:http|https)+:\/\/(?:cdn|www)+\.elitepvpers\.(?:org|com)+\/forum\/images\/teamicons\/relaunch\/(\S+)");
-                if (match.Groups.Count < 2) return false;
-
-                var availableUsergroups = typeof(Rank).GetProperties().Where(property => property.PropertyType == typeof(Rank));
-                
-                foreach(var reflectedUsergroup in availableUsergroups)
-                {
-                    var usergroup = (reflectedUsergroup.GetValue(null, null) as Rank);
-                    if (usergroup.File == match.Groups[1].Value)
-                    {
-                        group = usergroup;
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-
-            public static bool operator >(Rank lhs, Rank rhs)
-            {
-                return lhs.AccessRights > rhs.AccessRights;
-            }
-
-            public static bool operator <(Rank lhs, Rank rhs)
-            {
-                return lhs.AccessRights < rhs.AccessRights;
-            }
-
-            public static bool operator==(Rank lhs, Rank rhs)
-            {
-                return (lhs.Name == rhs.Name) && (lhs.AccessRights == rhs.AccessRights) && (lhs.File == rhs.File) && (lhs.Path == rhs.Path);
-            }
-
-            public static bool operator !=(Rank lhs, Rank rhs)
-            {
-                return (lhs.Name != rhs.Name) || (lhs.AccessRights != rhs.AccessRights) || (lhs.File != rhs.File) || (lhs.Path != rhs.Path);
-            }
-
-            public override int GetHashCode()
-            {
-                return base.GetHashCode();
-            } 
-
-            public override bool Equals(object obj)
-            {
-                return base.Equals(obj);
-            }
-        }
-
         public enum Status
         {
             Online,
@@ -328,7 +119,7 @@ namespace epvpapi
         /// <summary>
         /// List of ranks the user got
         /// </summary>
-        public List<Rank> Ranks { get; set; }
+        public List<Usergroup> Ranks { get; set; }
 
         /// <summary>
         /// Indicates whether the user is banned or not
@@ -395,7 +186,7 @@ namespace epvpapi
             Name = name;
             Blog = new Blog(this); // the blog id is equal to the user id since every user can have just one blog which is bound to the user's profile
             LastActivity = new DateTime();
-            Ranks = new List<Rank>();
+            Ranks = new List<Usergroup>();
             Namecolor = "black";
             LastVisitorMessage = new DateTime();
             JoinDate = new DateTime();
@@ -404,22 +195,22 @@ namespace epvpapi
         }
 
         /// <summary>
-        /// Checks if a user got a specific rank
+        /// Checks if a user got a specific Usergroup
         /// </summary>
-        /// <param name="rank"></param>
+        /// <param name="usergroup"></param>
         /// <returns></returns>
-        public bool HasRank(Rank rank)
+        public bool HasRank(Usergroup usergroup)
         {
-            return Ranks.Any(userRank => userRank == rank);
+            return Ranks.Any(userRank => userRank == usergroup);
         }
 
         /// <summary>
-        /// Gets highest rank or a user
+        /// Gets highest Usergroup or a user
         /// </summary>
-        /// <returns> The highest rank object </returns>
-        public Rank GetHighestRank()
+        /// <returns> The highest Usergroup object </returns>
+        public Usergroup GetHighestRank()
         {
-            var highestRank = new Rank();
+            var highestRank = new Usergroup();
             foreach(var rank in Ranks)
                 if (rank > highestRank)
                     highestRank = rank;

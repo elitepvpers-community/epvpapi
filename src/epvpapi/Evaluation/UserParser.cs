@@ -27,8 +27,8 @@ namespace epvpapi.Evaluation
                 {
                     if (!node.Attributes.Contains("src")) continue;
 
-                    var parsedRank = new User.Rank();
-                    if (User.Rank.FromUrl(node.Attributes["src"].Value, out parsedRank)) // 'src' holds the url to the rank image
+                    var parsedRank = new Usergroup();
+                    if (Usergroup.FromUrl(node.Attributes["src"].Value, out parsedRank)) // 'src' holds the url to the rank image
                         Target.Ranks.Add(parsedRank);
                 }
             }
