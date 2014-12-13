@@ -114,7 +114,8 @@ namespace epvpapi
 
         public string GetUrl()
         {
-            return "http://www.elitepvpers.com/forum/blogs/" + Blog.Owner.ID + "-" + Blog.Owner.Name.UrlEscape() + "/" + ID + "-" + Title.UrlEscape() + ".html";
+            return String.Format("http://www.elitepvpers.com/forum/blogs/{0}-{1}/{2}-{3}.html",
+                                Blog.Owner.ID, Blog.Owner.Name.UrlEscape(), ID, Title.UrlEscape());
         }
     }
 }

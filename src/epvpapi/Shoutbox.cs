@@ -53,15 +53,15 @@ namespace epvpapi
             {
                 session.ThrowIfInvalid();
 
-                var res = session.Post("http://www.elitepvpers.com/forum/mgc_cb_evo_ajax.php",
-                                            new List<KeyValuePair<string, string>>()
-                                            {
-                                                new KeyValuePair<string, string>("do", "ajax_chat"),
-                                                new KeyValuePair<string, string>("channel_id", ID.ToString()),
-                                                new KeyValuePair<string, string>("chat", message),
-                                                new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
-                                                new KeyValuePair<string, string>("s", String.Empty)
-                                            });
+                session.Post("http://www.elitepvpers.com/forum/mgc_cb_evo_ajax.php",
+                            new List<KeyValuePair<string, string>>()
+                            {
+                                new KeyValuePair<string, string>("do", "ajax_chat"),
+                                new KeyValuePair<string, string>("channel_id", ID.ToString()),
+                                new KeyValuePair<string, string>("chat", message),
+                                new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
+                                new KeyValuePair<string, string>("s", String.Empty)
+                            });
             }
 
             /// <summary>
@@ -196,7 +196,7 @@ namespace epvpapi
                 }
 
                 if (updateShoutbox)
-                    Shoutbox.Update(session);
+                    Update(session);
 
                 return shoutList;
             }

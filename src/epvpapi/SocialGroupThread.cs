@@ -57,7 +57,7 @@ namespace epvpapi
                             new KeyValuePair<string, string>("parseame", "1"),
                         });
 
-            SocialGroupThread socialGroupThread = new SocialGroupThread(0, socialGroup) { Creator = session.User, Deleted = false };
+            var socialGroupThread = new SocialGroupThread(0, socialGroup) { Creator = session.User, Deleted = false };
             socialGroupThread.Posts.Insert(0, startPost);
             return socialGroupThread;
         }
@@ -70,7 +70,7 @@ namespace epvpapi
         public void Delete<TUser>(AuthenticatedSession<TUser> session, string reason) where TUser : User
         {
             if (session.User.GetHighestRank() < Usergroup.GlobalModerator && session.User != SocialGroup.Maintainer) throw new InsufficientAccessException("You don't have enough access rights to delete this social group post");
-            if (ID == 0) throw new System.ArgumentException("ID must not be empty");
+            if (ID == 0) throw new ArgumentException("ID must not be empty");
             session.ThrowIfInvalid();
 
             session.Post("http://www.elitepvpers.com/forum/group_inlinemod.php?gmids=",
@@ -111,7 +111,7 @@ namespace epvpapi
                             new KeyValuePair<string, string>("groupid", SocialGroup.ID.ToString()),
                             new KeyValuePair<string, string>("discussionid", ID.ToString()),
                             new KeyValuePair<string, string>("sbutton", "Post+Message"),
-                            new KeyValuePair<string, string>("parseurl", (settings & SocialGroupPost.Settings.ParseUrl).ToString()),
+                            new KeyValuePair<string, string>("parseurl", (settings & Message.Settings.ParseUrl).ToString()),
                             new KeyValuePair<string, string>("parseame", "1"),
                         });
         }
@@ -122,10 +122,8 @@ namespace epvpapi
         /// <returns> The url of the group thread </returns>
         public string GetUrl()
         {
-            return "http://www.elitepvpers.com/forum/groups/" + SocialGroup.ID
-                + "-" + SocialGroup.Name.UrlEscape()
-                + "-d" + ID + "-"
-                + Posts.First().Title.UrlEscape() + ".html";
+            return String.Format("http://www.elitepvpers.com/forum/groups/{0}-{1}-d{2}-{3}.html", 
+                                 SocialGroup.ID, SocialGroup.Name.UrlEscape(), ID, Posts.First().Title.UrlEscape());
         } 
     }
 }
