@@ -375,6 +375,13 @@ namespace epvpapi
         /// </summary>
         public uint Friends { get; set; }
 
+        /// <summary>
+        /// The system user appears in transactions with the id -1
+        /// </summary>
+        public static User System
+        {
+            get { return new User(-1); }
+        }
 
         public User(int id = 0)
             : this(null, id)
