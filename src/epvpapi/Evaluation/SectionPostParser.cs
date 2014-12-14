@@ -119,14 +119,26 @@ namespace epvpapi.Evaluation
                             ? userAvatarNode.Attributes["src"].Value
                             : "";
 
-                    // node that contains posts, thanks, elite*gold, the join date... 
-                    // if the user has set an avatar, the node will be set of by 1. Otherwise if no avatar was set, the avatar node is the stats container 
-                    var additionalStatsNode = (String.IsNullOrEmpty(Target.AvatarUrl))
-                        ? coreNode.SelectSingleNode("div[5]")
-                        : coreNode.SelectSingleNode("div[6]");
-                    if (additionalStatsNode != null)
+                    // get the node that contains posts, thanks, elite*gold, the join date... 
+                    // use a loop to search for the "Posts" entry since multiple states (such as the amount of user ranks,
+                    // the fact whether the user is banned or not, if the user has an avatar set and more) may change the div index where 
+                    // these information are rendered
+                    HtmlNode finalAdditionalStatsNode = null;
+                    foreach (var additionalStatsNode in coreNode.ChildNodes.GetElementsByTagName("div"))
                     {
-                        var statsNodes = additionalStatsNode.ChildNodes.GetElementsByTagName("div");
+                        var postbarNodes = additionalStatsNode.Descendants().GetElementsByClassName("postbar");
+                        foreach (var postbarNode in postbarNodes)
+                        {
+                            if (!postbarNode.InnerText.Contains("Posts")) continue;
+
+                            finalAdditionalStatsNode = postbarNode.ParentNode;
+                            break;
+                        }
+                    }
+
+                    if (finalAdditionalStatsNode != null)
+                    {
+                        var statsNodes = finalAdditionalStatsNode.ChildNodes.GetElementsByTagName("div");
                         if (statsNodes != null)
                         {
                             // Loop through the nodes and check for their descriptors since the 
