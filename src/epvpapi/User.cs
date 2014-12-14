@@ -1,4 +1,5 @@
-﻿using epvpapi.Connection;
+﻿using System.Text;
+using epvpapi.Connection;
 using epvpapi.Evaluation;
 using epvpapi.TBM;
 using HtmlAgilityPack;

@@ -51,7 +51,8 @@ namespace epvpapi.Connection
                 var handler = new HttpClientHandler
                 {
                     UseCookies = true,
-                    CookieContainer = Cookies
+                    CookieContainer = Cookies,
+                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
                 };
 
                 if (UseProxy)
@@ -100,7 +101,8 @@ namespace epvpapi.Connection
                 {
                     UseCookies = true,
                     CookieContainer = Cookies,
-                    AllowAutoRedirect = true
+                    AllowAutoRedirect = true,
+                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
                 };
 
                 if (UseProxy)
@@ -146,7 +148,8 @@ namespace epvpapi.Connection
             {
                 UseCookies = true,
                 CookieContainer = Cookies,
-                AllowAutoRedirect = true
+                AllowAutoRedirect = true,
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
             };
 
             if (UseProxy)

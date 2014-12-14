@@ -158,7 +158,7 @@ namespace epvpapi
                     var doc = new HtmlDocument();
                     doc.LoadHtml(res.ToString());
 
-                    var messagesRootNode = doc.DocumentNode.SelectSingleNode("/html[1]/body[1]/table[2]/tr[2]/td[1]/table[1]/tr[5]/td[1]/table[1]/tr[2]/td[1]/div[1]/div[1]/div[1]/table[1]/tr[1]/td[3]/table[1]");
+                    var messagesRootNode = doc.GetElementbyId("tickerwrapper").SelectSingleNode("../table[1]/tr[1]/td[3]/table[1]");
                     if (messagesRootNode == null) throw new ParsingFailedException("Parsing channel history failed, root node is invalid or was not found");
 
                     var messageNodes = new List<HtmlNode>(messagesRootNode.ChildNodes.GetElementsByTagName("tr"));
@@ -244,7 +244,7 @@ namespace epvpapi
             var document = new HtmlDocument();
             document.LoadHtml(res.ToString());
 
-            var statsBodyNode = document.DocumentNode.SelectSingleNode("/html[1]/body[1]/table[2]/tr[2]/td[1]/table[1]/tr[5]/td[1]/table[1]/tr[2]/td[1]/div[1]/div[1]/div[1]/table[1]/tr[1]/td[1]/table[1]");
+            var statsBodyNode = document.GetElementbyId("tickerwrapper").SelectSingleNode("../table[1]/tr[1]/td[1]/table[1]");
             if (statsBodyNode == null) throw new ParsingFailedException("Updating the shoutbox information failed, root node is invalid or was not found");
 
             var chatStatsNodes = new List<HtmlNode>(statsBodyNode.Descendants("tr"));
