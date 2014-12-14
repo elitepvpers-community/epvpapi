@@ -57,6 +57,7 @@
     <Compile Include="Blog.cs" />
     <Compile Include="BlogEntry.cs" />
     <Compile Include="Connection\GuestSession.cs" />
+    <Compile Include="Connection\HttpHeader.cs" />
     <Compile Include="EpvpapiException.cs" />
     <Compile Include="Evaluation\PrivateMessageParser.cs" />
     <Compile Include="Evaluation\SectionPostParser.cs" />

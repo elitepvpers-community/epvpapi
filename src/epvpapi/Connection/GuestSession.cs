@@ -38,12 +38,13 @@ namespace epvpapi.Connection
         public GuestSession()
         {
             Cookies = new CookieContainer();
-        }   
+        }
 
         /// <summary> Performs a HTTP GET request </summary>
         /// <param name="url"> Location to request </param>
+        /// <param name="headers"> HTTP Headers that are transmitted with the request </param>
         /// <returns> Server <c>Response</c> to the sent request </returns>
-        internal Response Get(Uri url)
+        internal Response Get(string url, List<HttpHeader> headers)
         {
             try
             {
@@ -60,6 +61,10 @@ namespace epvpapi.Connection
                 }
 
                 var client = new HttpClient(handler);
+
+                foreach (var header in headers)
+                    client.DefaultRequestHeaders.Add(header.Name, header.Value);
+
                 var response = client.GetAsync(url);
                 if (!response.Result.IsSuccessStatusCode && response.Result.StatusCode != HttpStatusCode.SeeOther)
                     throw new RequestFailedException("Request failed, Server returned " + response.Result.StatusCode);
@@ -77,14 +82,15 @@ namespace epvpapi.Connection
         /// <returns> Server <c>Response</c> to the sent request </returns>
         internal Response Get(string url)
         {
-            return Get(new Uri(url));
+            return Get(url, HttpHeader.CommonHeaders);
         }
 
         /// <summary> Performs a HTTP POST request </summary>
         /// <param name="url"> Location where to post the data </param>
         /// <param name="content"> Contents to post </param>
+        /// <param name="headers"> HTTP Headers that are transmitted with the request </param>
         /// <returns> Server <c>Response</c> to the sent request </returns>
-        internal Response Post(string url, IEnumerable<KeyValuePair<string, string>> content)
+        internal Response Post(string url, IEnumerable<KeyValuePair<string, string>> content, List<HttpHeader> headers)
         {
             try
             {
@@ -104,11 +110,8 @@ namespace epvpapi.Connection
                 }
 
                 var client = new HttpClient(handler);
-                client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
-                client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip,deflate,sdch");
-                client.DefaultRequestHeaders.Add("Accept-Language", "de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4");
-                client.DefaultRequestHeaders.Add("User-Agent", "epvpapi - .NET Library v."
-                    + FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion);
+                foreach(var header in headers)
+                    client.DefaultRequestHeaders.Add(header.Name, header.Value);
 
                 var encodedContent = new FormUrlEncodedContent(content);
                 encodedContent.Headers.ContentType.MediaType = "application/x-www-form-urlencoded";
@@ -124,6 +127,11 @@ namespace epvpapi.Connection
             {
                 throw new RequestFailedException("The Session could not be resolved", exception);
             }
+        }
+
+        internal Response Post(string url, IEnumerable<KeyValuePair<string, string>> content)
+        {
+            return Post(url, content, HttpHeader.DefaultPostHeaders);
         }
 
         /// <summary>
