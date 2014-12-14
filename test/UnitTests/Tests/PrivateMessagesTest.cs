@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using epvpapi;
 using epvpapi.Connection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -19,8 +20,9 @@ namespace UnitTests.Tests
                 if (messages.Count <= 0)
                     Assert.Fail("Messages could not be parsed or no private messages do exist in the inbox");
 
+                // grab only 3 messages (if available)
                 // check if the properties of all messages were parsed correctly
-                foreach (var message in messages)
+                foreach (var message in messages.Count >= 3 ? messages.Take(3) : messages.Take(messages.Count))
                 {
                     Assert.AreNotEqual(0, message.ID, "The ID of a private message was not set");
                     if(new DateTime() == message.Date)
