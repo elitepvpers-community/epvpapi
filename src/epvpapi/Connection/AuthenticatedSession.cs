@@ -46,27 +46,27 @@ namespace epvpapi.Connection
         /// <summary>
         /// Profile representing the logged-in user being bound to the session
         /// </summary>
-        public Profile<TUser> ConnectedProfile { get; private set; }
+        public Profile<TUser> Profile { get; private set; }
 
         /// <summary>
         /// Shortcut for accessing the <c>User</c> object within the connected profile
         /// </summary>
         public TUser User
         {
-            get { return ConnectedProfile.User; }
-            set { ConnectedProfile.User = value; }
+            get { return Profile.User; }
+            set { Profile.User = value; }
         }
 
         public AuthenticatedSession(TUser user, string md5Password):
             this(user)
         {
-            ConnectedProfile.Login(this, md5Password);
+            Profile.Login(this, md5Password);
         }
 
         public AuthenticatedSession(TUser user, string md5Password, WebProxy proxy) :
             this(user, proxy)
         {
-            ConnectedProfile.Login(this, md5Password);
+            Profile.Login(this, md5Password);
         }
 
         public AuthenticatedSession(TUser user, WebProxy proxy):
@@ -78,7 +78,7 @@ namespace epvpapi.Connection
 
         public AuthenticatedSession(TUser user)
         {
-            ConnectedProfile = new Profile<TUser>(user);
+            Profile = new Profile<TUser>(user);
             Cookies = new CookieContainer();
         }   
     
