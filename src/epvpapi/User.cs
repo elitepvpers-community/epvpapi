@@ -120,7 +120,7 @@ namespace epvpapi
         /// <summary>
         /// List of ranks the user got
         /// </summary>
-        public List<Usergroup> Ranks { get; set; }
+        public List<Usergroup> Usergroups { get; set; }
 
         /// <summary>
         /// Indicates whether the user is banned or not
@@ -187,7 +187,7 @@ namespace epvpapi
             Name = name;
             Blog = new Blog(this); // the blog id is equal to the user id since every user can have just one blog which is bound to the user's profile
             LastActivity = new DateTime();
-            Ranks = new List<Usergroup>();
+            Usergroups = new List<Usergroup>();
             Namecolor = "black";
             LastVisitorMessage = new DateTime();
             JoinDate = new DateTime();
@@ -202,7 +202,7 @@ namespace epvpapi
         /// <returns></returns>
         public bool HasRank(Usergroup usergroup)
         {
-            return Ranks.Any(userRank => userRank == usergroup);
+            return Usergroups.Any(userRank => userRank == usergroup);
         }
 
         /// <summary>
@@ -212,7 +212,7 @@ namespace epvpapi
         public Usergroup GetHighestRank()
         {
             var highestRank = new Usergroup();
-            foreach(var rank in Ranks)
+            foreach(var rank in Usergroups)
                 if (rank > highestRank)
                     highestRank = rank;
 

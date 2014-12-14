@@ -29,7 +29,7 @@ namespace epvpapi.Evaluation
 
                     var parsedRank = new Usergroup();
                     if (Usergroup.FromUrl(node.Attributes["src"].Value, out parsedRank)) // 'src' holds the url to the rank image
-                        Target.Ranks.Add(parsedRank);
+                        Target.Usergroups.Add(parsedRank);
                 }
             }
         }
