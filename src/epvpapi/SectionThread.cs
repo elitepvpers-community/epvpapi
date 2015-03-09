@@ -298,18 +298,27 @@ namespace epvpapi
 
         /// <summary>
         /// Retrieves a list of all posts in the <c>SectionThread</c>
+        /// The amount of pages to fetch will be retrieved from the PageCount property that is updated each time the Thread is updated
+        /// </summary>
+        /// <param name="session"> Session used for sending the request </param>
+        /// <param name="firstPage"> Index of the first page to fetch </param>
+        /// <returns> List of <c>SectionPost</c>s representing the replies </returns>
+        public List<SectionPost> Replies<TUser>(AuthenticatedSession<TUser> session, uint firstPage = 1) where TUser : User
+        {
+            return Replies(session, PageCount, firstPage);
+        }
+
+        /// <summary>
+        /// Retrieves a list of all posts in the <c>SectionThread</c>
         /// </summary>
         /// <param name="session"> Session used for sending the request </param>
         /// <param name="firstPage"> Index of the first page to fetch </param>
         /// <param name="pageCount"> Amount of pages to get replies from. The higher this count, the more data will be generated and received </param>
         /// <returns> List of <c>SectionPost</c>s representing the replies </returns>
-        public List<SectionPost> Replies<TUser>(AuthenticatedSession<TUser> session, uint pageCount = 1, uint firstPage = 1) where TUser : User
+        public List<SectionPost> Replies<TUser>(AuthenticatedSession<TUser> session, uint pageCount, uint firstPage) where TUser : User
         {
             session.ThrowIfInvalid();
             if(ID == 0) throw new ArgumentException("ID must not be empty");
-
-            // in case the amount of pages to fetch is greater than the available page count, set it to the maximum available count
-            pageCount = (pageCount > PageCount && PageCount != 0) ? PageCount : pageCount;
 
             var retrievedReplies = new List<SectionPost>();
             for (uint i = firstPage; i < (firstPage + pageCount); ++i)
