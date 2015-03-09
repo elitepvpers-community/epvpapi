@@ -59,11 +59,6 @@ namespace epvpapi
         /// </summary>
         public uint PageCount { get; set; }
 
-        /// <summary>
-        /// Amount of posts within all pages
-        /// </summary>
-        public uint PostCount { get; set; }
-
         public SectionThread(Section section)
             : this(0, section)
         { }
@@ -317,7 +312,7 @@ namespace epvpapi
             pageCount = (pageCount > PageCount && PageCount != 0) ? PageCount : pageCount;
 
             var retrievedReplies = new List<SectionPost>();
-            for (uint i = firstPage; i <= (firstPage + pageCount); ++i)
+            for (uint i = firstPage; i < (firstPage + pageCount); ++i)
             {
                 var res = session.Get(GetUrl(i));
                 var htmlDocument = new HtmlDocument();
