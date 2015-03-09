@@ -317,7 +317,7 @@ namespace epvpapi
             pageCount = (pageCount > PageCount && PageCount != 0) ? PageCount : pageCount;
 
             var retrievedReplies = new List<SectionPost>();
-            for (uint i = 0; i < pageCount; ++i)
+            for (uint i = firstPage; i <= (firstPage + pageCount); ++i)
             {
                 var res = session.Get(GetUrl(i));
                 var htmlDocument = new HtmlDocument();
@@ -335,7 +335,9 @@ namespace epvpapi
                     retrievedReplies.Add(parsedPost);
                 }
 
-                if (i == 0 && retrievedReplies.Count != 0)
+                // store the starting post and 
+                // remove it after storing since it is no reply
+                if (i == 1 && retrievedReplies.Count != 0)
                 {
                     InitialPost = retrievedReplies.First();
                     retrievedReplies.Remove(retrievedReplies.First());
