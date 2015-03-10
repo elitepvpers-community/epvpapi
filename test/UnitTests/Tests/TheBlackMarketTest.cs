@@ -18,7 +18,7 @@ namespace UnitTests.Tests
         {
             try
             {
-                var treasures = TestEnvironment.Session.ConnectedProfile.GetTreasures(targetStatus, 1, 1);
+                var treasures = TestEnvironment.Session.Profile.GetTreasures(TestEnvironment.Session, targetStatus, 1, 1);
                 if (treasures.Count == 0)
                     Assert.Fail("No treasures were retrieved");
 

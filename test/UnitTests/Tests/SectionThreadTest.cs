@@ -15,13 +15,14 @@ namespace UnitTests.Tests
         [TestMethod]
         public void TestReplies()
         {
-            // http://www.elitepvpers.com/forum/main/619408-shoutbox-rules-regeln.html
+            // http://www.elitepvpers.com/forum/main/1329965-de-en-infractions-warnings-things-you-should-know.html
             var testThread = new SectionThread(1329965, Section.Main);
 
             try
             {
                 var replies = testThread.Replies(TestEnvironment.Session);
                 Assert.AreNotEqual(0, replies.Count, "No replies were pulled from the test thread");
+                Assert.AreNotEqual(0, testThread.InitialPost.ID, "The initial post of the test thread was not set");
 
                 foreach (var reply in replies)
                 {
