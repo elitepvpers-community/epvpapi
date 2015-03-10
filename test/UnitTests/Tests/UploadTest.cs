@@ -22,17 +22,17 @@ namespace UnitTests.Tests
 
                 if (!String.IsNullOrEmpty(TestEnvironment.Session.User.AvatarUrl))
                 {
-                    TestEnvironment.Session.ConnectedProfile.RemoveAvatar();
+                    TestEnvironment.Session.Profile.RemoveAvatar(TestEnvironment.Session);
                     TestEnvironment.Session.User.Update(TestEnvironment.Session);
 
                     Assert.AreEqual(0, TestEnvironment.Session.User.AvatarUrl.Length, "The avatar of the logged-in user was not removed");
                 }
 
-                TestEnvironment.Session.ConnectedProfile.SetAvatar(schmittAvatar);
+                TestEnvironment.Session.Profile.SetAvatar(TestEnvironment.Session, schmittAvatar);
                 TestEnvironment.Session.User.Update(TestEnvironment.Session);
                 Assert.AreNotEqual(0, TestEnvironment.Session.User.AvatarUrl.Length, "The test avatar from the web was not uploaded and set");
 
-                TestEnvironment.Session.ConnectedProfile.SetAvatar(gitAvatar);
+                TestEnvironment.Session.Profile.SetAvatar(TestEnvironment.Session, gitAvatar);
                 TestEnvironment.Session.User.Update(TestEnvironment.Session);
                 Assert.AreNotEqual(0, TestEnvironment.Session.User.AvatarUrl, "The test avatar from the file system was not uploaded and set");
             }
