@@ -12,6 +12,11 @@ There are currently 3 ways to get started:
 * Use our [NuGet package](https://www.nuget.org/packages/epvpapi) (compiling is not required)
 
 
+Upgrading
+===
+Upgrading isn't always easy, especially not when dealing with libraries that change/remove function definitions and properties that you are using. You can quickly review all changes that may be relevant for you at the [Migration Guide page](https://github.com/Mostey/epvpapi/wiki/What's-new%3F-Migration-Guide) of the wiki if you plan to upgrade.
+
+
 References
 ===
 These pages provide explanations and samples on how to properly use the library.
