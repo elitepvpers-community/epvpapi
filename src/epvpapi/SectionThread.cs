@@ -305,7 +305,8 @@ namespace epvpapi
         /// <returns> List of <c>SectionPost</c>s representing the replies </returns>
         public List<SectionPost> Replies<TUser>(AuthenticatedSession<TUser> session, uint firstPage = 1) where TUser : User
         {
-            return Replies(session, PageCount, firstPage);
+            var availablePages = (PageCount - firstPage) + 1;
+            return Replies(session, availablePages, firstPage);
         }
 
         /// <summary>
