@@ -19,7 +19,7 @@ namespace UnitTests.Tests
             {
                 Section.Main.Update(TestEnvironment.Session);
 
-                if (Section.Main.Announcements.Count < 3) // every section needs to supply at least 3 announcements
+                if (Section.Main.Announcements.Count < 2) // every section needs to supply at least 2 announcements
                     Assert.Fail("The announcements were not fully detected. Announcement count: {0}",
                                 Section.Main.Announcements.Count);
 
