@@ -27,8 +27,7 @@ namespace epvpapi.Connection
         /// </summary>
         public bool UseProxy { get; set; }
 
-        
-        public GuestSession(WebProxy proxy):
+        public GuestSession(WebProxy proxy) :
             this()
         {
             UseProxy = true;
@@ -48,29 +47,32 @@ namespace epvpapi.Connection
         {
             try
             {
-                var handler = new HttpClientHandler
+                using (var handler = new HttpClientHandler()
                 {
                     UseCookies = true,
                     CookieContainer = Cookies,
                     AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
-                };
-
-                if (UseProxy)
+                })
                 {
-                    handler.UseProxy = true;
-                    handler.Proxy = Proxy;
+                    if (UseProxy)
+                    {
+                        handler.UseProxy = true;
+                        handler.Proxy = Proxy;
+                    }
+
+                    using (var client = new HttpClient(handler))
+                    {
+                        foreach (var header in headers)
+                            client.DefaultRequestHeaders.Add(header.Name, header.Value);
+
+                        var response = client.GetAsync(url);
+                        if (!response.Result.IsSuccessStatusCode && response.Result.StatusCode != HttpStatusCode.SeeOther)
+                            throw new RequestFailedException("Request failed, Server returned " + response.Result.StatusCode);
+
+                        return new Response(response.Result);
+                    }
                 }
 
-                var client = new HttpClient(handler);
-
-                foreach (var header in headers)
-                    client.DefaultRequestHeaders.Add(header.Name, header.Value);
-
-                var response = client.GetAsync(url);
-                if (!response.Result.IsSuccessStatusCode && response.Result.StatusCode != HttpStatusCode.SeeOther)
-                    throw new RequestFailedException("Request failed, Server returned " + response.Result.StatusCode);
-
-                return new Response(response.Result);
             }
             catch (CookieException exception)
             {
@@ -97,33 +99,36 @@ namespace epvpapi.Connection
             {
                 var targetUrl = new Uri(url);
 
-                var handler = new HttpClientHandler()
+                using (var handler = new HttpClientHandler()
                 {
                     UseCookies = true,
                     CookieContainer = Cookies,
                     AllowAutoRedirect = true,
                     AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
-                };
-
-                if (UseProxy)
+                })
                 {
-                    handler.UseProxy = true;
-                    handler.Proxy = Proxy;
+                    if (UseProxy)
+                    {
+                        handler.UseProxy = true;
+                        handler.Proxy = Proxy;
+                    }
+
+                    using (var client = new HttpClient(handler))
+                    {
+                        foreach (var header in headers)
+                            client.DefaultRequestHeaders.Add(header.Name, header.Value);
+
+                        var encodedContent = new FormUrlEncodedContent(content);
+                        encodedContent.Headers.ContentType.MediaType = "application/x-www-form-urlencoded";
+                        encodedContent.Headers.ContentType.CharSet = "UTF-8";
+
+                        var response = client.PostAsync(targetUrl, encodedContent);
+                        if (!response.Result.IsSuccessStatusCode && response.Result.StatusCode != HttpStatusCode.SeeOther && response.Result.StatusCode != HttpStatusCode.Redirect)
+                            throw new RequestFailedException("Request failed, Server returned " + response.Result.StatusCode);
+
+                        return new Response(response.Result);
+                    }
                 }
-
-                var client = new HttpClient(handler);
-                foreach(var header in headers)
-                    client.DefaultRequestHeaders.Add(header.Name, header.Value);
-
-                var encodedContent = new FormUrlEncodedContent(content);
-                encodedContent.Headers.ContentType.MediaType = "application/x-www-form-urlencoded";
-                encodedContent.Headers.ContentType.CharSet = "UTF-8";
-
-                var response = client.PostAsync(targetUrl, encodedContent);
-                if (!response.Result.IsSuccessStatusCode && response.Result.StatusCode != HttpStatusCode.SeeOther && response.Result.StatusCode != HttpStatusCode.Redirect)
-                    throw new RequestFailedException("Request failed, Server returned " + response.Result.StatusCode);
-
-                return new Response(response.Result);
             }
             catch (CookieException exception)
             {
@@ -144,25 +149,29 @@ namespace epvpapi.Connection
         /// <returns> Server <c>Response</c> to the sent request  </returns>
         internal Response PostMultipartFormData(Uri url, MultipartFormDataContent content)
         {
-            var handler = new HttpClientHandler()
+            using (var handler = new HttpClientHandler()
             {
                 UseCookies = true,
                 CookieContainer = Cookies,
                 AllowAutoRedirect = true,
                 AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
-            };
-
-            if (UseProxy)
+            })
             {
-                handler.UseProxy = true;
-                handler.Proxy = Proxy;
+                if (UseProxy)
+                {
+                    handler.UseProxy = true;
+                    handler.Proxy = Proxy;
+                }
+
+                using (var client = new HttpClient(handler))
+                {
+                    var response = client.PostAsync(url, content);
+                    if (!response.Result.IsSuccessStatusCode)
+                        throw new RequestFailedException("Server returned " + response.Result.StatusCode);
+
+                    return new Response(response.Result);
+                }
             }
-
-            var client = new HttpClient(handler);
-
-            var response = client.PostAsync(url, content);
-            if (!response.Result.IsSuccessStatusCode) throw new RequestFailedException("Server returned " + response.Result.StatusCode);
-            return new Response(response.Result);
         }
     }
 }
