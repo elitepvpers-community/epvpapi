@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
+﻿using HtmlAgilityPack;
+using System;
 using System.Net;
-using System.Net.Http;
-using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using epvpapi.Evaluation;
-using HtmlAgilityPack;
 
 namespace epvpapi.Connection
 {
@@ -17,7 +9,7 @@ namespace epvpapi.Connection
     /// Represents a web session
     /// </summary>
     public class AuthenticatedSession<TUser> : GuestSession where TUser : User
-    {      
+    {
         /// <summary>
         /// Represents an unique ID identifiying the session which is frequently getting updated on each request
         /// Besides that, the security token needs to be provided for most of the forum actions.
@@ -25,7 +17,6 @@ namespace epvpapi.Connection
         /// </summary>
         public string SecurityToken { get; private set; }
 
-       
         /// <summary>
         /// Searches the local cookie container for the session cookie.
         /// Determines whether the session is valid or not, i.e. if the session cookie has been set
@@ -35,13 +26,12 @@ namespace epvpapi.Connection
             get
             {
                 foreach (Cookie cookie in Cookies.GetCookies(new Uri("http://www.elitepvpers.com/forum/")))
-                    if(cookie.Name == "bbsessionhash" && !String.IsNullOrEmpty(cookie.Value))
+                    if (cookie.Name == "bbsessionhash" && !String.IsNullOrEmpty(cookie.Value))
                         return true;
 
                 return false;
             }
         }
-
 
         /// <summary>
         /// Profile representing the logged-in user being bound to the session
@@ -57,7 +47,7 @@ namespace epvpapi.Connection
             set { Profile.User = value; }
         }
 
-        public AuthenticatedSession(TUser user, string md5Password):
+        public AuthenticatedSession(TUser user, string md5Password) :
             this(user)
         {
             Profile.Login(this, md5Password);
@@ -69,7 +59,7 @@ namespace epvpapi.Connection
             Profile.Login(this, md5Password);
         }
 
-        public AuthenticatedSession(TUser user, WebProxy proxy):
+        public AuthenticatedSession(TUser user, WebProxy proxy) :
             this(user)
         {
             UseProxy = true;
@@ -80,8 +70,8 @@ namespace epvpapi.Connection
         {
             Profile = new Profile<TUser>(user);
             Cookies = new CookieContainer();
-        }   
-    
+        }
+
         /// <summary>
         /// Logs out the logged-in user and destroys the session
         /// </summary>
@@ -90,7 +80,7 @@ namespace epvpapi.Connection
             ThrowIfInvalid();
             Get("http://www.elitepvpers.com/forum/login.php?do=logout&logouthash=" + SecurityToken);
         }
-   
+
         /// <summary>
         /// Updates required session information such as the SecurityToken
         /// </summary>
