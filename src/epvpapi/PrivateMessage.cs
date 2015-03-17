@@ -114,7 +114,7 @@ namespace epvpapi
 
             var res = session.Get("http://www.elitepvpers.com/forum/private.php?do=showpm&pmid=" + ID.ToString());
             var doc = new HtmlDocument();
-            doc.LoadHtml(res.ToString());
+            doc.LoadHtml(res);
 
             new PrivateMessageParser.SenderParser(Sender).Execute(doc.GetElementbyId("post"));
             new PrivateMessageParser.ContentParser(this).Execute(doc.GetElementbyId("td_post_"));

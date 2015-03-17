@@ -230,7 +230,7 @@ namespace epvpapi
             var res = session.Get(GetUrl());
 
             var doc = new HtmlDocument();
-            doc.LoadHtml(res.ToString());
+            doc.LoadHtml(res);
             new UserParser(this, (this == session.User)).Execute(doc);
         }
 
@@ -244,7 +244,7 @@ namespace epvpapi
             var res = session.Get(GetUrl());
 
             var doc = new HtmlDocument();
-            doc.LoadHtml(res.ToString());
+            doc.LoadHtml(res);
             new UserParser(this, false).Execute(doc);
         }
 
@@ -289,7 +289,7 @@ namespace epvpapi
                                     });
 
             var htmlDocument = new HtmlDocument();
-            htmlDocument.LoadHtml(res.ToString());
+            htmlDocument.LoadHtml(res);
             var rootNode = htmlDocument.DocumentNode.SelectSingleNode("users");
 
             return (rootNode != null)

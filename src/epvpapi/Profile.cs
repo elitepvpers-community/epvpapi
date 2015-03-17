@@ -36,17 +36,17 @@ namespace epvpapi
         /// </remarks>
         public void Login(AuthenticatedSession<TUser> session, string md5Password)
         {
-            var res = session.Post("http://www.elitepvpers.com/forum/login.php?do=login&langid=1",
-                                    new List<KeyValuePair<string, string>>()
-                                        {
-                                            new KeyValuePair<string, string>("vb_login_username", User.Name),
-                                            new KeyValuePair<string, string>("cookieuser", "1"),
-                                            new KeyValuePair<string, string>("s", String.Empty),
-                                            new KeyValuePair<string, string>("securitytoken", "guest"),
-                                            new KeyValuePair<string, string>("do", "login"),
-                                            new KeyValuePair<string, string>("vb_login_md5password", md5Password),
-                                            new KeyValuePair<string, string>("vb_login_md5password_utf", md5Password)
-                                        });
+            session.Post("http://www.elitepvpers.com/forum/login.php?do=login&langid=1",
+                        new List<KeyValuePair<string, string>>()
+                            {
+                                new KeyValuePair<string, string>("vb_login_username", User.Name),
+                                new KeyValuePair<string, string>("cookieuser", "1"),
+                                new KeyValuePair<string, string>("s", String.Empty),
+                                new KeyValuePair<string, string>("securitytoken", "guest"),
+                                new KeyValuePair<string, string>("do", "login"),
+                                new KeyValuePair<string, string>("vb_login_md5password", md5Password),
+                                new KeyValuePair<string, string>("vb_login_md5password_utf", md5Password)
+                            });
 
             session.Update();
         }
@@ -62,7 +62,7 @@ namespace epvpapi
 
             var res = session.Get("http://www.elitepvpers.com/theblackmarket/api/secretword/");
             var doc = new HtmlDocument();
-            doc.LoadHtml(res.ToString());
+            doc.LoadHtml(res);
 
             return doc.DocumentNode.Descendants().GetElementsByNameXHtml("secretword").FirstOrDefault().Attributes["value"].Value;
         }
@@ -97,7 +97,7 @@ namespace epvpapi
 
             var res = session.Get("http://www.elitepvpers.com/forum/subscription.php?do=viewsubscription&daysprune=-1&folderid=all");
             var htmlDocument = new HtmlDocument();
-            htmlDocument.LoadHtml(res.ToString());
+            htmlDocument.LoadHtml(res);
 
             // a bit ugly but it works so far
             var rootNode = htmlDocument.DocumentNode.SelectSingleNode("//tr/td[@class='tcat']/span[@class='smallfont']").ParentNode.ParentNode.ParentNode;
@@ -145,7 +145,7 @@ namespace epvpapi
                     + "/" + i);
 
                 var htmlDocument = new HtmlDocument();
-                htmlDocument.LoadHtml(res.ToString());
+                htmlDocument.LoadHtml(res);
 
                 var rootFormNode = htmlDocument.GetElementbyId("contentbg");
                 if (rootFormNode == null) continue;
@@ -250,7 +250,7 @@ namespace epvpapi
                     { new StringContent(changeType.ToString()), "avatarid" }
                 };
 
-            session.PostMultipartFormData(new Uri("http://www.elitepvpers.com/forum/profile.php?do=updateavatar"), content);
+            session.PostMultipartFormData("http://www.elitepvpers.com/forum/profile.php?do=updateavatar", content);
         }
 
         /// <summary>
@@ -272,7 +272,7 @@ namespace epvpapi
                     { new StringContent("52428800"), "MAX_FILE_SIZE" }
                 };
 
-            session.PostMultipartFormData(new Uri("http://www.elitepvpers.com/forum/profile.php?do=updatesignature"), content);
+            session.PostMultipartFormData("http://www.elitepvpers.com/forum/profile.php?do=updatesignature", content);
         }
     }
 

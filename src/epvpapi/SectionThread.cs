@@ -251,7 +251,7 @@ namespace epvpapi
 
             var res = session.Get(GetUrl());
             var htmlDocument = new HtmlDocument();
-            htmlDocument.LoadHtml(res.ToString());
+            htmlDocument.LoadHtml(res);
 
             var postsRootNode = htmlDocument.GetElementbyId("posts");
             if (postsRootNode == null) return;
@@ -326,7 +326,7 @@ namespace epvpapi
             {
                 var res = session.Get(GetUrl(i));
                 var htmlDocument = new HtmlDocument();
-                htmlDocument.LoadHtml(res.ToString());
+                htmlDocument.LoadHtml(res);
 
                 var postsRootNode = htmlDocument.GetElementbyId("posts");
                 if (postsRootNode == null) continue;

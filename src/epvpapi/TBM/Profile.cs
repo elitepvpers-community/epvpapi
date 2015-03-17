@@ -41,10 +41,9 @@ namespace epvpapi.TBM
             else if (query.HasFlag(Transaction.Query.Sent) && !query.HasFlag(Transaction.Query.Received))
                 typeParameter = "sent";
 
-            var res = session.Get("http://www.elitepvpers.com/theblackmarket/api/transactions.php?u=" + session.User.ID +
+            var responseContent = session.Get("http://www.elitepvpers.com/theblackmarket/api/transactions.php?u=" + session.User.ID +
                                     "&type=" + typeParameter + "&secretword=" + SecretWord);
 
-            var responseContent = res.ToString();
             if(String.IsNullOrEmpty(responseContent))
                 throw new InvalidAuthenticationException("The provided Secret Word was invalid");
 

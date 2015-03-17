@@ -39,69 +39,18 @@ namespace epvpapi.Connection
             Cookies = new CookieContainer();
         }
 
-        /// <summary> Performs a HTTP GET request </summary>
-        /// <param name="url"> Location to request </param>
-        /// <param name="headers"> HTTP Headers that are transmitted with the request </param>
-        /// <returns> Server <c>Response</c> to the sent request </returns>
-        internal Response Get(string url, List<HttpHeader> headers)
-        {
-            try
-            {
-                using (var handler = new HttpClientHandler()
-                {
-                    UseCookies = true,
-                    CookieContainer = Cookies,
-                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
-                })
-                {
-                    if (UseProxy)
-                    {
-                        handler.UseProxy = true;
-                        handler.Proxy = Proxy;
-                    }
-
-                    using (var client = new HttpClient(handler))
-                    {
-                        foreach (var header in headers)
-                            client.DefaultRequestHeaders.Add(header.Name, header.Value);
-
-                        using (var response = client.GetAsync(url))
-                        {
-                            if (!response.Result.IsSuccessStatusCode &&
-                                response.Result.StatusCode != HttpStatusCode.SeeOther)
-                                throw new RequestFailedException("Request failed, Server returned " + response.Result.StatusCode);
-
-                            return new Response(response.Result.Content.ReadAsStringAsync().Result);
-                        }
-                    }
-                }
-
-            }
-            catch (CookieException exception)
-            {
-                throw new RequestFailedException("The Session could not be resolved", exception);
-            }
-        }
-
-        /// <summary> Performs a HTTP GET request </summary>
-        /// <param name="url"> Location to request </param>
-        /// <returns> Server <c>Response</c> to the sent request </returns>
-        internal Response Get(string url)
-        {
-            return Get(url, HttpHeader.CommonHeaders);
-        }
-
-        /// <summary> Performs a HTTP POST request </summary>
+        /// <summary> Performs a HTTP request </summary>
         /// <param name="url"> Location where to post the data </param>
-        /// <param name="content"> Contents to post </param>
         /// <param name="headers"> HTTP Headers that are transmitted with the request </param>
-        /// <returns> Server <c>Response</c> to the sent request </returns>
-        internal Response Post(string url, IEnumerable<KeyValuePair<string, string>> content, List<HttpHeader> headers)
+        /// <param name="method"> <c>HttpMethod</c> that is used for the request </param>
+        /// <param name="content"> Content to post (if <c>HttpMethod.Post</c> was specified) </param>
+        /// <returns> Plain response content </returns>
+        public string Request(string url, List<HttpHeader> headers, 
+                                HttpMethod method = HttpMethod.Get,
+                                HttpContent content = null)
         {
             try
             {
-                var targetUrl = new Uri(url);
-
                 using (var handler = new HttpClientHandler()
                 {
                     UseCookies = true,
@@ -121,21 +70,36 @@ namespace epvpapi.Connection
                         foreach (var header in headers)
                             client.DefaultRequestHeaders.Add(header.Name, header.Value);
 
-                        var encodedContent = new FormUrlEncodedContent(content);
-                        encodedContent.Headers.ContentType.MediaType = "application/x-www-form-urlencoded";
-                        encodedContent.Headers.ContentType.CharSet = "UTF-8";
 
-                        using (var response = client.PostAsync(targetUrl, encodedContent))
+                        HttpResponseMessage response;
+                        switch (method)
                         {
-                            if (!response.Result.IsSuccessStatusCode &&
-                                response.Result.StatusCode != HttpStatusCode.SeeOther &&
-                                response.Result.StatusCode != HttpStatusCode.Redirect)
-                                throw new RequestFailedException("Request failed, Server returned " + response.Result.StatusCode);
+                            case HttpMethod.Post:
+                            {
+                                if(content == null) throw new ArgumentException("Content must not be null when using POST as HTTP method");
+                                response = client.PostAsync(url, content).Result;
+                                break;
+                            }
+                            case HttpMethod.Get:
+                            {
+                                response = client.GetAsync(url).Result;
+                                break;
+                            }
+                            default:
+                                throw new ArgumentException("This HTTP method is not supported, please use either HttpMethod.POST or HttpMethod.GET");
+                        }
 
-                            return new Response(response.Result.Content.ReadAsStringAsync().Result);
+                        using (response)
+                        {
+                            if (!response.IsSuccessStatusCode &&
+                                response.StatusCode != HttpStatusCode.SeeOther)
+                                throw new RequestFailedException("Request failed, Server returned " + response.StatusCode);
+
+                            return response.Content.ReadAsStringAsync().Result;
                         }
                     }
                 }
+
             }
             catch (CookieException exception)
             {
@@ -143,7 +107,42 @@ namespace epvpapi.Connection
             }
         }
 
-        internal Response Post(string url, IEnumerable<KeyValuePair<string, string>> content)
+
+        /// <summary> Performs a HTTP GET request </summary>
+        /// <param name="url"> Location to request </param>
+        /// <param name="headers"> HTTP Headers that are transmitted with the request </param>
+        /// <returns> Plain response content </returns>
+        public string Get(string url, List<HttpHeader> headers)
+        {
+            return Request(url, headers);
+        }
+
+        /// <summary> Performs a HTTP GET request with default get headers </summary>
+        /// <param name="url"> Location to request </param>
+        /// <returns> Plain response content </returns>
+        public string Get(string url)
+        {
+            return Get(url, HttpHeader.CommonHeaders);
+        }
+
+        /// <summary> Performs a HTTP POST request </summary>
+        /// <param name="url"> Location where to post the data </param>
+        /// <param name="content"> Contents to post </param>
+        /// <param name="headers"> HTTP Headers that are transmitted with the request </param>
+        /// <returns> Plain response content </returns>
+        public string Post(string url, IEnumerable<KeyValuePair<string, string>> content, List<HttpHeader> headers)
+        {
+            var encodedContent = new FormUrlEncodedContent(content);
+            encodedContent.Headers.ContentType.MediaType = "application/x-www-form-urlencoded";
+            encodedContent.Headers.ContentType.CharSet = "UTF-8";
+            return Request(url, headers, HttpMethod.Post, encodedContent);
+        }
+
+        /// <summary> Performs a HTTP POST request with default post headers </summary>
+        /// <param name="url"> Location where to post the data </param>
+        /// <param name="content"> Contents to post </param>
+        /// <returns> Plain response content </returns>
+        public string Post(string url, IEnumerable<KeyValuePair<string, string>> content)
         {
             return Post(url, content, HttpHeader.DefaultPostHeaders);
         }
@@ -153,34 +152,10 @@ namespace epvpapi.Connection
         /// </summary>
         /// <param name="url"> Location where to post the data </param>
         /// <param name="content"> Contents to post </param>
-        /// <returns> Server <c>Response</c> to the sent request  </returns>
-        internal Response PostMultipartFormData(Uri url, MultipartFormDataContent content)
+        /// <returns> Plain response content </returns>
+        public string PostMultipartFormData(string url, MultipartFormDataContent content)
         {
-            using (var handler = new HttpClientHandler()
-            {
-                UseCookies = true,
-                CookieContainer = Cookies,
-                AllowAutoRedirect = true,
-                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
-            })
-            {
-                if (UseProxy)
-                {
-                    handler.UseProxy = true;
-                    handler.Proxy = Proxy;
-                }
-
-                using (var client = new HttpClient(handler))
-                {
-                    using (var response = client.PostAsync(url, content))
-                    {
-                        if (!response.Result.IsSuccessStatusCode)
-                            throw new RequestFailedException("Server returned " + response.Result.StatusCode);
-
-                        return new Response(response.Result.Content.ReadAsStringAsync().Result);
-                    }
-                }
-            }
+            return Request(url, HttpHeader.CommonHeaders, HttpMethod.Post, content);
         }
     }
 }

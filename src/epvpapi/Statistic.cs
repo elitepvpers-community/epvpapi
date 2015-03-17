@@ -39,7 +39,7 @@ namespace epvpapi
         {
             var res = session.Get("http://www.elitepvpers.com/forum/");
             var doc = new HtmlDocument();
-            doc.LoadHtml(res.ToString());
+            doc.LoadHtml(res);
 
             var statsNode = doc.GetElementbyId("collapseobj_forumhome_stats");
             if (statsNode == null) return;

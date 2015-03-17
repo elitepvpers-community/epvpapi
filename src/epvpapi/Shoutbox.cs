@@ -90,7 +90,7 @@ namespace epvpapi
                 try
                 {
                     var doc = new HtmlDocument();
-                    doc.LoadHtml(res.ToString());
+                    doc.LoadHtml(res);
 
                     // every shoutbox entry got 3 td nodes. One for the time, one for the username and one for the actual messages
                     // the target nodes are identified by their unique valign: top attribute
@@ -156,7 +156,7 @@ namespace epvpapi
                     var res = session.Get("http://www.elitepvpers.com/forum/mgc_cb_evo.php?do=view_archives&page=" + (firstPage + i));
                     
                     var doc = new HtmlDocument();
-                    doc.LoadHtml(res.ToString());
+                    doc.LoadHtml(res);
 
                     var messagesRootNode = doc.GetElementbyId("tickerwrapper").SelectSingleNode("../table[1]/tr[1]/td[3]/table[1]");
                     if (messagesRootNode == null) throw new ParsingFailedException("Parsing channel history failed, root node is invalid or was not found");
@@ -242,7 +242,7 @@ namespace epvpapi
 
             var res = session.Get("http://www.elitepvpers.com/forum/mgc_cb_evo.php?do=view_archives&page=1");
             var document = new HtmlDocument();
-            document.LoadHtml(res.ToString());
+            document.LoadHtml(res);
 
             var statsBodyNode = document.GetElementbyId("tickerwrapper").SelectSingleNode("../table[1]/tr[1]/td[1]/table[1]");
             if (statsBodyNode == null) throw new ParsingFailedException("Updating the shoutbox information failed, root node is invalid or was not found");

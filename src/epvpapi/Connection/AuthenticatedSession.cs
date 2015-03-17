@@ -87,7 +87,7 @@ namespace epvpapi.Connection
         public void Update()
         {
             var res = Get("http://www.elitepvpers.com/forum/");
-            SecurityToken = new Regex("SECURITYTOKEN = \"(\\S+)\";").Match(res.ToString()).Groups[1].Value;
+            SecurityToken = new Regex("SECURITYTOKEN = \"(\\S+)\";").Match(res).Groups[1].Value;
 
             if (String.IsNullOrEmpty(SecurityToken) || SecurityToken == "guest")
                 throw new InvalidAuthenticationException("Credentials entered for user " + User.Name + " were invalid");

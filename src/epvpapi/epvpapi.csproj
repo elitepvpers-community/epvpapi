@@ -58,6 +58,7 @@
     <Compile Include="BlogEntry.cs" />
     <Compile Include="Connection\GuestSession.cs" />
     <Compile Include="Connection\HttpHeader.cs" />
+    <Compile Include="Connection\HttpMethod.cs" />
     <Compile Include="EpvpapiException.cs" />
     <Compile Include="Evaluation\PrivateMessageParser.cs" />
     <Compile Include="Evaluation\SectionPostParser.cs" />
@@ -89,7 +90,6 @@
     <Compile Include="Profile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Connection\RequestFailedException.cs" />
-    <Compile Include="Connection\Response.cs" />
     <Compile Include="Connection\AuthenticatedSession.cs" />
     <Compile Include="Section.cs" />
     <Compile Include="SectionPost.cs" />

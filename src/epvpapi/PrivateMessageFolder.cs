@@ -54,7 +54,7 @@ namespace epvpapi
                 // setting 'pp' to 100 will get you exactly 100 messages per page. This is the highest count that can be set.
                 var res = session.Get("http://www.elitepvpers.com/forum/private.php?folderid=" + ID + "&pp=100&sort=date&page=" + i);
                 var document = new HtmlDocument();
-                document.LoadHtml(res.ToString());
+                document.LoadHtml(res);
 
                 var formRootNode = document.GetElementbyId("pmform");
                 if (formRootNode == null) continue;

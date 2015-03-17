@@ -70,7 +70,7 @@ namespace epvpapi
 
             var res = session.Get("http://www.elitepvpers.com/forum/" + UrlName + "/");
             var doc = new HtmlDocument();
-            doc.LoadHtml(res.ToString());
+            doc.LoadHtml(res);
 
             new SectionParser.AnnouncementsParser(this).Execute(doc.GetElementbyId("threadslist"));
         }
@@ -92,7 +92,7 @@ namespace epvpapi
             {
                 var res = session.Get("http://www.elitepvpers.com/forum/" + UrlName + "/index" + i + ".html");
                 var doc = new HtmlDocument();
-                doc.LoadHtml(res.ToString());
+                doc.LoadHtml(res);
 
                 var threadFrameNode = doc.GetElementbyId("threadbits_forum_" + ID);
                 if (threadFrameNode == null) continue;

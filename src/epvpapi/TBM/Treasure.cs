@@ -128,11 +128,11 @@ namespace epvpapi.TBM
             session.ThrowIfInvalid();
             if (ID == 0) throw new ArgumentException("ID must not be zero");
 
-            var res = session.Post(GetUrl(),
-                new List<KeyValuePair<string, string>>()
-                {
-                    new KeyValuePair<string, string>("deletetreasure", "1")
-                });
+            session.Post(GetUrl(),
+                        new List<KeyValuePair<string, string>>()
+                        {
+                            new KeyValuePair<string, string>("deletetreasure", "1")
+                        });
         }
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace epvpapi.TBM
 
             var res = session.Get(GetUrl());
             var htmlDocument = new HtmlDocument();
-            htmlDocument.LoadHtml(res.ToString());
+            htmlDocument.LoadHtml(res);
 
             var rootFormNode = htmlDocument.GetElementbyId("contentbg");
             if (rootFormNode == null) return;
