@@ -1,6 +1,6 @@
-﻿using epvpapi.Connection;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using epvpapi.Connection;
 
 namespace epvpapi
 {
@@ -100,7 +100,7 @@ namespace epvpapi
                             new KeyValuePair<string, string>("options%5Benable_group_albums%5D", settings.HasFlag(Options.EnableGroupAlbums) ? "1" : "0"),
                             new KeyValuePair<string, string>("options%5Benable_group_messages%5D", settings.HasFlag(Options.EnableGroupMessages) ? "1" : "0")
                         });
-            
+
             return new SocialGroup(0);
         }
 
@@ -110,7 +110,7 @@ namespace epvpapi
         /// <param name="session"> Session that is used for sending the request </param>
         public void Delete<TUser>(AuthenticatedSession<TUser> session) where TUser : User
         {
-            if (session.User.GetHighestRank() < Usergroup.GlobalModerator && session.User != Maintainer) 
+            if (session.User.GetHighestRank() < Usergroup.GlobalModerator && session.User != Maintainer)
                 throw new InsufficientAccessException("You don't have enough access rights to delete this group");
 
             if (ID == 0) throw new ArgumentException("Group ID must not be zero");
@@ -323,7 +323,7 @@ namespace epvpapi
         public string GetUrl()
         {
             return "http://www.elitepvpers.com/forum/groups/" + ID + "-" + Name.UrlEscape() + ".html";
-        } 
+        }
     }
 }
 

@@ -34,7 +34,7 @@ namespace epvpapi
         /// <returns> <c>Image</c> object containing the actual image from the given path </returns>
         public static Image FromFileSystem(string path)
         {
-            if(!Image.IsValid(path))
+            if (!Image.IsValid(path))
                 throw new ArgumentException("Provided path is not a valid path to an image");
 
             var image = new Image()
@@ -61,7 +61,8 @@ namespace epvpapi
         /// <returns> <c>Image</c> object containing the just downloaded image </returns>
         public static Image FromWeb(Uri url, string imageFormat = ".jpeg")
         {
-            return new Image() {
+            return new Image()
+            {
                 Data = new WebClient().DownloadData(url),
                 Name = "Unnamed",
                 Format = imageFormat

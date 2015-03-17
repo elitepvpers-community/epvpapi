@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace epvpapi
 {
     public class UnicastMessage : Message
@@ -28,7 +23,7 @@ namespace epvpapi
         public UnicastMessage(int id, User receiver, Content content)
             : base(id)
         {
-            Content = content;       
+            Content = content;
             Sender = new User();
             Receiver = receiver;
         }

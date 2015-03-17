@@ -11,6 +11,6 @@ namespace epvpapi
         /// Deletes the object using the given <c>Session</c>
         /// </summary>
         /// <param name="session"> Session that is used for sending the request </param>
-        void Delete<TUser>(AuthenticatedSession<TUser> session) where TUser : User; 
+        void Delete<TUser>(AuthenticatedSession<TUser> session) where TUser : User;
     }
 }

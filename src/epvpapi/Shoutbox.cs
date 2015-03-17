@@ -1,10 +1,10 @@
-﻿using epvpapi.Connection;
-using epvpapi.Evaluation;
-using HtmlAgilityPack;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using epvpapi.Connection;
+using epvpapi.Evaluation;
+using HtmlAgilityPack;
 
 namespace epvpapi
 {
@@ -23,7 +23,7 @@ namespace epvpapi
             /// </summary>
             public class Shout : Message
             {
-                 public Shout(int id = 0)
+                public Shout(int id = 0)
                     : this(id, new Content())
                 { }
 
@@ -38,7 +38,7 @@ namespace epvpapi
 
             public string Name { get; set; }
 
-            public Channel(int id, string name):
+            public Channel(int id, string name) :
                 base(id)
             {
                 Name = name;
@@ -98,7 +98,7 @@ namespace epvpapi
                     var shoutboxNodes = new List<HtmlNode>(tdNodes.Where(node => node.Attributes.Any(attribute => attribute.Name == "valign" && attribute.Value == "top")));
 
                     var shoutboxNodeGroups = shoutboxNodes.Split(3);
-                    foreach(var shoutboxNodeGroup in shoutboxNodeGroups)
+                    foreach (var shoutboxNodeGroup in shoutboxNodeGroups)
                     {
                         if (shoutboxNodeGroup.Count != 3) continue; // every node group needs to have exactly 3 nodes in order to be valid
                         var parsedShout = new Shout();
@@ -151,10 +151,10 @@ namespace epvpapi
                 session.ThrowIfInvalid();
 
                 var shoutList = new List<Shout>();
-                for(int i = 0; i < pageCount; ++i)
+                for (int i = 0; i < pageCount; ++i)
                 {
                     var res = session.Get("http://www.elitepvpers.com/forum/mgc_cb_evo.php?do=view_archives&page=" + (firstPage + i));
-                    
+
                     var doc = new HtmlDocument();
                     doc.LoadHtml(res.ToString());
 
@@ -165,7 +165,7 @@ namespace epvpapi
                     if (messageNodes.Count < 1) throw new ParsingFailedException("Parsing channel history failed, message nodes could not be retrieved");
                     messageNodes.RemoveAt(0); // remove the table header
 
-                    foreach(var messageNode in messageNodes)
+                    foreach (var messageNode in messageNodes)
                     {
                         var parsedShout = new Shout();
 
@@ -180,7 +180,7 @@ namespace epvpapi
                         parsedShout.Date = time;
 
                         var userNode = messageNode.SelectSingleNode("td[3]/span[1]/a[1]");
-                        if(userNode == null) continue;
+                        if (userNode == null) continue;
 
                         var userNameNode = userNode.SelectSingleNode("span[1]") ??
                                            userNode; // users with black names do not have the span element
@@ -221,7 +221,7 @@ namespace epvpapi
         private static Channel _Global = new Channel(0, "General");
         public static Channel Global
         {
-            get {  return _Global; }
+            get { return _Global; }
             set { _Global = value; }
         }
 
@@ -256,7 +256,7 @@ namespace epvpapi
             foreach (var node in topChatterNodes)
             {
                 var userNode = node.SelectSingleNode("td[1]/a[1]");
-                if(userNode == null) continue;
+                if (userNode == null) continue;
                 var userID = userNode.Attributes.Contains("href") ? User.FromUrl(userNode.Attributes["href"].Value) : 0;
 
                 var userNameNode = userNode.SelectSingleNode("span[1]") ?? userNode; // black user names do not have a span element

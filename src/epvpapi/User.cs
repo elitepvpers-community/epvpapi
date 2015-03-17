@@ -1,12 +1,11 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 using epvpapi.Connection;
 using epvpapi.Evaluation;
 using epvpapi.TBM;
 using HtmlAgilityPack;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace epvpapi
 {
@@ -212,7 +211,7 @@ namespace epvpapi
         public Usergroup GetHighestRank()
         {
             var highestRank = new Usergroup();
-            foreach(var rank in Usergroups)
+            foreach (var rank in Usergroups)
                 if (rank > highestRank)
                     highestRank = rank;
 
@@ -225,7 +224,7 @@ namespace epvpapi
         /// <param name="session"> Session used for sending the request </param>
         public void Update<TUser>(AuthenticatedSession<TUser> session) where TUser : User
         {
-            if(ID == 0) throw new ArgumentException("User ID must not be 0");
+            if (ID == 0) throw new ArgumentException("User ID must not be 0");
             session.ThrowIfInvalid();
             var res = session.Get(GetUrl());
 
@@ -255,7 +254,7 @@ namespace epvpapi
         public string GetUrl()
         {
             return "http://www.elitepvpers.com/forum/members/" + ID + "-" + Name.UrlEscape() + ".html";
-        } 
+        }
 
         /// <summary>
         /// Retrieves the profile ID of the given URL
@@ -266,7 +265,7 @@ namespace epvpapi
         public static int FromUrl(string url)
         {
             var match = Regex.Match(url, @"(?:http://www.elitepvpers.com/(?:forum/)*)*(?:members|theblackmarket/profile)/([0-9]+)(?:-[a-zA-Z]+.html)*");
-            if(match.Groups.Count < 2) throw new ParsingFailedException(String.Format("User could not be exported from the given url: {0}", url));
+            if (match.Groups.Count < 2) throw new ParsingFailedException(String.Format("User could not be exported from the given url: {0}", url));
 
             return match.Groups[1].Value.To<int>();
         }
@@ -294,7 +293,7 @@ namespace epvpapi
 
             return (rootNode != null)
                     ? (from userNode in rootNode.ChildNodes.GetElementsByTagName("user")
-                        where userNode.Attributes.Contains("userid")
+                       where userNode.Attributes.Contains("userid")
                        select new User(userNode.InnerText, userNode.Attributes["userid"].Value.To<int>())).ToList()
                     : new List<User>();
         }

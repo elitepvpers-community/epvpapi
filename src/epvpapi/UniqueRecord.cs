@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace epvpapi
 {
@@ -16,7 +12,7 @@ namespace epvpapi
         /// </summary>
         public DateTime Date { get; set; }
 
-        public UniqueRecord(int id = 0):
+        public UniqueRecord(int id = 0) :
             base(id)
         {
             Date = new DateTime();

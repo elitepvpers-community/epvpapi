@@ -11,7 +11,7 @@ namespace epvpapi.TBM
         /// User that sent the <c>EliteGold</c>
         /// </summary>
         public User Sender { get; set; }
-        
+
         /// <summary>
         /// User that received the <c>EliteGold</c>
         /// </summary>
@@ -45,11 +45,11 @@ namespace epvpapi.TBM
             Sender = new User();
             Receiver = new User();
             Time = new DateTime();
-        }     
+        }
 
         public string GetUrl()
         {
             return "http://www.elitepvpers.com/theblackmarket/transaction/" + ID;
-        } 
+        }
     }
 }

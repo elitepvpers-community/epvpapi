@@ -1,9 +1,9 @@
-﻿using epvpapi.Connection;
-using epvpapi.Evaluation;
-using HtmlAgilityPack;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using epvpapi.Connection;
+using epvpapi.Evaluation;
+using HtmlAgilityPack;
 
 namespace epvpapi
 {
@@ -45,14 +45,14 @@ namespace epvpapi
             public string GetUrl()
             {
                 return "http://www.elitepvpers.com/forum/" + Section.UrlName + "/announcement-" + Title.UrlEscape() + ".html";
-            } 
+            }
 
         }
 
         /// <summary>
         /// List of all announcements available for this section
         /// </summary>
-        public List<Announcement> Announcements { get; set; } 
+        public List<Announcement> Announcements { get; set; }
 
         public Section(int id, string urlName)
             : base(id)
@@ -126,7 +126,7 @@ namespace epvpapi
                     if (stickyThreadNodes.Any(stickyThreadNode => stickyThreadNode == threadNode))
                         parsedThread.Sticked = true;
 
-                    if(parsedThread.ID != 0)
+                    if (parsedThread.ID != 0)
                         parsedThreads.Add(parsedThread);
                 }
             }
@@ -137,7 +137,7 @@ namespace epvpapi
         public string GetUrl()
         {
             return "http://www.elitepvpers.com/forum/" + UrlName + "/";
-        } 
+        }
 
         private static readonly Section _Main = new Section(206, "main");
         public static Section Main

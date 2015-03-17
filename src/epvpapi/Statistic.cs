@@ -1,6 +1,6 @@
-﻿using epvpapi.Connection;
+﻿using System.Text.RegularExpressions;
+using epvpapi.Connection;
 using HtmlAgilityPack;
-using System.Text.RegularExpressions;
 
 namespace epvpapi
 {

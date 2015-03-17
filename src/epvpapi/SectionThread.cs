@@ -1,11 +1,10 @@
-﻿using System.Globalization;
-using epvpapi.Connection;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using HtmlAgilityPack;
+using epvpapi.Connection;
 using epvpapi.Evaluation;
+using HtmlAgilityPack;
 
 namespace epvpapi
 {
@@ -18,7 +17,7 @@ namespace epvpapi
         /// Section under which the <c>SectionThread</c> is listed
         /// </summary>
         public Section Section { get; set; }
-        
+
         /// <summary>
         /// If true, the thread state is closed meaning that no one (except the staff) can answer to this thread
         /// </summary>
@@ -48,7 +47,7 @@ namespace epvpapi
         /// The first post in the <c>SectionThread</c>, usually created by the thread starter
         /// </summary>
         public SectionPost InitialPost { get; set; }
-        
+
         /// <summary>
         /// Tags that have been set for better search results when using the board's search function
         /// </summary>
@@ -246,8 +245,8 @@ namespace epvpapi
         /// </remarks>
         public void Update(GuestSession session)
         {
-            if(ID == 0) throw new ArgumentException("ID must not be empty");
-            if(String.IsNullOrEmpty(Section.UrlName)) throw new ArgumentException("The section needs to be addressable");
+            if (ID == 0) throw new ArgumentException("ID must not be empty");
+            if (String.IsNullOrEmpty(Section.UrlName)) throw new ArgumentException("The section needs to be addressable");
 
             var res = session.Get(GetUrl());
             var htmlDocument = new HtmlDocument();
@@ -319,7 +318,7 @@ namespace epvpapi
         public List<SectionPost> Replies<TUser>(AuthenticatedSession<TUser> session, uint pageCount, uint firstPage) where TUser : User
         {
             session.ThrowIfInvalid();
-            if(ID == 0) throw new ArgumentException("ID must not be empty");
+            if (ID == 0) throw new ArgumentException("ID must not be empty");
 
             var retrievedReplies = new List<SectionPost>();
             for (uint i = firstPage; i < (firstPage + pageCount); ++i)

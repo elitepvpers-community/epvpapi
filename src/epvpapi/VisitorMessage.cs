@@ -1,6 +1,6 @@
-﻿using epvpapi.Connection;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using epvpapi.Connection;
 
 namespace epvpapi
 {
@@ -12,7 +12,7 @@ namespace epvpapi
         public VisitorMessage(int id = 0)
             : this(id, new User(), new Content())
         { }
-       
+
         public VisitorMessage(User receiver, Content content)
             : this(0, receiver, content)
         { }
@@ -57,6 +57,6 @@ namespace epvpapi
         public string GetUrl()
         {
             return "http://www.elitepvpers.com/forum/members/" + Receiver.ID + "-" + Receiver.Name.UrlEscape() + ".html#vmessage" + ID;
-        } 
+        }
     }
 }

@@ -1,6 +1,6 @@
-﻿using epvpapi.Connection;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using epvpapi.Connection;
 
 namespace epvpapi
 {
@@ -32,7 +32,7 @@ namespace epvpapi
 
         public SectionPost(Content content, string title = null)
             : this(0, new SectionThread(new Section(0, "")), content, title)
-        {  }
+        { }
 
         public SectionPost(int id, SectionThread thread, string title = null)
             : this(id, thread, new Content(), title)
@@ -49,7 +49,7 @@ namespace epvpapi
         public string GetUrl()
         {
             return "http://www.elitepvpers.com/forum/joining-e-pvp/" + Thread.ID + "-" + Thread.InitialPost.Title.UrlEscape() + ".html";
-        } 
+        }
 
         /// <summary>
         /// Reports the <c>SectionPost</c> using the built-in report function

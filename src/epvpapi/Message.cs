@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace epvpapi
 {
@@ -38,7 +34,7 @@ namespace epvpapi
         public Message(int id, Content content)
             : base(id)
         {
-            Content = content;       
+            Content = content;
             Sender = new User();
         }
     }

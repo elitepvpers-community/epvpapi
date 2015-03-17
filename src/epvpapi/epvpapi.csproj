@@ -82,6 +82,7 @@
     <Compile Include="Content.cs" />
     <Compile Include="Evaluation\ParsingFailedException.cs" />
     <Compile Include="Message.cs" />
+    <Compile Include="NativeMethods.cs" />
     <Compile Include="Post.cs" />
     <Compile Include="PremiumUser.cs" />
     <Compile Include="PrivateMessage.cs" />

@@ -16,7 +16,7 @@ namespace epvpapi.TBM
         /// </summary>
         public string SecretWord { get; set; }
 
-        public Profile(int id = 0):
+        public Profile(int id = 0) :
             base(id)
         {
             Ratings = new Ratings();
@@ -32,8 +32,8 @@ namespace epvpapi.TBM
         /// Use the <c>Transaction.Query.Received</c> or <c>Transaction.Query.Sent</c> constant. You can also concatenate both constants to get all transactions
         /// </param>
         /// <returns> List of <c>Transaction</c> objects representing the Transactions </returns>
-        public List<Transaction> GetTransactions<TUser>(AuthenticatedSession<TUser> session, 
-                                                        Transaction.Query query = Transaction.Query.Sent | Transaction.Query.Received)  where TUser : User
+        public List<Transaction> GetTransactions<TUser>(AuthenticatedSession<TUser> session,
+                                                        Transaction.Query query = Transaction.Query.Sent | Transaction.Query.Received) where TUser : User
         {
             var typeParameter = "all";
             if (query.HasFlag(Transaction.Query.Received) && !query.HasFlag(Transaction.Query.Sent))
@@ -45,7 +45,7 @@ namespace epvpapi.TBM
                                     "&type=" + typeParameter + "&secretword=" + SecretWord);
 
             var responseContent = res.ToString();
-            if(String.IsNullOrEmpty(responseContent))
+            if (String.IsNullOrEmpty(responseContent))
                 throw new InvalidAuthenticationException("The provided Secret Word was invalid");
 
             try

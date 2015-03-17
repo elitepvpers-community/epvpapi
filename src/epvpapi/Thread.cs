@@ -1,6 +1,6 @@
 ﻿namespace epvpapi
 {
-    public abstract class Thread : UniqueObject 
+    public abstract class Thread : UniqueObject
     {
         public User Creator { get; set; }
         public bool Deleted { get; set; }
@@ -17,4 +17,3 @@
         { }
     }
 }
-    
