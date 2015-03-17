@@ -1,7 +1,8 @@
-﻿using System;
-
+﻿
+using System;
 namespace epvpapi.Connection
 {
+    [Serializable]
     /// <summary>
     /// Exception that is thrown if the session being used is invalid, i.e. if no user is linked to the session.
     /// </summary>

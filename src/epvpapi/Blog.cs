@@ -1,7 +1,5 @@
-﻿using epvpapi.Connection;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace epvpapi
 {
@@ -28,6 +26,6 @@ namespace epvpapi
         public string GetUrl()
         {
             return "http://www.elitepvpers.com/forum/blogs/" + Owner.ID + "-" + Owner.Name.UrlEscape() + ".html";
-        }   
+        }
     }
 }

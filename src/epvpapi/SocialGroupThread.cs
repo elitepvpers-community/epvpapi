@@ -1,7 +1,7 @@
-﻿using epvpapi.Connection;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using epvpapi.Connection;
 
 namespace epvpapi
 {
@@ -122,8 +122,8 @@ namespace epvpapi
         /// <returns> The url of the group thread </returns>
         public string GetUrl()
         {
-            return String.Format("http://www.elitepvpers.com/forum/groups/{0}-{1}-d{2}-{3}.html", 
+            return String.Format("http://www.elitepvpers.com/forum/groups/{0}-{1}-d{2}-{3}.html",
                                  SocialGroup.ID, SocialGroup.Name.UrlEscape(), ID, Posts.First().Title.UrlEscape());
-        } 
+        }
     }
 }

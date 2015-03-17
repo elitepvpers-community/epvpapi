@@ -2,6 +2,7 @@
 
 namespace epvpapi.Evaluation
 {
+    [Serializable]
     public class ParsingFailedException : EpvpapiException
     {
         public ParsingFailedException(string msg):

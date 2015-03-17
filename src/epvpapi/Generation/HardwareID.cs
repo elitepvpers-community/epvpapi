@@ -2,7 +2,6 @@
 using System.Runtime.InteropServices;
 using System.Text;
 
-
 namespace epvpapi.Generation
 {
     public class HardwareID
@@ -30,12 +29,6 @@ namespace epvpapi.Generation
             public string szHwProfileName;
         }
 
-        [DllImport("advapi32.dll", SetLastError = true)]
-        private static extern bool GetCurrentHwProfile(IntPtr lpHwProfileInfo);
-
-        [DllImport("kernel32", CharSet = CharSet.Ansi, SetLastError = true, ExactSpelling = true)]
-        private static extern long GetVolumeInformationA(string pathName, StringBuilder volumeNameBuffer, int volumeNameSize, ref int volumeSerialNumber, ref int maximumComponentLength, ref int fileSystemFlags, StringBuilder fileSystemNameBuffer, int fileSystemNameSize);
-
         private static HW_PROFILE_INFO ProfileInfo()
         {
             HW_PROFILE_INFO profile = null;
@@ -46,7 +39,7 @@ namespace epvpapi.Generation
                 profilePtr = Marshal.AllocHGlobal(Marshal.SizeOf(profile));
                 Marshal.StructureToPtr(profile, profilePtr, false);
 
-                if (!GetCurrentHwProfile(profilePtr))
+                if (!NativeMethods.GetCurrentHwProfile(profilePtr))
                 {
                     throw new Exception("Error cant get current hw profile!");
                 }
@@ -73,7 +66,7 @@ namespace epvpapi.Generation
         {
             int serNum = 0, maxCompLen = 0, volFlags = 0;
             StringBuilder volLabel = new StringBuilder(256), fsName = new StringBuilder(256);
-            GetVolumeInformationA(strDriveLetter + ":\\", volLabel, volLabel.Capacity, ref serNum, ref maxCompLen, ref volFlags, fsName, fsName.Capacity);
+            NativeMethods.GetVolumeInformationA(strDriveLetter + ":\\", volLabel, volLabel.Capacity, ref serNum, ref maxCompLen, ref volFlags, fsName, fsName.Capacity);
             return Convert.ToString(serNum);
         }
 

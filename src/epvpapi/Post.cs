@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
+﻿
 namespace epvpapi
 {
     public abstract class Post : Message
@@ -13,7 +11,7 @@ namespace epvpapi
         public Post(int id = 0)
             : this(id, new Content())
         { }
-        
+
         public Post(Content content)
             : this(0, content)
         { }

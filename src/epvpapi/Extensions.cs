@@ -1,10 +1,9 @@
-﻿using HtmlAgilityPack;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
+using HtmlAgilityPack;
 
 namespace epvpapi
 {
@@ -40,7 +39,7 @@ namespace epvpapi
         /// </remarks>
         public static IEnumerable<HtmlNode> GetElementsByNameXHtml(this IEnumerable<HtmlNode> parent, string name)
         {
-            return  parent
+            return parent
                     .Where(node => node.Attributes.Contains("name"))
                     .Where(node => node.Attributes["name"].Value == name);
         }
@@ -105,7 +104,7 @@ namespace epvpapi
         /// <returns> Total seconds since 01.01.1970 </returns>
         public static uint UnixTimestamp()
         {
-            return (uint) (DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            return (uint)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
         }
 
         /// <summary>
@@ -128,11 +127,11 @@ namespace epvpapi
         /// <returns> True if both objects represent the same time, false if not </returns>
         public static bool Compare(this DateTime self, DateTime other)
         {
-            return (   (other.Year == self.Year) 
-                    && (other.Month == self.Month) 
-                    && (other.Day == self.Month) 
-                    && (other.Hour == self.Hour) 
-                    && (other.Minute == self.Minute) );
+            return ((other.Year == self.Year)
+                    && (other.Month == self.Month)
+                    && (other.Day == self.Month)
+                    && (other.Hour == self.Hour)
+                    && (other.Minute == self.Minute));
         }
 
         /// <summary>
@@ -165,7 +164,7 @@ namespace epvpapi
             }
 
             var dateTime = new DateTime();
-            foreach(var format in commonFormats)
+            foreach (var format in commonFormats)
             {
                 if (DateTime.TryParseExact(formattedTime, format, CultureInfo.InvariantCulture,
                     DateTimeStyles.None, out dateTime))

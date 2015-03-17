@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using epvpapi.Connection;
 
 namespace epvpapi
@@ -30,7 +28,7 @@ namespace epvpapi
             /// While they are not approved, only the staff and you, the owner, can see the comments
             /// </summary>
             ModerateComments = 4,
-                
+
             /// <summary>
             /// If set, the blog entry is only visible to the staff and yourself
             /// </summary>

@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using epvpapi.Connection;
 using HtmlAgilityPack;
 
@@ -78,11 +74,11 @@ namespace epvpapi.TBM
         /// </summary>
         public bool Available { get; set; }
 
-        public Treasure(string title, string content, uint cost):
+        public Treasure(string title, string content, uint cost) :
             this(0, title, content, cost)
         { }
 
-        public Treasure(int id = 0, string title = null, string content = null, uint cost = 0):
+        public Treasure(int id = 0, string title = null, string content = null, uint cost = 0) :
             base(id)
         {
             Title = title;
@@ -142,7 +138,7 @@ namespace epvpapi.TBM
         public void Update<TUser>(AuthenticatedSession<TUser> session) where TUser : User
         {
             session.ThrowIfInvalid();
-            if(ID == 0) throw new ArgumentException("ID must not be zero");
+            if (ID == 0) throw new ArgumentException("ID must not be zero");
 
             var res = session.Get(GetUrl());
             var htmlDocument = new HtmlDocument();
@@ -153,7 +149,7 @@ namespace epvpapi.TBM
 
             rootFormNode = rootFormNode.SelectSingleNode("table[1]/tr[1]/td[1]/table[1]/tr[2]/td[1]");
             if (rootFormNode == null) return;
-            
+
             var treasureInfoNode = rootFormNode.SelectSingleNode("div[1]/div[3]/table[1]/tr[1]/td[1]/table[1]");
             if (treasureInfoNode != null)
             {

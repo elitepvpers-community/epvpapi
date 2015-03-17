@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace epvpapi
 {
     /// <summary>
     /// Represents formatted vBulletin content
     /// </summary>
-    public class Content 
+    public class Content
     {
         /// <summary>
         /// Represents a content element such as spoilers, quotes, images, links...
@@ -24,7 +22,7 @@ namespace epvpapi
             /// <summary>
             /// Elements being wrapped by this element
             /// </summary>
-            public List<Element> Childs { get; set; } 
+            public List<Element> Childs { get; set; }
 
             /// <summary>
             /// The plain representation that includes the element tag and the plain values of the child elements.
@@ -35,7 +33,7 @@ namespace epvpapi
                 get { return String.Format("[{0}]{1}[/{0}]", Tag, String.Join(String.Empty, Childs.Select(childContent => childContent.Plain))); }
             }
 
-            public Element(string tag = ""):
+            public Element(string tag = "") :
                 this(tag, new List<Element>())
             { }
 
@@ -73,7 +71,7 @@ namespace epvpapi
 
                 public override string Plain
                 {
-                    get { return (string) Value; }
+                    get { return (string)Value; }
                 }
 
                 public PlainText() :
@@ -269,7 +267,7 @@ namespace epvpapi
                     get { return String.Format("[{0}={1}]{2}[/{0}]", Tag, Author.Name, String.Join(String.Empty, Childs.Select(childContent => childContent.Plain))); }
                 }
 
-                public Quote(User author):
+                public Quote(User author) :
                     base("quote")
                 {
                     Author = author;
@@ -323,7 +321,7 @@ namespace epvpapi
         /// </summary>
         public List<Element.Link> Links
         {
-            get { return Filter<Element.Link>(); } 
+            get { return Filter<Element.Link>(); }
         }
 
         /// <summary>
@@ -416,11 +414,11 @@ namespace epvpapi
 
         public Content(List<Element> elements)
         {
-            Elements = elements;       
+            Elements = elements;
         }
 
-        public Content(string plainStringContent):
-            this(new List<Element>() { new Element.PlainText(plainStringContent)} )
+        public Content(string plainStringContent) :
+            this(new List<Element>() { new Element.PlainText(plainStringContent) })
         { }
 
         public Content() :

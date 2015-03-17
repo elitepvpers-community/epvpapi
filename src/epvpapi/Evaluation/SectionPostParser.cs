@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using HtmlAgilityPack;
 
 namespace epvpapi.Evaluation
@@ -77,13 +74,13 @@ namespace epvpapi.Evaluation
                     {
                         var match = new Regex("(?:Posts): ([0-9]+(?:.|,)[0-9]+)").Match(coreNode.InnerText);
                         if (match.Groups.Count > 1)
-                            Target.Posts = (uint) double.Parse(match.Groups[1].Value);
+                            Target.Posts = (uint)double.Parse(match.Groups[1].Value);
                     }
                     else if (innerText.Contains("Received Thanks"))
                     {
                         var match = new Regex("(?:Received Thanks): ([0-9]+(?:.|,)[0-9]+)").Match(coreNode.InnerText);
                         if (match.Groups.Count > 1)
-                            Target.ThanksReceived = (uint) double.Parse(match.Groups[1].Value);
+                            Target.ThanksReceived = (uint)double.Parse(match.Groups[1].Value);
                     }
                 }
             }
@@ -151,7 +148,8 @@ namespace epvpapi.Evaluation
             }
         }
 
-        public SectionPostParser(SectionPost target) : base(target)
+        public SectionPostParser(SectionPost target)
+            : base(target)
         { }
 
         public void Execute(HtmlNode coreNode)

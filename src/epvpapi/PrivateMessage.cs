@@ -1,14 +1,14 @@
-﻿using epvpapi.Connection;
-using epvpapi.Evaluation;
-using HtmlAgilityPack;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using epvpapi.Connection;
+using epvpapi.Evaluation;
+using HtmlAgilityPack;
 
 namespace epvpapi
 {
     public class PrivateMessage : Post, IReportable, IInternalUpdatable, IUniqueWebObject
-    {  
+    {
         /// <summary>
         /// Additional options that can be set when posting messages
         /// </summary>
@@ -48,7 +48,7 @@ namespace epvpapi
 
         public PrivateMessage(User recipient, Content content, string title = null)
             : this(0, content, new List<User>() { recipient }, title)
-        {  }
+        { }
 
         public PrivateMessage(List<User> recipients, Content content, string title = null)
             : this(0, content, recipients, title)
@@ -148,6 +148,6 @@ namespace epvpapi
         public string GetUrl()
         {
             return "http://www.elitepvpers.com/forum/private.php?do=showpm&pmid=" + ID;
-        }  
+        }
     }
 }

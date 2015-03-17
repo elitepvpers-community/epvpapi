@@ -1,6 +1,6 @@
-﻿using epvpapi.Connection;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using epvpapi.Connection;
 
 namespace epvpapi
 {
@@ -16,7 +16,7 @@ namespace epvpapi
         { }
 
         public SocialGroupPost(int id, SocialGroupThread thread)
-            : this(id, new Content()) 
+            : this(id, new Content())
         {
             Thread = thread;
         }
@@ -49,6 +49,6 @@ namespace epvpapi
         public string GetUrl()
         {
             return Thread.GetUrl() + "#gmessage" + ID;
-        } 
+        }
     }
 }

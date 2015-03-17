@@ -1,7 +1,7 @@
-﻿using HtmlAgilityPack;
-using System;
+﻿using System;
 using System.Net;
 using System.Text.RegularExpressions;
+using HtmlAgilityPack;
 
 namespace epvpapi.Connection
 {
