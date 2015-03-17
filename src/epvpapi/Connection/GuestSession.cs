@@ -65,11 +65,14 @@ namespace epvpapi.Connection
                         foreach (var header in headers)
                             client.DefaultRequestHeaders.Add(header.Name, header.Value);
 
-                        var response = client.GetAsync(url);
-                        if (!response.Result.IsSuccessStatusCode && response.Result.StatusCode != HttpStatusCode.SeeOther)
-                            throw new RequestFailedException("Request failed, Server returned " + response.Result.StatusCode);
+                        using (var response = client.GetAsync(url))
+                        {
+                            if (!response.Result.IsSuccessStatusCode &&
+                                response.Result.StatusCode != HttpStatusCode.SeeOther)
+                                throw new RequestFailedException("Request failed, Server returned " + response.Result.StatusCode);
 
-                        return new Response(response.Result);
+                            return new Response(response.Result.Content.ReadAsStringAsync().Result);
+                        }
                     }
                 }
 
@@ -122,11 +125,15 @@ namespace epvpapi.Connection
                         encodedContent.Headers.ContentType.MediaType = "application/x-www-form-urlencoded";
                         encodedContent.Headers.ContentType.CharSet = "UTF-8";
 
-                        var response = client.PostAsync(targetUrl, encodedContent);
-                        if (!response.Result.IsSuccessStatusCode && response.Result.StatusCode != HttpStatusCode.SeeOther && response.Result.StatusCode != HttpStatusCode.Redirect)
-                            throw new RequestFailedException("Request failed, Server returned " + response.Result.StatusCode);
+                        using (var response = client.PostAsync(targetUrl, encodedContent))
+                        {
+                            if (!response.Result.IsSuccessStatusCode &&
+                                response.Result.StatusCode != HttpStatusCode.SeeOther &&
+                                response.Result.StatusCode != HttpStatusCode.Redirect)
+                                throw new RequestFailedException("Request failed, Server returned " + response.Result.StatusCode);
 
-                        return new Response(response.Result);
+                            return new Response(response.Result.Content.ReadAsStringAsync().Result);
+                        }
                     }
                 }
             }
@@ -165,11 +172,13 @@ namespace epvpapi.Connection
 
                 using (var client = new HttpClient(handler))
                 {
-                    var response = client.PostAsync(url, content);
-                    if (!response.Result.IsSuccessStatusCode)
-                        throw new RequestFailedException("Server returned " + response.Result.StatusCode);
+                    using (var response = client.PostAsync(url, content))
+                    {
+                        if (!response.Result.IsSuccessStatusCode)
+                            throw new RequestFailedException("Server returned " + response.Result.StatusCode);
 
-                    return new Response(response.Result);
+                        return new Response(response.Result.Content.ReadAsStringAsync().Result);
+                    }
                 }
             }
         }
