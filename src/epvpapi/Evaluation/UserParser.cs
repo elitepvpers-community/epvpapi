@@ -215,12 +215,24 @@ namespace epvpapi.Evaluation
                 Target.Name = userNameNode.InnerText.Strip();
                 Target.Banned = (userNameNode.Name == "strike") ? true : false;
 
-                if (userNameNode.Attributes.Contains("style"))
+                new NamecolorParser(Target).Execute(userNameNode);
+            }
+        }
+
+        internal class NamecolorParser : TargetableParser<User>, INodeParser
+        {
+            public NamecolorParser(User target) 
+                : base(target)
+            { }
+
+            public void Execute(HtmlNode coreNode)
+            {
+                if (coreNode.Attributes.Contains("style"))
                 {
-                    var match = Regex.Match(userNameNode.Attributes["style"].Value, @"color:(\S+)");
+                    var match = Regex.Match(coreNode.Attributes["style"].Value, @"color:(\S+)");
                     if (match.Groups.Count > 1)
                         Target.Namecolor = ColorTranslator.FromHtml(match.Groups[1].Value);
-                }   
+                }
             }
         }
 

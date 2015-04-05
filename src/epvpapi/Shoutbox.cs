@@ -118,7 +118,9 @@ namespace epvpapi
                         var userNameNode = shoutboxNodeGroup.ElementAt(1).SelectSingleNode(@"span[1]/a[1]/span[1]") ??
                                            shoutboxNodeGroup.ElementAt(1).SelectSingleNode(@"span[1]/a[1]"); // users with black names do not have the span element
 
-                        parsedShout.Sender.Name = (userNameNode != null) ? userNameNode.InnerText : "";
+                        if (userNameNode == null) continue;
+                        parsedShout.Sender.Name = userNameNode.InnerText;
+                        new UserParser.NamecolorParser(parsedShout.Sender).Execute(userNameNode);
 
                         var userLinkNode = shoutboxNodeGroup.ElementAt(1).SelectSingleNode(@"span[1]/a[1]");
                         parsedShout.Sender.ID = (userLinkNode != null) ? userLinkNode.Attributes.Contains("href") ? User.FromUrl(userLinkNode.Attributes["href"].Value) : 0 : 0;
