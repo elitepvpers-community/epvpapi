@@ -25,12 +25,20 @@ namespace epvpapi
             public List<Element> Childs { get; set; }
 
             /// <summary>
-            /// The plain representation that includes the element tag and the plain values of the child elements.
-            /// Commonly used for posting content to the forum since vBulletin needs to interpret the raw content first
+            /// The plain representation that does not include element tags
             /// </summary>
             public virtual string Plain
             {
-                get { return String.Format("[{0}]{1}[/{0}]", Tag, String.Join(String.Empty, Childs.Select(childContent => childContent.Plain))); }
+                get { return String.Join(String.Empty, Childs.Select(childContent => childContent.Plain)); }
+            }
+
+            /// <summary>
+            /// The source representation that includes the element tag and values of the child elements.
+            /// Commonly used for posting content to the forum
+            /// </summary>
+            public virtual string Source
+            {
+                get { return String.Format("[{0}]{1}[/{0}]", Tag, String.Join(String.Empty, Childs.Select(childContent => childContent.Source))); }
             }
 
             public Element(string tag = "") :
@@ -69,9 +77,14 @@ namespace epvpapi
             {
                 public string Value { get; set; }
 
+                public override string Source
+                {
+                    get { return Value; }
+                }
+
                 public override string Plain
                 {
-                    get { return (string)Value; }
+                    get { return Value; }
                 }
 
                 public PlainText() :
@@ -194,7 +207,7 @@ namespace epvpapi
             {
                 public string Url { get; set; }
 
-                public override string Plain
+                public override string Source
                 {
                     get { return String.Format("[{0}]{1}[/{0}]", Tag, Url); }
                 }
@@ -211,9 +224,9 @@ namespace epvpapi
             {
                 public string Url { get; set; }
 
-                public override string Plain
+                public override string Source
                 {
-                    get { return String.Format("[{0}={1}]{2}[/{0}]", Tag, Url, String.Join(String.Empty, Childs.Select(childContent => childContent.Plain))); }
+                    get { return String.Format("[{0}={1}]{2}[/{0}]", Tag, Url, String.Join(String.Empty, Childs.Select(childContent => childContent.Source))); }
                 }
 
                 public Link() :
@@ -228,7 +241,7 @@ namespace epvpapi
             {
                 public string Content { get; set; }
 
-                public override string Plain
+                public override string Source
                 {
                     get { return String.Format("[{0}]{1}[/{0}]", Tag, Content); }
                 }
@@ -245,9 +258,9 @@ namespace epvpapi
             {
                 public uint Size { get; set; }
 
-                public override string Plain
+                public override string Source
                 {
-                    get { return String.Format("[{0}={1}]{2}[/{0}]", Tag, Size, String.Join(String.Empty, Childs.Select(childContent => childContent.Plain))); }
+                    get { return String.Format("[{0}={1}]{2}[/{0}]", Tag, Size, String.Join(String.Empty, Childs.Select(childContent => childContent.Source))); }
                 }
 
                 public FontSize() :
@@ -262,9 +275,9 @@ namespace epvpapi
             {
                 public User Author { get; set; }
 
-                public override string Plain
+                public override string Source
                 {
-                    get { return String.Format("[{0}={1}]{2}[/{0}]", Tag, Author.Name, String.Join(String.Empty, Childs.Select(childContent => childContent.Plain))); }
+                    get { return String.Format("[{0}={1}]{2}[/{0}]", Tag, Author.Name, String.Join(String.Empty, Childs.Select(childContent => childContent.Source))); }
                 }
 
                 public Quote(User author) :
@@ -445,9 +458,9 @@ namespace epvpapi
         }
 
         /// <summary>
-        /// Returns the plain text representation of the elements to be used in requests for transmitting content
+        /// Returns the plain representation of the elements to be used in requests for transmitting content
         /// </summary>
-        /// <returns> Plain text representation of the elements </returns>
+        /// <returns> Plain representation of the elements as string </returns>
         public override string ToString()
         {
             return String.Join(String.Empty, Elements.Select(content => content.Plain));
