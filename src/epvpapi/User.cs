@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
 using epvpapi.Connection;
@@ -29,7 +30,7 @@ namespace epvpapi
         /// <summary>
         /// Color of the name
         /// </summary>
-        public string Namecolor { get; set; }
+        public Color Namecolor { get; set; }
 
         /// <summary>
         /// Custom user title displayed beneath the name
@@ -187,7 +188,7 @@ namespace epvpapi
             Blog = new Blog(this); // the blog id is equal to the user id since every user can have just one blog which is bound to the user's profile
             LastActivity = new DateTime();
             Usergroups = new List<Usergroup>();
-            Namecolor = "black";
+            Namecolor = Color.Black;
             LastVisitorMessage = new DateTime();
             JoinDate = new DateTime();
             TBMProfile = new Profile(id);

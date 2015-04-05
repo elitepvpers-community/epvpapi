@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
@@ -218,7 +219,7 @@ namespace epvpapi.Evaluation
                 {
                     var match = Regex.Match(userNameNode.Attributes["style"].Value, @"color:(\S+)");
                     if (match.Groups.Count > 1)
-                        Target.Namecolor = match.Groups[1].Value;
+                        Target.Namecolor = ColorTranslator.FromHtml(match.Groups[1].Value);
                 }   
             }
         }
