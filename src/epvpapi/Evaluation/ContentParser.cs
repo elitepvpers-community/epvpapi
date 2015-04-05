@@ -97,10 +97,10 @@ namespace epvpapi.Evaluation
                         }
                     case "#text":
                         {
-                            if (!String.IsNullOrEmpty(subNode.InnerText.Strip()))
+                            if (!String.IsNullOrEmpty(subNode.InnerText))
                                 Target.Add(new Content.Element.PlainText()
                                 {
-                                    Value = subNode.InnerText.Strip()
+                                    Value = subNode.InnerText
                                 });
 
                             break;

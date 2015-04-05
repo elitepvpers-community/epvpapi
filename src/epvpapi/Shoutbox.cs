@@ -124,6 +124,9 @@ namespace epvpapi
                         parsedShout.Sender.ID = (userLinkNode != null) ? userLinkNode.Attributes.Contains("href") ? User.FromUrl(userLinkNode.Attributes["href"].Value) : 0 : 0;
 
                         var messageNode = shoutboxNodeGroup.ElementAt(2).SelectSingleNode(@"span[1]");
+                        // strip the leading and trailing whitespaces of every shout
+                        messageNode.InnerHtml = messageNode.InnerHtml.Strip();
+
                         new ContentParser(parsedShout.Content.Elements).Execute(messageNode);
 
                         shouts.Add(parsedShout);

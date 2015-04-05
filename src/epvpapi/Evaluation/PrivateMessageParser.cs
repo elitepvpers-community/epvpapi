@@ -22,6 +22,10 @@ namespace epvpapi.Evaluation
                 var contentNode = coreNode.SelectSingleNode("div[2]");
                 if (contentNode == null) return;
 
+                // strip the new line (\n) character from the message content 
+                // that occurs in the beginning of each message in order to separate text from title 
+                contentNode.InnerHtml = contentNode.InnerHtml.Strip(); 
+
                 new Evaluation.ContentParser(Target.Content.Elements).Execute(contentNode);
             }
         }
