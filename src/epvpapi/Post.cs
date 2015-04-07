@@ -7,6 +7,7 @@ namespace epvpapi
         /// Title of the <c>Post</c>
         /// </summary>
         public string Title { get; set; }
+        public bool Deleted { get; set; }
 
         public Post(int id = 0)
             : this(id, new Content())
