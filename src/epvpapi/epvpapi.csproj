@@ -55,6 +55,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Announcement.cs" />
     <Compile Include="Blog.cs" />
     <Compile Include="BlogEntry.cs" />
     <Compile Include="Connection\GuestSession.cs" />

@@ -37,27 +37,6 @@ namespace epvpapi
         /// </summary>
         public string Description { get; set; }
 
-        public class Announcement : Post, IUniqueWebObject
-        {
-            public DateTime Begins { get; set; }
-            public DateTime Ends { get; set; }
-            public uint Hits { get; set; }
-            public Section Section { get; set; }
-
-            public Announcement(Section section, int id = 0)
-                : base(id)
-            {
-                Section = section;
-                Begins = new DateTime();
-                Ends = new DateTime();
-            }
-
-            public string GetUrl()
-            {
-                return String.Format("http://www.elitepvpers.com/forum/{0}/announcement-{1}.html", Section.Shortname, Title.UrlEscape());
-            }
-        }
-
         /// <summary>
         /// List of all announcements available for this section
         /// </summary>

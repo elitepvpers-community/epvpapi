@@ -14,7 +14,7 @@ namespace epvpapi.Evaluation
 
             public void Execute(HtmlNode coreNode)
             {
-                Target.Announcements = new List<Section.Announcement>();
+                Target.Announcements = new List<Announcement>();
 
                 if (coreNode != null)
                 {
@@ -23,7 +23,7 @@ namespace epvpapi.Evaluation
 
                     foreach (var announcementNode in sectionNodes.Take(sectionNodes.Count - 1)) // ignore the last node since that is no actual announcement
                     {
-                        var announcement = new Section.Announcement(Target);
+                        var announcement = new Announcement(Target);
 
                         var firstLine = announcementNode.SelectSingleNode("td[2]/div[1]");
                         if (firstLine != null)
