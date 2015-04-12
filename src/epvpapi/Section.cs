@@ -122,6 +122,26 @@ namespace epvpapi
             return parsedThreads;
         }
 
+        public static List<Section> GetSectionByShortname<TUser>(AuthenticatedSession<TUser> session, string shortname) where TUser : User
+        {
+            var sections = new List<Section>();
+
+            var res = session.Get("http://www.elitepvpers.com/forum/main/announcement-board-rules-signature-rules.html");
+            var doc = new HtmlDocument();
+            doc.LoadHtml(res.ToString());
+
+            var selectElements = doc.DocumentNode
+                .Descendants()
+                .GetElementsByTagName("select")
+                .GetElementsByAttribute("name", "f")
+                .ToList();
+
+            if (selectElements.Count != 1)
+                throw new ParsingFailedException("The goto selection dropbox could not be found");
+
+            return sections;
+        }
+
         public string GetUrl()
         {
             return String.Format("http://www.elitepvpers.com/forum/{0}/", Shortname);
