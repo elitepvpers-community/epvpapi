@@ -67,5 +67,27 @@ namespace UnitTests.Tests
                 AssertExtender.Exception("Session is invalid", exc);
             } 
         }
+
+        [TestMethod]
+        public void TestGetSectionByShortname()
+        {
+            try
+            {
+                var sections = Section.GetSectionByShortname(TestEnvironment.Session, "main");
+                Assert.AreNotEqual(0, sections, "The Main section wasn't found by its shortname");
+                var mainSection = sections.First();
+
+                Assert.AreNotEqual(0, mainSection.ID, "The ID of the section was not set");
+                Assert.AreNotEqual(0, mainSection.Name, "The section name was not set");
+            }
+            catch (RequestFailedException exc)
+            {
+                AssertExtender.Exception("A HTTP request failed", exc);
+            }
+            catch (InvalidSessionException exc)
+            {
+                AssertExtender.Exception("Session is invalid", exc);
+            }
+        }
     }
 }
