@@ -4,7 +4,7 @@ using epvpapi.Connection;
 
 namespace epvpapi
 {
-    public class SectionPost : Post, IReportable, IUniqueWebObject
+    public class SectionPost : Post, IReportable, IReasonableDeletable, IUniqueWebObject
     {
         /// <summary>
         /// Additional options that can be set when posting messages
@@ -73,6 +73,33 @@ namespace epvpapi
                             new KeyValuePair<string, string>("do", "sendemail"),
                             new KeyValuePair<string, string>("url", "showthread.php?p=" + ID.ToString() + "#post" + ID.ToString())                
                         });
+        }
+
+        /// <summary>
+        /// Deletes the <c>SectionPost</c>
+        /// </summary>
+        /// <param name="session"> Session that is used for sending the request </param>
+        /// <param name="reason"> Reason for the deletion </param>
+        /// <remarks>
+        /// Not tested yet!
+        /// </remarks>
+        public void Delete<TUser>(AuthenticatedSession<TUser> session, string reason) where TUser : User
+        {
+            if (ID == 0) throw new ArgumentException("ID must not be empty");
+            session.ThrowIfInvalid();
+
+            session.Post("http://www.elitepvpers.com/forum/editpost.php",
+                        new List<KeyValuePair<string, string>>()
+                        {
+                            new KeyValuePair<string, string>("do", "deletepost"),
+                            new KeyValuePair<string, string>("s", String.Empty),
+                            new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
+                            new KeyValuePair<string, string>("postid", ID.ToString()),
+                            new KeyValuePair<string, string>("deletepost", "delete"),
+                            new KeyValuePair<string, string>("reason", reason),
+                        });
+
+            Deleted = true;
         }
     }
 }
