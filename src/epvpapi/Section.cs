@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using epvpapi.Connection;
 using epvpapi.Evaluation;
 using HtmlAgilityPack;
@@ -120,6 +121,47 @@ namespace epvpapi
             }
 
             return parsedThreads;
+        }
+
+        public static List<Section> GetSectionByShortname<TUser>(AuthenticatedSession<TUser> session, string shortname) where TUser : User
+        {
+            var sections = new List<Section>();
+
+            var res = session.Get("http://www.elitepvpers.com/forum/main/announcement-board-rules-signature-rules.html");
+            var doc = new HtmlDocument();
+            doc.LoadHtml(res.ToString());
+
+            var selectElements = doc.DocumentNode
+                .Descendants()
+                .GetElementsByTagName("select")
+                .GetElementsByAttribute("name", "f")
+                .ToList();
+
+            if (selectElements.Count != 1)
+                throw new ParsingFailedException("The goto selection dropbox could not be found");
+
+            var selectElement = selectElements.First();
+            var forumsNode = selectElement.SelectSingleNode("optgroup[2]");
+
+            if(forumsNode == null)
+                throw new ParsingFailedException("The root node of the listed forums wasn't found");
+
+            foreach (var forum in forumsNode.ChildNodes.GetElementsByTagName("option"))
+            {
+                var forumName = forum.NextSibling.InnerText.Strip();
+
+                var forumShortname = Regex.Replace(forumName, "(&amp;)|(^ )|(')|((&nbsp; )+)", "");
+                forumShortname = Regex.Replace(forumShortname, @"(\bof\b)|(\bfor\b)|(\bthe\b)", "", RegexOptions.IgnoreCase);
+                forumShortname = Regex.Replace(forumShortname, "[^a-zA-Z0-9']+", "-");
+                forumShortname = Regex.Replace(forumShortname, "(-$)|(^-)", "");
+                forumShortname = forumShortname.ToLower();
+
+                if (forumShortname != shortname) continue;
+
+                sections.Add(new Section(forum.Attributes["value"].Value.To<int>(), forumShortname) { Name = forumName });
+            }
+
+            return sections;
         }
 
         public string GetUrl()
