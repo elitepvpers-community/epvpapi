@@ -43,10 +43,7 @@ namespace epvpapi.Evaluation
                                 announcement.Begins = beginNode.InnerText.ToElitepvpersDateTime();
 
                             var creatorNode = secondLine.SelectSingleNode("span[2]/a[1]");
-                            announcement.Sender.Name = (creatorNode != null) ? creatorNode.InnerText : "";
-                            announcement.Sender.Title = secondLine.SelectSingleNode("span[2]/text()[2]").InnerText.Strip();
-                            announcement.Sender.Title = announcement.Sender.Title.Remove(0, 1); // remove the brackets
-                            announcement.Sender.Title = announcement.Sender.Title.Remove(announcement.Sender.Title.Length - 1, 1); // remove the brackets
+                            announcement.Sender.Name = (creatorNode != null) ? creatorNode.InnerText : "";   
                             announcement.Sender.ID = creatorNode.Attributes.Contains("href") ? User.FromUrl(creatorNode.Attributes["href"].Value) : 0;
                         }
 
