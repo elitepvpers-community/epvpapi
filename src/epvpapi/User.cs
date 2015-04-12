@@ -188,7 +188,7 @@ namespace epvpapi
             Blog = new Blog(this); // the blog id is equal to the user id since every user can have just one blog which is bound to the user's profile
             LastActivity = new DateTime();
             Usergroups = new List<Usergroup>();
-            Namecolor = Color.Black;
+            Namecolor = new Color();
             LastVisitorMessage = new DateTime();
             JoinDate = new DateTime();
             TBMProfile = new Profile(id);

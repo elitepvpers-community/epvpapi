@@ -44,7 +44,7 @@ namespace UnitTests.Tests
 
                 // Test the properties which always have to be set
                 Assert.AreNotEqual(0, testUser.Title.Length, "Title of the user was not set");
-                Assert.AreNotEqual(0, testUser.Namecolor.Length, "Namecolor of the user was not set");
+                Assert.AreNotEqual(0, testUser.Namecolor.IsEmpty, "Namecolor of the user was not set");
                 Assert.AreNotEqual(0, testUser.TBMProfile.ID, "ID of the user's TBM profile was not set");
 
                 if (testUser.JoinDate == new DateTime() && testUser.CurrentStatus != User.Status.Invisible)

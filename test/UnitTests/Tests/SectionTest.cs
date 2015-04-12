@@ -30,8 +30,6 @@ namespace UnitTests.Tests
                                         "The begin date of the announcement was not set");
                     Assert.AreNotEqual(0, announcement.Sender.ID, "The ID of the announcement creator was not set");
                     Assert.AreNotEqual(0, announcement.Sender.Name, "The name of the announcement creator was not set");
-                    Assert.AreNotEqual(0, announcement.Sender.Title,
-                                        "The user title of the announcement creator was not set");
                 }
             }
             catch (RequestFailedException exc)
