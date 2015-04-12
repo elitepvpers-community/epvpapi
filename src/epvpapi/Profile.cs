@@ -111,7 +111,7 @@ namespace epvpapi
 
                 var threadId = new Regex("<td class=\"alt1\" id=\"td_threadtitle_(.*?)\"").Match(node.InnerHtml).Groups[1].Value.To<int>();
                 var threadSection = new Regex("<a href=\"(.*?)/.*?\" id=\"thread_title_.*?\">.*?</a>").Match(node.InnerHtml).Groups[1].Value;
-                var section = Section.Sections.FirstOrDefault(n => n.UrlName == threadSection);
+                var section = Section.Sections.FirstOrDefault(n => n.Shortname == threadSection);
 
                 var subscribedThread = new SectionThread(threadId, section);
                 subscribedThreads.Add(subscribedThread);

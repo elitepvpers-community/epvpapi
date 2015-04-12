@@ -246,7 +246,7 @@ namespace epvpapi
         public void Update(GuestSession session)
         {
             if (ID == 0) throw new ArgumentException("ID must not be empty");
-            if (String.IsNullOrEmpty(Section.UrlName)) throw new ArgumentException("The section needs to be addressable");
+            if (String.IsNullOrEmpty(Section.Shortname)) throw new ArgumentException("The section needs to be addressable");
 
             var res = session.Get(GetUrl());
             var htmlDocument = new HtmlDocument();
@@ -353,10 +353,8 @@ namespace epvpapi
 
         public string GetUrl(uint pageIndex = 1)
         {
-            return "http://www.elitepvpers.com/forum/" + Section.UrlName + "/"
-                + ID + "-" + InitialPost.Title.UrlEscape()
-                + ((pageIndex > 1) ? "-" + pageIndex : "")
-                + ".html";
+            return String.Format("http://www.elitepvpers.com/forum/{0}/{1}-{2}" + ((pageIndex > 1) ? "-" + pageIndex : "") + ".html",
+                    Section.Shortname, ID, InitialPost.Title.UrlEscape());
         }
 
         /// <summary>
