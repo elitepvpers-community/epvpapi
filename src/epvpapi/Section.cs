@@ -77,7 +77,7 @@ namespace epvpapi
             if (Shortname == String.Empty) throw new ArgumentException("This section is not addressable, please specify the URLName property before using this function");
 
             var parsedThreads = new List<SectionThread>();
-            for (uint i = startIndex; i <= pages; ++i)
+            for (uint i = startIndex; i < startIndex + pages; ++i)
             {
                 var res = session.Get(String.Format("http://www.elitepvpers.com/forum/{0}/index{1}.html", Shortname, i));
                 var doc = new HtmlDocument();
