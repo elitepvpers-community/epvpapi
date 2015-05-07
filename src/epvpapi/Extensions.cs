@@ -163,6 +163,13 @@ namespace epvpapi
                 formattedTime = formattedTime.Insert(index, DateTime.Now.Date.ToString("dd/MM/yyyy"));
             }
 
+            if (formattedTime.Contains("Yesterday"))
+            {
+                var index = formattedTime.IndexOf("Yesterday");
+                formattedTime = formattedTime.Remove(index, 9);
+                formattedTime = formattedTime.Insert(index, DateTime.Now.AddDays(-1).ToString("dd/MM/yyyy"));
+            }
+
             var dateTime = new DateTime();
             foreach (var format in commonFormats)
             {

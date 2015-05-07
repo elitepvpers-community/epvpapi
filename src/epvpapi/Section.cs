@@ -39,6 +39,11 @@ namespace epvpapi
         public string Description { get; set; }
 
         /// <summary>
+        /// Amount of pages in this section
+        /// </summary>
+        public uint PageCount { get; set; }
+
+        /// <summary>
         /// List of all announcements available for this section
         /// </summary>
         public List<Announcement> Announcements { get; set; }
@@ -60,6 +65,8 @@ namespace epvpapi
             var res = session.Get(String.Format("http://www.elitepvpers.com/forum/{0}/", Shortname));
             var doc = new HtmlDocument();
             doc.LoadHtml(res);
+
+            PageCount = new Regex(@"<td.*?>Page \d+ of (\d+)</td>").Match(doc.DocumentNode.InnerHtml).Groups[1].Value.To<UInt32>();
 
             new SectionParser.AnnouncementsParser(this).Execute(doc.GetElementbyId("threadslist"));
         }
