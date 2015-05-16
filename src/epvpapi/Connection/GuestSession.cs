@@ -102,7 +102,6 @@ namespace epvpapi.Connection
             }
         }
 
-
         /// <summary> Performs a HTTP GET request </summary>
         /// <param name="url"> Location to request </param>
         /// <param name="headers"> HTTP Headers that are transmitted with the request </param>
