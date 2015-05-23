@@ -134,7 +134,7 @@ namespace epvpapi
         {
             var sections = new List<Section>();
 
-            var res = session.Get("http://www.elitepvpers.com/forum/main/announcement-board-rules-signature-rules.html");
+            var res = session.Get("http://www.elitepvpers.com/forum/main");
             var doc = new HtmlDocument();
             doc.LoadHtml(res.ToString());
 
@@ -150,15 +150,15 @@ namespace epvpapi
             var selectElement = selectElements.First();
             var forumsNode = selectElement.SelectSingleNode("optgroup[2]");
 
-            if(forumsNode == null)
+            if (forumsNode == null)
                 throw new ParsingFailedException("The root node of the listed forums wasn't found");
 
             foreach (var forum in forumsNode.ChildNodes.GetElementsByTagName("option"))
             {
                 var forumName = forum.NextSibling.InnerText.Strip();
+                forumName = Regex.Replace(forumName, "(&amp;)|(^ )|(')|((&nbsp; )+)", "");
 
-                var forumShortname = Regex.Replace(forumName, "(&amp;)|(^ )|(')|((&nbsp; )+)", "");
-                forumShortname = Regex.Replace(forumShortname, @"(\bof\b)|(\bfor\b)|(\bthe\b)", "", RegexOptions.IgnoreCase);
+                var forumShortname = Regex.Replace(forumName, @"(\bof\b)|(\bfor\b)|(\bthe\b)", "", RegexOptions.IgnoreCase);
                 forumShortname = Regex.Replace(forumShortname, "[^a-zA-Z0-9']+", "-");
                 forumShortname = Regex.Replace(forumShortname, "(-$)|(^-)", "");
                 forumShortname = forumShortname.ToLower();
@@ -169,6 +169,59 @@ namespace epvpapi
             }
 
             return sections;
+        }
+
+        public static List<Section> GetTopLevelSections<TUser>(AuthenticatedSession<TUser> session) where TUser : User
+        {
+            var sections = new List<Section>();
+
+            var res = session.Get("http://www.elitepvpers.com/forum/main");
+            var doc = new HtmlDocument();
+            doc.LoadHtml(res.ToString());
+
+            var selectElements = doc.DocumentNode
+                .Descendants()
+                .GetElementsByTagName("select")
+                .GetElementsByAttribute("name", "f")
+                .ToList();
+
+            if (selectElements.Count != 1)
+                throw new ParsingFailedException("The goto selection dropbox could not be found");
+
+            var selectElement = selectElements.First();
+            var forumsNode = selectElement.SelectSingleNode("optgroup[2]");
+
+            if (forumsNode == null)
+                throw new ParsingFailedException("The root node of the listed forums wasn't found");
+
+            foreach (var forum in forumsNode.ChildNodes.GetElementsByTagName("option"))
+            {
+                var forumName = forum.NextSibling.InnerText.Strip();
+                forumName = Regex.Replace(forumName, "(&amp;)|(^ )|(')|((&nbsp; )+)", "");
+
+                var forumShortname = Regex.Replace(forumName, @"(\bof\b)|(\bfor\b)|(\bthe\b)", "", RegexOptions.IgnoreCase);
+                forumShortname = Regex.Replace(forumShortname, "[^a-zA-Z0-9']+", "-");
+                forumShortname = Regex.Replace(forumShortname, "(-$)|(^-)", "");
+                forumShortname = forumShortname.ToLower();
+
+                sections.Add(new Section(forum.Attributes["value"].Value.To<int>(), forumShortname) { Name = forumName });
+            }
+
+            return sections;
+        }
+
+        static List<HtmlNode> getNodesWithStartingID(HtmlNode node, string id)
+        {
+            var nodes = new List<HtmlNode>();
+            foreach (var childNode in node.ChildNodes)
+                if (childNode.Id.StartsWith(id))
+                {
+                    nodes.Add(childNode);
+                    var childNodes = getNodesWithStartingID(childNode, id);
+                    if (childNodes.Count > 0)
+                        nodes.AddRange(childNodes);
+                }
+            return nodes;
         }
 
         public string GetUrl()
