@@ -210,20 +210,6 @@ namespace epvpapi
             return sections;
         }
 
-        static List<HtmlNode> getNodesWithStartingID(HtmlNode node, string id)
-        {
-            var nodes = new List<HtmlNode>();
-            foreach (var childNode in node.ChildNodes)
-                if (childNode.Id.StartsWith(id))
-                {
-                    nodes.Add(childNode);
-                    var childNodes = getNodesWithStartingID(childNode, id);
-                    if (childNodes.Count > 0)
-                        nodes.AddRange(childNodes);
-                }
-            return nodes;
-        }
-
         public string GetUrl()
         {
             return String.Format("http://www.elitepvpers.com/forum/{0}/", Shortname);
