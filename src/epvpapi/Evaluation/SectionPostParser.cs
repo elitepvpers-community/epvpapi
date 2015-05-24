@@ -24,10 +24,9 @@ namespace epvpapi.Evaluation
                     if (innerText.Contains("elite*gold"))
                     {
                         var elitegoldNode = coreNode.SelectSingleNode("text()[2]");
-                        Target.EliteGold = (elitegoldNode != null)
-                            ? new String(elitegoldNode.InnerText.Skip(2).ToArray()).To<int>()
-                            : 0;
-
+                        var elitegold = (elitegoldNode != null) ? new String(elitegoldNode.InnerText.Skip(2).ToArray()) : null;
+                        // elitegold is empty ("") when it's locked
+                        Target.EliteGold = elitegold != "" ? elitegold.To<int>() : -1;
                     }
                     else if (innerText.Contains("The Black Market"))
                     {
