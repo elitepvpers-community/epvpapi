@@ -58,6 +58,26 @@ namespace epvpapi.Evaluation
             }
         }
 
+        internal class ContactInfoParser : TargetableParser<User>, INodeParser
+        {
+            public ContactInfoParser(User target)
+                : base(target)
+            { }
+
+            public void Execute(HtmlNode coreNode)
+            {
+                if (coreNode == null) return;
+
+                var listNode = coreNode.SelectSingleNode("li[1]");
+                if (listNode != null)
+                {
+                    foreach (var node in listNode.ChildNodes)
+                        if ((node.GetAttributeValue("onclick", "").To<string>().Contains("skype")))
+                            Target.SkypeID = node.InnerText;
+                }
+            }
+        }
+
         internal class AboutParser : TargetableParser<User>, INodeParser
         {
             public AboutParser(User target)
@@ -98,11 +118,10 @@ namespace epvpapi.Evaluation
                 }
 
                 var signatureNode = rootNode.SelectSingleNode("li[2]/dl[1]/dd[1]");
-                if(signatureNode != null)
+                if (signatureNode != null)
                     new ContentParser(Target.Signature.Elements).Execute(signatureNode);
             }
         }
-
 
         internal class LastVisitorsParser : TargetableParser<User>, INodeParser
         {
@@ -135,7 +154,7 @@ namespace epvpapi.Evaluation
 
         internal class FriendListParser : TargetableParser<User>, INodeParser
         {
-            public FriendListParser(User target) : 
+            public FriendListParser(User target) :
                 base(target)
             { }
 
@@ -152,7 +171,6 @@ namespace epvpapi.Evaluation
                 }
             }
         }
-
 
         internal class LastActivityParser : TargetableParser<User>, INodeParser
         {
@@ -210,7 +228,7 @@ namespace epvpapi.Evaluation
                 var userNameNode = coreNode.SelectSingleNode("h1[1]/span[1]") ??
                     coreNode.SelectSingleNode("h1[1]/strike[1]") ?? // If the user is banned, the name is struck through
                     coreNode.SelectSingleNode("h1[1]"); // In case the user has no special color, the <span> element will be missing and no attributes are used
-                                   
+
                 if (userNameNode == null) return;
                 Target.Name = userNameNode.InnerText.Strip();
                 Target.Banned = (userNameNode.Name == "strike") ? true : false;
@@ -221,7 +239,7 @@ namespace epvpapi.Evaluation
 
         internal class NamecolorParser : TargetableParser<User>, INodeParser
         {
-            public NamecolorParser(User target) 
+            public NamecolorParser(User target)
                 : base(target)
             { }
 
@@ -391,7 +409,8 @@ namespace epvpapi.Evaluation
 
         public bool IsSessionUser { get; private set; }
 
-        public UserParser(User target, bool isSessionUser) : base(target)
+        public UserParser(User target, bool isSessionUser)
+            : base(target)
         {
             IsSessionUser = isSessionUser;
         }
@@ -412,6 +431,7 @@ namespace epvpapi.Evaluation
             new MiniStatsParser(Target).Execute(document.GetElementbyId("collapseobj_stats_mini"));
             new LastVisitorsParser(Target).Execute(document.GetElementbyId("collapseobj_visitors"));
             new FriendListParser(Target).Execute(document.GetElementbyId("friends_list"));
+            new ContactInfoParser(Target).Execute(document.GetElementbyId("instant_messaging_list"));
         }
     }
 }

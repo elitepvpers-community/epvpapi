@@ -153,6 +153,11 @@ namespace epvpapi
         public string SteamID { get; set; }
 
         /// <summary>
+        /// Additional information that can be entered by the user. Listed under tab 'Contact'
+        /// </summary>
+        public string SkypeID { get; set; }
+
+        /// <summary>
         /// Holds the URL to the avatar the user has set
         /// </summary>
         public string AvatarUrl { get; set; }
