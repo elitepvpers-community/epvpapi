@@ -95,7 +95,7 @@ namespace epvpapi.Evaluation
                 var pageNode = coreNode.SelectSingleNode("td[3]/div[1]"); ;
                 if (pageNode != null)
                 {
-                    // span will show if the thread is tagged or got pages to click on
+                    // span will show if the thread is tagged, got attachments got pages to click on
                     var pageNodes = pageNode.SelectNodes("span");
                     if (pageNodes != null)
                     {
@@ -106,8 +106,12 @@ namespace epvpapi.Evaluation
                         {
                             // last page is in the last a element
                             pageNode = pageNodes.Last();
-                            var match = new Regex("[-]{1}([0-9]*)\\.html").Match(pageNode.GetAttributeValue("href", ""));
-                            Target.PageCount = match.Groups[1].Value.To<uint>();
+                            // are we are on the attachments link?
+                            if (!pageNode.Attributes.Contains("onclick"))
+                            {
+                                var match = new Regex("[-]{1}([0-9]*)\\.html").Match(pageNode.GetAttributeValue("href", ""));
+                                Target.PageCount = match.Groups[1].Value.To<uint>();
+                            }
                         }
                     }
                 }
