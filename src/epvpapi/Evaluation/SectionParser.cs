@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 
 namespace epvpapi.Evaluation
@@ -43,7 +44,7 @@ namespace epvpapi.Evaluation
                                 announcement.Begins = beginNode.InnerText.ToElitepvpersDateTime();
 
                             var creatorNode = secondLine.SelectSingleNode("span[2]/a[1]");
-                            announcement.Sender.Name = (creatorNode != null) ? creatorNode.InnerText : "";   
+                            announcement.Sender.Name = (creatorNode != null) ? creatorNode.InnerText : "";
                             announcement.Sender.ID = creatorNode.Attributes.Contains("href") ? User.FromUrl(creatorNode.Attributes["href"].Value) : 0;
                         }
 
@@ -89,6 +90,26 @@ namespace epvpapi.Evaluation
                         creatorNode = coreNode.SelectSingleNode("td[3]/div[2]/span[2]");
 
                     Target.Creator = new User(creatorNode.InnerText, creatorNode.Attributes.Contains("onclick") ? User.FromUrl(creatorNode.Attributes["onclick"].Value) : 0);
+                }
+
+                var pageNode = coreNode.SelectSingleNode("td[3]/div[1]"); ;
+                if (pageNode != null)
+                {
+                    // span will show if the thread is tagged or got pages to click on
+                    var pageNodes = pageNode.SelectNodes("span");
+                    if (pageNodes != null)
+                    {
+                        // pages are in the last div
+                        pageNode = pageNodes.Last();
+                        pageNodes = pageNode.SelectNodes("a");
+                        if (pageNodes != null)
+                        {
+                            // last page is in the last a element
+                            pageNode = pageNodes.Last();
+                            var match = new Regex("[-]{1}([0-9]*)\\.html").Match(pageNode.GetAttributeValue("href", ""));
+                            Target.PageCount = match.Groups[1].Value.To<uint>();
+                        }
+                    }
                 }
 
                 var repliesNode = coreNode.SelectSingleNode("td[5]/a[1]");
