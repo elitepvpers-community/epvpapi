@@ -383,13 +383,13 @@ namespace epvpapi.Evaluation
                     }
                     else if (keyNode.InnerText.Contains("The Black Market"))
                     {
-                        var positiveRatingsNode = valueNode.SelectSingleNode("span[1]");
+                        var positiveRatingsNode = valueNode.SelectSingleNode("a[1]/span[1]");
                         Target.TBMProfile.Ratings.Positive = (positiveRatingsNode != null) ? positiveRatingsNode.InnerText.To<uint>() : Target.TBMProfile.Ratings.Positive;
 
-                        var neutralRatingsNode = valueNode.SelectSingleNode("text()[1]");
-                        Target.TBMProfile.Ratings.Neutral = (neutralRatingsNode != null) ? new string(neutralRatingsNode.InnerText.Skip(1).Take(1).ToArray()).To<uint>() : Target.TBMProfile.Ratings.Neutral;
+                        var neutralRatingsNode = valueNode.SelectSingleNode("a[2]");
+                        Target.TBMProfile.Ratings.Neutral = (neutralRatingsNode != null) ? neutralRatingsNode.InnerText.To<uint>() : Target.TBMProfile.Ratings.Neutral;
 
-                        var negativeRatingsNode = valueNode.SelectSingleNode("span[2]");
+                        var negativeRatingsNode = valueNode.SelectSingleNode("a[3]/span[2]");
                         Target.TBMProfile.Ratings.Negative = (negativeRatingsNode != null) ? negativeRatingsNode.InnerText.To<uint>() : Target.TBMProfile.Ratings.Negative;
                     }
                     else if (keyNode.InnerText.Contains("Mediations"))
