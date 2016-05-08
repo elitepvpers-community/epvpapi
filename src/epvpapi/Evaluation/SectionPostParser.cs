@@ -30,17 +30,17 @@ namespace epvpapi.Evaluation
                     }
                     else if (innerText.Contains("The Black Market"))
                     {
-                        var tbmPositiveNode = coreNode.SelectSingleNode("span[1]");
+                        var tbmPositiveNode = coreNode.SelectSingleNode("a[2]/span[1]");
                         Target.TBMProfile.Ratings.Positive = (tbmPositiveNode != null)
                             ? tbmPositiveNode.InnerText.To<uint>()
                             : 0;
 
-                        var tbmNeutralNode = coreNode.SelectSingleNode("text()[3]");
+                        var tbmNeutralNode = coreNode.SelectSingleNode("a[3]");
                         Target.TBMProfile.Ratings.Neutral = (tbmNeutralNode != null)
                             ? tbmNeutralNode.InnerText.TrimStart('/').TrimEnd('/').To<uint>()
                             : 0;
 
-                        var tbmNegativeNode = coreNode.SelectSingleNode("span[2]");
+                        var tbmNegativeNode = coreNode.SelectSingleNode("a[4]/span[1]");
                         Target.TBMProfile.Ratings.Negative = (tbmNegativeNode != null)
                             ? tbmNegativeNode.InnerText.To<uint>()
                             : 0;
