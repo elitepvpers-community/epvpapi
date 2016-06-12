@@ -353,7 +353,7 @@ namespace epvpapi
 
         public string GetUrl(uint pageIndex = 1)
         {
-            return String.Format("http://www.elitepvpers.com/forum/{0}/{1}-{2}" + ((pageIndex > 1) ? "-" + pageIndex : "") + ".html",
+            return String.Format("http://www.elitepvpers.com/forum/{0}/{1}-{2}-a" + ((pageIndex > 1) ? "-" + pageIndex : "") + ".html",
                     Section.Shortname, ID, InitialPost.Title.UrlEscape());
         }
 
