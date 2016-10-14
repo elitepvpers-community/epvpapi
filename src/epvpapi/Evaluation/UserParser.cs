@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
+using System.Net;
 
 namespace epvpapi.Evaluation
 {
@@ -230,7 +231,7 @@ namespace epvpapi.Evaluation
                     coreNode.SelectSingleNode("h1[1]"); // In case the user has no special color, the <span> element will be missing and no attributes are used
 
                 if (userNameNode == null) return;
-                Target.Name = userNameNode.InnerText.Strip();
+                Target.Name = WebUtility.HtmlDecode(userNameNode.InnerText.Strip());
                 Target.Banned = (userNameNode.Name == "strike") ? true : false;
 
                 new NamecolorParser(Target).Execute(userNameNode);

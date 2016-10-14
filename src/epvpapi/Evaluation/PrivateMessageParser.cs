@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using System.Net;
 
 namespace epvpapi.Evaluation
 {
@@ -44,7 +45,7 @@ namespace epvpapi.Evaluation
 
                 var userNameNode = coreNode.SelectSingleNode("span[1]");
 
-                Target.Name = (userNameNode != null) ? userNameNode.InnerText : "";
+                Target.Name = (userNameNode != null) ? WebUtility.HtmlDecode(userNameNode.InnerText) : "";
                 Target.ID = (coreNode.Attributes.Contains("href")) ? User.FromUrl(coreNode.Attributes["href"].Value) : 0;
             }
         }

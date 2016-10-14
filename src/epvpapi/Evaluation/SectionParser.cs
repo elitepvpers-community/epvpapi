@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
+using System.Net;
 
 namespace epvpapi.Evaluation
 {
@@ -44,7 +45,7 @@ namespace epvpapi.Evaluation
                                 announcement.Begins = beginNode.InnerText.ToElitepvpersDateTime();
 
                             var creatorNode = secondLine.SelectSingleNode("span[2]/a[1]");
-                            announcement.Sender.Name = (creatorNode != null) ? creatorNode.InnerText : "";
+                            announcement.Sender.Name = (creatorNode != null) ? WebUtility.HtmlDecode(creatorNode.InnerText) : "";
                             announcement.Sender.ID = creatorNode.Attributes.Contains("href") ? User.FromUrl(creatorNode.Attributes["href"].Value) : 0;
                         }
 

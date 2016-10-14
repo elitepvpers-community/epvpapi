@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
+using System.Net;
 
 namespace epvpapi.Evaluation
 {
@@ -101,7 +102,7 @@ namespace epvpapi.Evaluation
                                        postCreatorNode.SelectSingleNode("text()[1]") ??
                                        postCreatorNode.SelectSingleNode("strike[1]"); // banned users
 
-                    Target.Name = (userNameNode != null) ? userNameNode.InnerText : "";
+                    Target.Name = (userNameNode != null) ? WebUtility.HtmlDecode(userNameNode.InnerText) : "";
                     Target.Banned = (userNameNode != null) ? (userNameNode.Name == "strike") ? true : false : false;
 
                     var userTitleNode = coreNode.SelectSingleNode("div[3]");
