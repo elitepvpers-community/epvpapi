@@ -160,14 +160,14 @@ namespace epvpapi
             {
                 var index = formattedTime.IndexOf("Today");
                 formattedTime = formattedTime.Remove(index, 5);
-                formattedTime = formattedTime.Insert(index, DateTime.Now.Date.ToString("dd/MM/yyyy"));
+                formattedTime = formattedTime.Insert(index, DateTime.Now.Date.ToString("MM/dd/yyyy"));
             }
 
             if (formattedTime.Contains("Yesterday"))
             {
                 var index = formattedTime.IndexOf("Yesterday");
                 formattedTime = formattedTime.Remove(index, 9);
-                formattedTime = formattedTime.Insert(index, DateTime.Now.AddDays(-1).ToString("dd/MM/yyyy"));
+                formattedTime = formattedTime.Insert(index, DateTime.Now.AddDays(-1).ToString("MM/dd/yyyy"));
             }
 
             var dateTime = new DateTime();
