@@ -37,7 +37,7 @@ namespace epvpapi
         /// <param name="session"> Session which will be used to retrieve the statistic </param>
         public void Update(GuestSession session)
         {
-            var res = session.Get("http://www.elitepvpers.com/forum/");
+            var res = session.Get("https://www.elitepvpers.com/forum/");
             var doc = new HtmlDocument();
             doc.LoadHtml(res);
 

@@ -38,7 +38,7 @@ namespace epvpapi
         {
             session.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/forum/group.php?do=message",
+            session.Post("https://www.elitepvpers.com/forum/group.php?do=message",
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("subject", startPost.Title),
@@ -73,14 +73,14 @@ namespace epvpapi
             if (ID == 0) throw new ArgumentException("ID must not be empty");
             session.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/forum/group_inlinemod.php?gmids=",
+            session.Post("https://www.elitepvpers.com/forum/group_inlinemod.php?gmids=",
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
                             new KeyValuePair<string, string>("groupid", SocialGroup.ID.ToString()),
                             new KeyValuePair<string, string>("messageids", ID.ToString()),
                             new KeyValuePair<string, string>("do", "doinlinedelete"),
-                            new KeyValuePair<string, string>("url", "http://www.elitepvpers.com/forum/groups/" + SocialGroup.ID.ToString() + "--.html"),
+                            new KeyValuePair<string, string>("url", "https://www.elitepvpers.com/forum/groups/" + SocialGroup.ID.ToString() + "--.html"),
                             new KeyValuePair<string, string>("inline_discussion", "1"),
                             new KeyValuePair<string, string>("deletetype", "1"),
                             new KeyValuePair<string, string>("deletereason", reason)
@@ -97,7 +97,7 @@ namespace epvpapi
         {
             session.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/forum/group.php?do=message",
+            session.Post("https://www.elitepvpers.com/forum/group.php?do=message",
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("message", post.Content.ToString()),
@@ -122,7 +122,7 @@ namespace epvpapi
         /// <returns> The url of the group thread </returns>
         public string GetUrl()
         {
-            return String.Format("http://www.elitepvpers.com/forum/groups/{0}-{1}-d{2}-{3}.html",
+            return String.Format("https://www.elitepvpers.com/forum/groups/{0}-{1}-d{2}-{3}.html",
                                  SocialGroup.ID, SocialGroup.Name.UrlEscape(), ID, Posts.First().Title.UrlEscape());
         }
     }

@@ -62,7 +62,7 @@ namespace epvpapi
         {
             if (Shortname == String.Empty) throw new ArgumentException("Sections cannot be updated if no url-address-name is provided");
 
-            var res = session.Get(String.Format("http://www.elitepvpers.com/forum/{0}/", Shortname));
+            var res = session.Get(String.Format("https://www.elitepvpers.com/forum/{0}/", Shortname));
             var doc = new HtmlDocument();
             doc.LoadHtml(res);
 
@@ -86,7 +86,7 @@ namespace epvpapi
             var parsedThreads = new List<SectionThread>();
             for (uint i = startIndex; i < startIndex + pages; ++i)
             {
-                var res = session.Get(String.Format("http://www.elitepvpers.com/forum/{0}/index{1}.html", Shortname, i));
+                var res = session.Get(String.Format("https://www.elitepvpers.com/forum/{0}/index{1}.html", Shortname, i));
                 var doc = new HtmlDocument();
                 doc.LoadHtml(res);
 
@@ -116,6 +116,9 @@ namespace epvpapi
 
                 foreach (var threadNode in totalThreadNodes)
                 {
+                    // skip deleted threads, since we can't parse them (yet)
+                    if (threadNode.SelectSingleNode("td[6]") == null) continue;
+
                     var parsedThread = new SectionThread(0, this);
                     new SectionParser.ThreadListingParser(parsedThread).Execute(threadNode);
 
@@ -134,7 +137,7 @@ namespace epvpapi
         {
             var sections = new List<Section>();
 
-            var res = session.Get("http://www.elitepvpers.com/forum/main");
+            var res = session.Get("https://www.elitepvpers.com/forum/main");
             var doc = new HtmlDocument();
             doc.LoadHtml(res.ToString());
 
@@ -175,7 +178,7 @@ namespace epvpapi
         {
             var sections = new List<Section>();
 
-            var res = session.Get("http://www.elitepvpers.com/forum/main");
+            var res = session.Get("https://www.elitepvpers.com/forum/main");
             var doc = new HtmlDocument();
             doc.LoadHtml(res.ToString());
 
@@ -212,7 +215,7 @@ namespace epvpapi
 
         public string GetUrl()
         {
-            return String.Format("http://www.elitepvpers.com/forum/{0}/", Shortname);
+            return String.Format("https://www.elitepvpers.com/forum/{0}/", Shortname);
         }
 
         private static readonly Section _Main = new Section(206, "main");

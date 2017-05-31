@@ -137,7 +137,7 @@ namespace epvpapi
             get { return new Usergroup("Founder", "founder.png"); }
         }
 
-        private const string _DefaultDirectory = "http://cdn.elitepvpers.org/forum/images/teamicons/relaunch/";
+        private const string _DefaultDirectory = "https://cdn.elitepvpers.org/forum/images/teamicons/relaunch/";
 
         public static string DefaultDirectory
         {

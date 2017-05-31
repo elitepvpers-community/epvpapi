@@ -25,7 +25,7 @@ namespace epvpapi.Connection
         {
             get
             {
-                foreach (Cookie cookie in Cookies.GetCookies(new Uri("http://www.elitepvpers.com/forum/")))
+                foreach (Cookie cookie in Cookies.GetCookies(new Uri("https://www.elitepvpers.com/forum/")))
                     if (cookie.Name == "bbsessionhash" && !String.IsNullOrEmpty(cookie.Value))
                         return true;
 
@@ -78,7 +78,7 @@ namespace epvpapi.Connection
         public void Destroy()
         {
             ThrowIfInvalid();
-            Get("http://www.elitepvpers.com/forum/login.php?do=logout&logouthash=" + SecurityToken);
+            Get("https://www.elitepvpers.com/forum/login.php?do=logout&logouthash=" + SecurityToken);
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace epvpapi.Connection
         /// </summary>
         public void Update()
         {
-            var res = Get("http://www.elitepvpers.com/forum/");
+            var res = Get("https://www.elitepvpers.com/forum/");
             SecurityToken = new Regex("SECURITYTOKEN = \"(\\S+)\";").Match(res).Groups[1].Value;
 
             if (String.IsNullOrEmpty(SecurityToken) || SecurityToken == "guest")

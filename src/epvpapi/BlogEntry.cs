@@ -78,7 +78,7 @@ namespace epvpapi
             Date = publishDate;
             var tags = Tags.Aggregate("", (current, tag) => current + (tag + (Tags.Last() != tag ? "," : "")));
 
-            session.Post("http://www.elitepvpers.com/forum/blog_post.php?do=updateblog&blogid=",
+            session.Post("https://www.elitepvpers.com/forum/blog_post.php?do=updateblog&blogid=",
                 new List<KeyValuePair<string, string>>()
                 {
                     new KeyValuePair<string, string>("title", Title),
@@ -112,7 +112,7 @@ namespace epvpapi
 
         public string GetUrl()
         {
-            return String.Format("http://www.elitepvpers.com/forum/blogs/{0}-{1}/{2}-{3}.html",
+            return String.Format("https://www.elitepvpers.com/forum/blogs/{0}-{1}/{2}-{3}.html",
                                 Blog.Owner.ID, Blog.Owner.Name.UrlEscape(), ID, Title.UrlEscape());
         }
     }

@@ -49,7 +49,7 @@ namespace epvpapi.TBM
 
         public string GetUrl()
         {
-            return "http://www.elitepvpers.com/theblackmarket/transaction/" + ID;
+            return "https://www.elitepvpers.com/theblackmarket/transaction/" + ID;
         }
     }
 }

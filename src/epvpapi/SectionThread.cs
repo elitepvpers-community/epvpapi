@@ -87,7 +87,7 @@ namespace epvpapi
         {
             session.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/forum/newthread.php?do=postthread&f=" + section.ID,
+            session.Post("https://www.elitepvpers.com/forum/newthread.php?do=postthread&f=" + section.ID,
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("subject", String.IsNullOrEmpty(startPost.Title) ? "-" : startPost.Title),
@@ -129,7 +129,7 @@ namespace epvpapi
             if (ID == 0) throw new ArgumentException("ID must not be empty");
             session.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/forum/postings.php",
+            session.Post("https://www.elitepvpers.com/forum/postings.php",
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("s", String.Empty),
@@ -154,7 +154,7 @@ namespace epvpapi
             if (ID == 0) throw new ArgumentException("ID must not be empty");
             session.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/forum/postings.php",
+            session.Post("https://www.elitepvpers.com/forum/postings.php",
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("s", String.Empty),
@@ -178,7 +178,7 @@ namespace epvpapi
             if (ID == 0) throw new System.ArgumentException("ID must not be empty");
             session.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/forum/threadrate.php",
+            session.Post("https://www.elitepvpers.com/forum/threadrate.php",
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("ajax", "1"),
@@ -207,7 +207,7 @@ namespace epvpapi
             if (ID == 0) throw new ArgumentException("ID must not be empty");
             session.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/forum/newreply.php?do=postreply&t=" + ID,
+            session.Post("https://www.elitepvpers.com/forum/newreply.php?do=postreply&t=" + ID,
                          new List<KeyValuePair<string, string>>() 
                          { 
                              new KeyValuePair<string, string>("title", String.IsNullOrEmpty(post.Title) ? "-" : post.Title),
@@ -333,9 +333,11 @@ namespace epvpapi
                 // for some reason, the lastpost container contains nothing and needs to be filtered out 
                 foreach (var postContainerNode in postsRootNode.ChildNodes.GetElementsByTagName("div").Where(element => element.Id != "lastpost"))
                 {
+                    // skip deleted posts, parsing them doesn't work (yet)
+                    if (postContainerNode.SelectSingleNode("div[1]/div[1]/div[1]/table[1]/tr[1]/td[1]/a[1]/img[1]") == null) continue;
+
                     var parsedPost = new SectionPost(0, this);
                     new SectionPostParser(parsedPost).Execute(postContainerNode);
-
                     retrievedReplies.Add(parsedPost);
                 }
 
@@ -353,7 +355,7 @@ namespace epvpapi
 
         public string GetUrl(uint pageIndex = 1)
         {
-            return String.Format("http://www.elitepvpers.com/forum/{0}/{1}-{2}-a" + ((pageIndex > 1) ? "-" + pageIndex : "") + ".html",
+            return String.Format("https://www.elitepvpers.com/forum/{0}/{1}-{2}-a" + ((pageIndex > 1) ? "-" + pageIndex : "") + ".html",
                     Section.Shortname, ID, InitialPost.Title.UrlEscape());
         }
 
@@ -364,7 +366,7 @@ namespace epvpapi
         /// <returns> Retrieved thread ID </returns>
         public static int FromUrl(string url)
         {
-            var match = Regex.Match(url, @"http://www.elitepvpers.com/forum/\S+/(\d+)-\S+.html");
+            var match = Regex.Match(url, @"https://www.elitepvpers.com/forum/\S+/(\d+)-\S+.html");
             if (match.Groups.Count < 2) throw new ParsingFailedException("User could not be exported from the given URL");
 
             return match.Groups[1].Value.To<int>();

@@ -41,7 +41,7 @@ namespace epvpapi.TBM
             else if (query.HasFlag(Transaction.Query.Sent) && !query.HasFlag(Transaction.Query.Received))
                 typeParameter = "sent";
 
-            var responseContent = session.Get("http://www.elitepvpers.com/theblackmarket/api/transactions.php?u=" + session.User.ID +
+            var responseContent = session.Get("https://www.elitepvpers.com/theblackmarket/api/transactions.php?u=" + session.User.ID +
                                     "&type=" + typeParameter + "&secretword=" + SecretWord);
 
             if(String.IsNullOrEmpty(responseContent))
@@ -85,7 +85,7 @@ namespace epvpapi.TBM
 
         public string GetUrl()
         {
-            return "http://www.elitepvpers.com/theblackmarket/profile/" + ID;
+            return "https://www.elitepvpers.com/theblackmarket/profile/" + ID;
         }
     }
 }

@@ -85,7 +85,7 @@ namespace epvpapi
         {
             session.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/forum/group.php?do=docreate",
+            session.Post("https://www.elitepvpers.com/forum/group.php?do=docreate",
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("s", String.Empty),
@@ -116,7 +116,7 @@ namespace epvpapi
             if (ID == 0) throw new ArgumentException("Group ID must not be zero");
             session.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/forum/group.php?do=delete",
+            session.Post("https://www.elitepvpers.com/forum/group.php?do=delete",
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("do", "dodelete"),
@@ -140,7 +140,7 @@ namespace epvpapi
             if (ID == 0) throw new ArgumentException("Group ID must not be zero");
             session.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/forum/group.php?do=dotransfer&groupid=" + ID.ToString(),
+            session.Post("https://www.elitepvpers.com/forum/group.php?do=dotransfer&groupid=" + ID.ToString(),
                         new List<KeyValuePair<string, string>>()
                         { 
                             new KeyValuePair<string, string>("do", "dotransfer"),
@@ -162,14 +162,14 @@ namespace epvpapi
             if (ID == 0) throw new ArgumentException("Group ID must not be zero");
             session.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/forum/groups/" + ID.ToString() + "--.html",
+            session.Post("https://www.elitepvpers.com/forum/groups/" + ID.ToString() + "--.html",
                         new List<KeyValuePair<string, string>>()
                         { 
                             new KeyValuePair<string, string>("do", "doaccepttransfer"),
                             new KeyValuePair<string, string>("groupid", ID.ToString()),
                             new KeyValuePair<string, string>("s", String.Empty),
                             new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
-                            new KeyValuePair<string, string>("url", "http://www.elitepvpers.com/forum/private.php?do=showpm&pmid=99999999"),
+                            new KeyValuePair<string, string>("url", "https://www.elitepvpers.com/forum/private.php?do=showpm&pmid=99999999"),
                             new KeyValuePair<string, string>("confirm", "Yes"),
                         });
         }
@@ -187,14 +187,14 @@ namespace epvpapi
             if (ID == 0) throw new ArgumentException("Group ID must not be zero");
             session.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/forum/group.php?do=doedit",
+            session.Post("https://www.elitepvpers.com/forum/group.php?do=doedit",
                         new List<KeyValuePair<string, string>>()
                         { 
                             new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
                             new KeyValuePair<string, string>("do", "doedit"),
                             new KeyValuePair<string, string>("groupid", ID.ToString()),
                             new KeyValuePair<string, string>("s", String.Empty),
-                            new KeyValuePair<string, string>("url", "http://www.elitepvpers.com/forum/groups/" + ID.ToString() + "--.html"),
+                            new KeyValuePair<string, string>("url", "https://www.elitepvpers.com/forum/groups/" + ID.ToString() + "--.html"),
                             new KeyValuePair<string, string>("socialgroupcategoryid", "1"),
                             new KeyValuePair<string, string>("groupdescription", description),
                             new KeyValuePair<string, string>("grouptype", access.ToString()),
@@ -222,7 +222,7 @@ namespace epvpapi
             if (ID == 0) throw new ArgumentException("Group ID must not be zero");
             session.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/forum/group.php?do=pendingmembers",
+            session.Post("https://www.elitepvpers.com/forum/group.php?do=pendingmembers",
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("do", "kickmembers"),
@@ -244,7 +244,7 @@ namespace epvpapi
             if (ID == 0) throw new ArgumentException("Group ID must not be zero");
             session.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/forum/group.php?do=sendinvite",
+            session.Post("https://www.elitepvpers.com/forum/group.php?do=sendinvite",
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("do", "sendinvite"),
@@ -265,7 +265,7 @@ namespace epvpapi
             if (ID == 0) throw new ArgumentException("Group ID must not be zero");
             session.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/forum/group.php?do=pendingmembers",
+            session.Post("https://www.elitepvpers.com/forum/group.php?do=pendingmembers",
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("do", "cancelinvites"),
@@ -285,7 +285,7 @@ namespace epvpapi
             if (ID == 0) throw new ArgumentException("Group ID must not be zero");
             session.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/forum/group.php?do=dojoin",
+            session.Post("https://www.elitepvpers.com/forum/group.php?do=dojoin",
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("do", "dojoin"),
@@ -307,7 +307,7 @@ namespace epvpapi
             if (ID == 0) throw new ArgumentException("Group ID must not be zero");
             session.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/forum/group.php?do=doleave",
+            session.Post("https://www.elitepvpers.com/forum/group.php?do=doleave",
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("do", "doleave"),
@@ -322,7 +322,7 @@ namespace epvpapi
 
         public string GetUrl()
         {
-            return "http://www.elitepvpers.com/forum/groups/" + ID + "-" + Name.UrlEscape() + ".html";
+            return "https://www.elitepvpers.com/forum/groups/" + ID + "-" + Name.UrlEscape() + ".html";
         }
     }
 }

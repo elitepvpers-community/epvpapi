@@ -31,7 +31,7 @@ namespace epvpapi
             if (session.User.GetHighestRank() < Usergroup.GlobalModerator && session.User != Thread.SocialGroup.Maintainer) throw new InsufficientAccessException("You don't have enough access rights to delete this social group post");
             session.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/forum/group_inlinemod.php",
+            session.Post("https://www.elitepvpers.com/forum/group_inlinemod.php",
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("s", String.Empty),
@@ -39,7 +39,7 @@ namespace epvpapi
                             new KeyValuePair<string, string>("groupid", Thread.SocialGroup.ID.ToString()),
                             new KeyValuePair<string, string>("messageids", ID.ToString()),
                             new KeyValuePair<string, string>("do", "doinlinedelete"),
-                            new KeyValuePair<string, string>("url", "http://www.elitepvpers.com/forum/groups/t-d" + Thread.ID.ToString() + "--.html"),
+                            new KeyValuePair<string, string>("url", "https://www.elitepvpers.com/forum/groups/t-d" + Thread.ID.ToString() + "--.html"),
                             new KeyValuePair<string, string>("inline_discussion", "0"),
                             new KeyValuePair<string, string>("deletetype", "1"),
                             new KeyValuePair<string, string>("deletereason", reason)

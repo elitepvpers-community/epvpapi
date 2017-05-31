@@ -259,7 +259,7 @@ namespace epvpapi
         /// <returns> The profile url of the user </returns>
         public string GetUrl()
         {
-            return "http://www.elitepvpers.com/forum/members/" + ID + "-" + Name.UrlEscape() + ".html";
+            return "https://www.elitepvpers.com/forum/members/" + ID + "-" + Name.UrlEscape() + ".html";
         }
 
         /// <summary>
@@ -270,7 +270,7 @@ namespace epvpapi
         /// <exception cref="ParsingFailedException"> Thrown if the specified link does not contain the profile ID and/or was malformatted </exception>
         public static int FromUrl(string url)
         {
-            var match = Regex.Match(url, @"(?:http://www.elitepvpers.com/(?:forum/)*)*(?:members|theblackmarket/profile)/([0-9]+)(?:-[a-zA-Z]+.html)*");
+            var match = Regex.Match(url, @"(?:https://www.elitepvpers.com/(?:forum/)*)*(?:members|theblackmarket/profile)/([0-9]+)(?:-[a-zA-Z]+.html)*");
             if (match.Groups.Count < 2) throw new ParsingFailedException(String.Format("User could not be exported from the given url: {0}", url));
 
             return match.Groups[1].Value.To<int>();
@@ -285,7 +285,7 @@ namespace epvpapi
         public static IEnumerable<User> Search<TUser>(AuthenticatedSession<TUser> session, string name) where TUser : User
         {
             session.ThrowIfInvalid();
-            var res = session.Post("http://www.elitepvpers.com/forum/ajax.php?do=usersearch",
+            var res = session.Post("https://www.elitepvpers.com/forum/ajax.php?do=usersearch",
                                     new List<KeyValuePair<string, string>>()
                                     {
                                         new KeyValuePair<string, string>("securitytoken", session.SecurityToken),

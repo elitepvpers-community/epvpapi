@@ -102,7 +102,7 @@ namespace epvpapi.TBM
             if (Title.Length < 4) throw new ArgumentException("The title is too short (4 characters minimum)");
             if (Cost < 1) throw new ArgumentException("The price is too low (at least 1 elite*gold)");
 
-            session.Post("http://www.elitepvpers.com/theblackmarket/treasures/",
+            session.Post("https://www.elitepvpers.com/theblackmarket/treasures/",
                 new List<KeyValuePair<string, string>>()
                 {
                     new KeyValuePair<string, string>("title", Title),
@@ -206,7 +206,7 @@ namespace epvpapi.TBM
 
         public string GetUrl()
         {
-            return "http://www.elitepvpers.com/theblackmarket/treasure/" + ID;
+            return "https://www.elitepvpers.com/theblackmarket/treasure/" + ID;
         }
     }
 }

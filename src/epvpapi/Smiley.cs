@@ -8,7 +8,7 @@
         /// <summary>
         /// Default root directory where smilies are stored
         /// </summary>
-        private static string _DefaultDirectory = "http://www.elitepvpers.com/forum/images/smilies/";
+        private static string _DefaultDirectory = "https://www.elitepvpers.com/forum/images/smilies/";
         public static string DefaultDirectory
         {
             get { return _DefaultDirectory; }

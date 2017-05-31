@@ -53,7 +53,7 @@ namespace epvpapi
             {
                 session.ThrowIfInvalid();
 
-                session.Post("http://www.elitepvpers.com/forum/mgc_cb_evo_ajax.php",
+                session.Post("https://www.elitepvpers.com/forum/mgc_cb_evo_ajax.php",
                             new List<KeyValuePair<string, string>>()
                             {
                                 new KeyValuePair<string, string>("do", "ajax_chat"),
@@ -72,7 +72,7 @@ namespace epvpapi
             {
                 session.ThrowIfInvalid();
 
-                var res = session.Post("http://www.elitepvpers.com/forum/mgc_cb_evo_ajax.php",
+                var res = session.Post("https://www.elitepvpers.com/forum/mgc_cb_evo_ajax.php",
                                             new List<KeyValuePair<string, string>>
                                             {
                                                 new KeyValuePair<string, string>("do", "ajax_refresh_chat"),
@@ -158,12 +158,12 @@ namespace epvpapi
                 var shoutList = new List<Shout>();
                 for (int i = 0; i < pageCount; ++i)
                 {
-                    var res = session.Get("http://www.elitepvpers.com/forum/mgc_cb_evo.php?do=view_archives&page=" + (firstPage + i));
+                    var res = session.Get("https://www.elitepvpers.com/forum/mgc_cb_evo.php?do=view_archives&page=" + (firstPage + i));
 
                     var doc = new HtmlDocument();
                     doc.LoadHtml(res);
 
-                    var messagesRootNode = doc.GetElementbyId("tickerwrapper").SelectSingleNode("../table[1]/tr[1]/td[3]/table[1]");
+                    var messagesRootNode = doc.GetElementbyId("tickerwrapper").SelectSingleNode("../table[2]/tr[1]/td[3]/table[1]");
                     if (messagesRootNode == null) throw new ParsingFailedException("Parsing channel history failed, root node is invalid or was not found");
 
                     var messageNodes = new List<HtmlNode>(messagesRootNode.ChildNodes.GetElementsByTagName("tr"));
@@ -245,11 +245,11 @@ namespace epvpapi
         {
             session.ThrowIfInvalid();
 
-            var res = session.Get("http://www.elitepvpers.com/forum/mgc_cb_evo.php?do=view_archives&page=1");
+            var res = session.Get("https://www.elitepvpers.com/forum/mgc_cb_evo.php?do=view_archives&page=1");
             var document = new HtmlDocument();
             document.LoadHtml(res);
 
-            var statsBodyNode = document.GetElementbyId("tickerwrapper").SelectSingleNode("../table[1]/tr[1]/td[1]/table[1]");
+            var statsBodyNode = document.GetElementbyId("tickerwrapper").SelectSingleNode("../table[2]/tr[1]/td[1]/table[1]");
             if (statsBodyNode == null) throw new ParsingFailedException("Updating the shoutbox information failed, root node is invalid or was not found");
 
             var chatStatsNodes = new List<HtmlNode>(statsBodyNode.Descendants("tr"));

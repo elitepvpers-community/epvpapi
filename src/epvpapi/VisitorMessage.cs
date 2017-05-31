@@ -34,7 +34,7 @@ namespace epvpapi
             if (Receiver.ID == 0) throw new ArgumentException("Receiver ID must not be empty");
             session.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/forum/visitormessage.php?do=message",
+            session.Post("https://www.elitepvpers.com/forum/visitormessage.php?do=message",
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("ajax", "1"),
@@ -56,7 +56,7 @@ namespace epvpapi
 
         public string GetUrl()
         {
-            return "http://www.elitepvpers.com/forum/members/" + Receiver.ID + "-" + Receiver.Name.UrlEscape() + ".html#vmessage" + ID;
+            return "https://www.elitepvpers.com/forum/members/" + Receiver.ID + "-" + Receiver.Name.UrlEscape() + ".html#vmessage" + ID;
         }
     }
 }

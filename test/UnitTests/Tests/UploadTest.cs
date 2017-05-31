@@ -17,7 +17,7 @@ namespace UnitTests.Tests
         {
             try
             {
-                var schmittAvatar = Image.FromWeb(new Uri("http://i.epvpimg.com/GQp1h.jpg"));
+                var schmittAvatar = Image.FromWeb(new Uri("http://i.epvpimg.com/wwfRdab.jpg"));
                 var gitAvatar = Image.FromFileSystem("../../Resources/identicon.png");
 
                 if (!String.IsNullOrEmpty(TestEnvironment.Session.User.AvatarUrl))

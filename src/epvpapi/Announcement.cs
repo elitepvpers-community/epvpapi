@@ -23,7 +23,7 @@ namespace epvpapi
 
         public string GetUrl()
         {
-            return String.Format("http://www.elitepvpers.com/forum/{0}/announcement-{1}.html", Section.Shortname, Title.UrlEscape());
+            return String.Format("https://www.elitepvpers.com/forum/{0}/announcement-{1}.html", Section.Shortname, Title.UrlEscape());
         }
     }
 }

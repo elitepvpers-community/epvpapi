@@ -34,7 +34,7 @@ namespace epvpapi
         /// </remarks>
         public void Login(AuthenticatedSession<TUser> session, string md5Password)
         {
-            session.Post("http://www.elitepvpers.com/forum/login.php?do=login&langid=1",
+            session.Post("https://www.elitepvpers.com/forum/login.php?do=login&langid=1",
                         new List<KeyValuePair<string, string>>()
                             {
                                 new KeyValuePair<string, string>("vb_login_username", User.Name),
@@ -58,7 +58,7 @@ namespace epvpapi
         {
             session.ThrowIfInvalid();
 
-            var res = session.Get("http://www.elitepvpers.com/theblackmarket/api/secretword/");
+            var res = session.Get("https://www.elitepvpers.com/theblackmarket/api/secretword/");
             var doc = new HtmlDocument();
             doc.LoadHtml(res);
 
@@ -74,7 +74,7 @@ namespace epvpapi
         {
             session.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/theblackmarket/api/secretword/",
+            session.Post("https://www.elitepvpers.com/theblackmarket/api/secretword/",
                         new List<KeyValuePair<string, string>>()
                             {
                                 new KeyValuePair<string, string>("secretword", newSecretWord)
@@ -93,7 +93,7 @@ namespace epvpapi
 
             var subscribedThreads = new List<SectionThread>();
 
-            var res = session.Get("http://www.elitepvpers.com/forum/subscription.php?do=viewsubscription&daysprune=-1&folderid=all");
+            var res = session.Get("https://www.elitepvpers.com/forum/subscription.php?do=viewsubscription&daysprune=-1&folderid=all");
             var htmlDocument = new HtmlDocument();
             htmlDocument.LoadHtml(res);
 
@@ -138,7 +138,7 @@ namespace epvpapi
             var listedTreasures = new List<Treasure>();
             for (var i = startIndex; i < (startIndex + pageCount); ++i)
             {
-                var res = session.Get("http://www.elitepvpers.com/theblackmarket/treasures/" +
+                var res = session.Get("https://www.elitepvpers.com/theblackmarket/treasures/" +
                     ((queryStatus == Treasure.Query.Bought) ? "bought" : "soldunsold")
                     + "/" + i);
 
@@ -248,7 +248,7 @@ namespace epvpapi
                     { new StringContent(changeType.ToString()), "avatarid" }
                 };
 
-            session.PostMultipartFormData("http://www.elitepvpers.com/forum/profile.php?do=updateavatar", content);
+            session.PostMultipartFormData("https://www.elitepvpers.com/forum/profile.php?do=updateavatar", content);
         }
 
         /// <summary>
@@ -263,14 +263,14 @@ namespace epvpapi
                     // Encoding (SBCSCodePageEncoding) is important and required to transmit german characters such as Ä, Ü, Ö...
                     { new StringContent(signatureContent.ToString(), System.Text.Encoding.GetEncoding("ISO-8859-1")), "message" }, 
                     { new StringContent("0"), "wysiwyg" },
-                    { new StringContent("http://www.elitepvpers.com/forum/usercp.php"), "url" },
+                    { new StringContent("https://www.elitepvpers.com/forum/usercp.php"), "url" },
                     { new StringContent(String.Empty), "s" },
                     { new StringContent(session.SecurityToken), "securitytoken" },
                     { new StringContent("updatesignature"), "do" },
                     { new StringContent("52428800"), "MAX_FILE_SIZE" }
                 };
 
-            session.PostMultipartFormData("http://www.elitepvpers.com/forum/profile.php?do=updatesignature", content);
+            session.PostMultipartFormData("https://www.elitepvpers.com/forum/profile.php?do=updatesignature", content);
         }
     }
 

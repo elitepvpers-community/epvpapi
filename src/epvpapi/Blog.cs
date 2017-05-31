@@ -25,7 +25,7 @@ namespace epvpapi
         /// <returns> The url of the blog </returns>
         public string GetUrl()
         {
-            return "http://www.elitepvpers.com/forum/blogs/" + Owner.ID + "-" + Owner.Name.UrlEscape() + ".html";
+            return "https://www.elitepvpers.com/forum/blogs/" + Owner.ID + "-" + Owner.Name.UrlEscape() + ".html";
         }
     }
 }

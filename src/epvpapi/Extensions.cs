@@ -9,7 +9,7 @@ namespace epvpapi
 {
     internal static class Extensions
     {
-        // -> http://stackoverflow.com/questions/249760/how-to-convert-unix-timestamp-to-datetime-and-vice-versa
+        // -> https://stackoverflow.com/questions/249760/how-to-convert-unix-timestamp-to-datetime-and-vice-versa
         public static DateTime ToDateTime(this uint unixTimeStamp)
         {
             // Unix timestamp is seconds past epoch
@@ -78,7 +78,7 @@ namespace epvpapi
                                                    .Any(attribute => attribute.Name == "class" && attribute.Value == className));
         }
 
-        // -> http://stackoverflow.com/questions/419019/split-list-into-sublists-with-linq
+        // -> https://stackoverflow.com/questions/419019/split-list-into-sublists-with-linq
         public static List<List<T>> Split<T>(this List<T> source, uint elementsPerSplit)
         {
             return source
@@ -160,14 +160,14 @@ namespace epvpapi
             {
                 var index = formattedTime.IndexOf("Today");
                 formattedTime = formattedTime.Remove(index, 5);
-                formattedTime = formattedTime.Insert(index, DateTime.Now.Date.ToString("MM/dd/yyyy"));
+                formattedTime = formattedTime.Insert(index, DateTime.Now.Date.ToString("dd.MM.yyyy"));
             }
 
             if (formattedTime.Contains("Yesterday"))
             {
                 var index = formattedTime.IndexOf("Yesterday");
                 formattedTime = formattedTime.Remove(index, 9);
-                formattedTime = formattedTime.Insert(index, DateTime.Now.AddDays(-1).ToString("MM/dd/yyyy"));
+                formattedTime = formattedTime.Insert(index, DateTime.Now.AddDays(-1).ToString("dd.MM.yyyy"));
             }
 
             var dateTime = new DateTime();

@@ -48,7 +48,7 @@ namespace epvpapi
 
         public string GetUrl()
         {
-            return "http://www.elitepvpers.com/forum/joining-e-pvp/" + Thread.ID + "-" + Thread.InitialPost.Title.UrlEscape() + ".html";
+            return "https://www.elitepvpers.com/forum/joining-e-pvp/" + Thread.ID + "-" + Thread.InitialPost.Title.UrlEscape() + ".html";
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace epvpapi
             if (ID == 0) throw new System.ArgumentException("ID must not be empty");
             session.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/forum/report.php?do=sendemail",
+            session.Post("https://www.elitepvpers.com/forum/report.php?do=sendemail",
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
@@ -88,7 +88,7 @@ namespace epvpapi
             if (ID == 0) throw new ArgumentException("ID must not be empty");
             session.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/forum/editpost.php",
+            session.Post("https://www.elitepvpers.com/forum/editpost.php",
                         new List<KeyValuePair<string, string>>()
                         {
                             new KeyValuePair<string, string>("do", "deletepost"),

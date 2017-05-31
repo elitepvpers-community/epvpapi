@@ -81,7 +81,7 @@ namespace epvpapi
             {
                 var recipients = String.Join(";", splittedRecipientList.Select(recipient => recipient.Name));
 
-                session.Post("http://www.elitepvpers.com/forum/private.php?do=insertpm&pmid=",
+                session.Post("https://www.elitepvpers.com/forum/private.php?do=insertpm&pmid=",
                             new List<KeyValuePair<string, string>>()
                             {
                                 new KeyValuePair<string, string>("recipients", recipients),
@@ -112,7 +112,7 @@ namespace epvpapi
             session.ThrowIfInvalid();
             if (ID == 0) throw new System.ArgumentException("ID must not be emtpy");
 
-            var res = session.Get("http://www.elitepvpers.com/forum/private.php?do=showpm&pmid=" + ID.ToString());
+            var res = session.Get("https://www.elitepvpers.com/forum/private.php?do=showpm&pmid=" + ID.ToString());
             var doc = new HtmlDocument();
             doc.LoadHtml(res);
 
@@ -129,7 +129,7 @@ namespace epvpapi
         {
             session.ThrowIfInvalid();
 
-            session.Post("http://www.elitepvpers.com/forum/private.php?do=sendemail",
+            session.Post("https://www.elitepvpers.com/forum/private.php?do=sendemail",
                          new List<KeyValuePair<string, string>>()
                          {
                              new KeyValuePair<string, string>("s", String.Empty),
@@ -137,7 +137,7 @@ namespace epvpapi
                              new KeyValuePair<string, string>("reason", reason),
                              new KeyValuePair<string, string>("pmid", ID.ToString()),
                              new KeyValuePair<string, string>("do", "sendemail"),
-                             new KeyValuePair<string, string>("url", "http://www.elitepvpers.com/forum/private.php?do=showpm&pmid=" + ID.ToString())
+                             new KeyValuePair<string, string>("url", "https://www.elitepvpers.com/forum/private.php?do=showpm&pmid=" + ID.ToString())
                          });
         }
 
@@ -147,7 +147,7 @@ namespace epvpapi
         /// <returns> The url to the private message </returns>
         public string GetUrl()
         {
-            return "http://www.elitepvpers.com/forum/private.php?do=showpm&pmid=" + ID;
+            return "https://www.elitepvpers.com/forum/private.php?do=showpm&pmid=" + ID;
         }
     }
 }

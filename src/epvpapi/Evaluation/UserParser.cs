@@ -310,7 +310,7 @@ namespace epvpapi.Evaluation
                     else if (legendCaption == "General Information")
                     {
                         HtmlNode recommendationsNode = null;
-                        if (Target.CurrentStatus != User.Status.Invisible || IsSessionUser)
+                        if (Target.CurrentStatus == User.Status.Invisible || !IsSessionUser)
                             recommendationsNode = statisticsGroup.SelectSingleNode("ul[1]/li[3]/text()[1]");
                         else
                             recommendationsNode = statisticsGroup.SelectSingleNode("ul[1]/li[2]/text()[1]");
