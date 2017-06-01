@@ -92,7 +92,7 @@ namespace epvpapi
                             new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
                             new KeyValuePair<string, string>("do", "docreate"),
                             new KeyValuePair<string, string>("groupid", String.Empty),
-                            new KeyValuePair<string, string>("url", "http%3A%2F%2Fwww.elitepvpers.com%2Fforum%2Fgroups%2F"),
+                            new KeyValuePair<string, string>("url", "https%3A%2F%2Fwww.elitepvpers.com%2Fforum%2Fgroups%2F"),
                             new KeyValuePair<string, string>("socialgroupcategoryid", "1"),
                             new KeyValuePair<string, string>("groupname", name),
                             new KeyValuePair<string, string>("groupdescription", description),
@@ -124,7 +124,7 @@ namespace epvpapi
                             new KeyValuePair<string, string>("pictureid", String.Empty),
                             new KeyValuePair<string, string>("s", String.Empty),
                             new KeyValuePair<string, string>("securitytoken", session.SecurityToken),
-                            new KeyValuePair<string, string>("url", "http%3A%2F%2Fwww.elitepvpers.com%2Fforum%2Fgroups%2F" + ID.ToString() + "--.html"),
+                            new KeyValuePair<string, string>("url", "https%3A%2F%2Fwww.elitepvpers.com%2Fforum%2Fgroups%2F" + ID.ToString() + "--.html"),
                             new KeyValuePair<string, string>("confirm", "++Yes++")
                         });
         }
