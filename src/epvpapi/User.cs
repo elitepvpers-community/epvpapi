@@ -236,7 +236,7 @@ namespace epvpapi
 
             var doc = new HtmlDocument();
             doc.LoadHtml(res);
-            new UserParser(this, (this == session.User)).Execute(doc);
+            new UserParser(this, (this.ID == session.User.ID)).Execute(doc);
         }
 
         /// <summary>
