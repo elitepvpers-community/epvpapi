@@ -210,6 +210,57 @@ namespace epvpapi
         }
 
         /// <summary>
+        /// Retrieves all open <c>Trades</c>s that are requested or received using the logged-in user account
+        /// </summary>
+        /// <param name="session">Session used for sending the request</param>
+        /// <param name="queryStatus">
+        /// Type of <c>Trade</c> to query. Either <c>Trade.Query.Received</c> 
+        /// for querying open trades that have been received or <c>Treasure.Query.Requested</c> 
+        /// for open trades that have been requested</param>
+        /// <param name="pageCount"> Amount of pages to retrieve, one page may contain up to 15 trades </param>
+        /// <param name="startIndex"> Index of the first page to request (1 for the first page, 2 for the second, ...) </param>
+        /// <returns> List of all <c>Trades</c>s that could be retrieved </returns>
+        public List<Trade> GetTrades(AuthenticatedSession<TUser> session, Trade.Query queryStatus/* = Trade.Query.Received*/, uint pageCount = 1, uint startIndex = 1)
+        {
+            session.ThrowIfInvalid();
+
+            var listedTrades = new List<Trade>();
+            for (var i = startIndex; i < (startIndex + pageCount); ++i)
+            {
+                var res = "";
+                switch(queryStatus)
+                {
+                    case Trade.Query.Received:
+                        res = session.Get("https://www.elitepvpers.com/theblackmarket/trades/received/" + i);
+                        break;
+                    case Trade.Query.Requested:
+                        res = session.Get("https://www.elitepvpers.com/theblackmarket/trades/requested/" + i);
+                        break;
+                }
+
+                var htmlDocument = new HtmlDocument();
+                htmlDocument.LoadHtml(res);
+
+                var rootFormNode = htmlDocument.GetElementbyId("contentbg");
+                if (rootFormNode == null) continue;
+
+                var tableNode = rootFormNode.SelectSingleNode("table[1]/tr[1]/td[1]/table[1]/tr[2]/td[1]/div[1]/div[3]/table[1]");
+                if (tableNode == null) continue;
+
+                // skip the first <tr> element since that is the table header
+                foreach (var tradeListingNode in tableNode.ChildNodes.GetElementsByTagName("tr").Skip(1))
+                {
+                    var idNode = tradeListingNode.SelectSingleNode("td[1]");
+                    var trade = Trade.fromId(session, (idNode != null) ? idNode.InnerText.TrimStart('#').To<int>() : 0);
+
+                    listedTrades.Add(trade);
+                }
+            }
+
+            return listedTrades;
+        }
+
+        /// <summary>
         /// Removes/disables the current Avatar
         /// </summary>
         /// <param name="session">Session used for sending the request</param>
